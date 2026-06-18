@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PDFUpload from "./PDFUpload";
+// import PDFUpload from "./PDFUpload";
 import {
   PieChart,
   Pie,
@@ -19,6 +19,7 @@ import {
   clearAll,
 } from "../api";
 import { type CategoryData, type Expense, type MonthlyData } from "../types";
+import UploadStatement from "./UploadStatement";
 
 const COLORS = [
   "#6366f1",
@@ -41,7 +42,7 @@ export default function Dashboard({ refreshKey }: Props) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [showUpload, setShowUpload] = useState(false);
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -85,7 +86,8 @@ export default function Dashboard({ refreshKey }: Props) {
   if (total === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full bg-gray-900 text-center px-8">
-        <div className="text-5xl mb-4">📊</div>
+        {/* <div className="text-5xl mb-4">📊</div> */}
+        <UploadStatement fetchData={fetchData} />
         <h3 className="text-white font-semibold text-lg mb-2">
           No expenses yet
         </h3>
@@ -117,54 +119,6 @@ export default function Dashboard({ refreshKey }: Props) {
         >
           Clear All
         </button>
-      </div>
-      {/* PDF Upload Toggle */}
-      <div
-        style={{
-          backgroundColor: "var(--bg-surface)",
-          border: "1px solid rgba(179,180,189,0.1)",
-          borderRadius: "12px",
-          overflow: "hidden",
-        }}
-      >
-        <button
-          onClick={() => setShowUpload((prev) => !prev)}
-          className="w-full flex items-center justify-between px-4 py-3 cursor-pointer"
-          style={{ color: "var(--white)" }}
-        >
-          <div className="flex items-center gap-2">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="12" y1="18" x2="12" y2="12" />
-              <line x1="9" y1="15" x2="15" y2="15" />
-            </svg>
-            <span className="text-sm font-medium">
-              Upload bank statement (PDF)
-            </span>
-          </div>
-          <span style={{ color: "var(--muted)" }} className="text-xs">
-            {showUpload ? "▲ collapse" : "▼ expand"}
-          </span>
-        </button>
-
-        {showUpload && (
-          <PDFUpload
-            onSaved={() => {
-              setShowUpload(false);
-              fetchData();
-            }}
-          />
-        )}
       </div>
 
       {/* Stat Cards */}
