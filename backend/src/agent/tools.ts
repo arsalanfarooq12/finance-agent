@@ -104,7 +104,7 @@ export async function executeTool(
           description: expense.description,
           amount: expense.amount,
           category: expense.category,
-          date: expense.date || today,
+          date: today,
         });
         saved++;
       }

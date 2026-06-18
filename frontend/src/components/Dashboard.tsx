@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
+import PDFUpload from "./PDFUpload";
 import {
   PieChart,
   Pie,
-  Cell,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  // Legend,
 } from "recharts";
+
 import {
   getCategories,
   getMonthly,
@@ -41,7 +41,7 @@ export default function Dashboard({ refreshKey }: Props) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-
+  const [showUpload, setShowUpload] = useState(false);
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -97,6 +97,10 @@ export default function Dashboard({ refreshKey }: Props) {
     );
   }
 
+  const categoriesWithColor = categories.map((cat, i) => ({
+    ...cat,
+    fill: COLORS[i % COLORS.length],
+  }));
   return (
     <div className="h-full overflow-y-auto bg-gray-900 px-4 py-4 space-y-4">
       {/* Header */}
@@ -113,6 +117,54 @@ export default function Dashboard({ refreshKey }: Props) {
         >
           Clear All
         </button>
+      </div>
+      {/* PDF Upload Toggle */}
+      <div
+        style={{
+          backgroundColor: "var(--bg-surface)",
+          border: "1px solid rgba(179,180,189,0.1)",
+          borderRadius: "12px",
+          overflow: "hidden",
+        }}
+      >
+        <button
+          onClick={() => setShowUpload((prev) => !prev)}
+          className="w-full flex items-center justify-between px-4 py-3 cursor-pointer"
+          style={{ color: "var(--white)" }}
+        >
+          <div className="flex items-center gap-2">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--accent)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="12" y1="18" x2="12" y2="12" />
+              <line x1="9" y1="15" x2="15" y2="15" />
+            </svg>
+            <span className="text-sm font-medium">
+              Upload bank statement (PDF)
+            </span>
+          </div>
+          <span style={{ color: "var(--muted)" }} className="text-xs">
+            {showUpload ? "▲ collapse" : "▼ expand"}
+          </span>
+        </button>
+
+        {showUpload && (
+          <PDFUpload
+            onSaved={() => {
+              setShowUpload(false);
+              fetchData();
+            }}
+          />
+        )}
       </div>
 
       {/* Stat Cards */}
@@ -140,6 +192,9 @@ export default function Dashboard({ refreshKey }: Props) {
           <p className="text-white font-bold text-lg mt-0.5">
             {categories[0]?.category ?? "—"}
           </p>
+          <p className="text-white font-medium text-sm mt-0.5">
+            ₹{categories[0]?.total?.toLocaleString("en-IN") ?? "—"}
+          </p>
         </div>
       </div>
 
@@ -151,22 +206,18 @@ export default function Dashboard({ refreshKey }: Props) {
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
-              data={categories}
+              data={categoriesWithColor}
               dataKey="total"
               nameKey="category"
               cx="50%"
               cy="50%"
               outerRadius={75}
-              label={({ category, percent }) =>
-                `${category} ${(percent * 100).toFixed(0)}%`
+              label={({ name, percent }: any) =>
+                `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
               }
               labelLine={false}
               fontSize={10}
-            >
-              {categories.map((_, i) => (
-                <Cell key={i} fill={COLORS[i % COLORS.length]} />
-              ))}
-            </Pie>
+            ></Pie>
             <Tooltip
               formatter={(val: any) => `₹${val.toLocaleString("en-IN")}`}
               contentStyle={{

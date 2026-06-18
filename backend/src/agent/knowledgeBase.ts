@@ -92,7 +92,7 @@ class FinancialVectorStore {
   }
 
   private async getEmbedding(text: string): Promise<number[]> {
-    const response = await genAI.models.embedContent({
+    const response: any = await genAI.models.embedContent({
       model: "gemini-embedding-001",
       contents: text,
       config: { taskType: "RETRIEVAL_DOCUMENT" },

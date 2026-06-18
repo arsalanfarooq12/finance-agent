@@ -4,6 +4,7 @@ import * as dotenv from "dotenv";
 import chatRoutes from "./routes/chat.js";
 import expenseRoutes from "./routes/expenses.js";
 import { vectorStore } from "./agent/knowledgeBase.js";
+import uploadRoutes from "./routes/upload.js";
 dotenv.config();
 
 const app = express();
@@ -14,7 +15,7 @@ app.use(express.json());
 
 app.use("/api/chat", chatRoutes);
 app.use("/api/expenses", expenseRoutes);
-
+app.use("/api/upload", uploadRoutes);
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });

@@ -27,6 +27,30 @@ router.delete("/:id", (req, res) => {
   expenseQueries.deleteById.run(req.params.id);
   res.json({ success: true });
 });
+// pdf upload and expense extraction is handled in upload.ts,
+// this route is for saving extracted expenses to the database
+router.post("/bulk", (req, res) => {
+  const { expenses } = req.body;
+
+  if (!Array.isArray(expenses) || expenses.length === 0) {
+    return res.status(400).json({ error: "No expenses provided" });
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+  let saved = 0;
+
+  for (const exp of expenses) {
+    expenseQueries.insert.run({
+      description: exp.description,
+      amount: Math.abs(exp.amount),
+      category: exp.category,
+      date: exp.date ?? today,
+    });
+    saved++;
+  }
+
+  res.json({ saved, message: `${saved} expenses saved successfully` });
+});
 
 // Clear all data
 router.delete("/", (req, res) => {
