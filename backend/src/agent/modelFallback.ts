@@ -33,7 +33,7 @@ export async function generateWithFallback(
 
   for (let i = 0; i < MODEL_CHAIN.length; i++) {
     const modelName = MODEL_CHAIN[i];
-
+    // Try to generate content with the current model
     try {
       const model = genAI.getGenerativeModel({
         model: modelName,
@@ -52,7 +52,7 @@ export async function generateWithFallback(
       return { response: result.response, modelUsed: modelName! };
     } catch (error: any) {
       lastError = error;
-
+      // If the error is not retryable, throw it immediately. Otherwise, log a warning and continue to the next model in the chain.
       if (!isRetryableError(error)) {
         // Not an overload/rate-limit error — don't fall back, fail immediately
         throw error;
