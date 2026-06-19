@@ -1,6 +1,9 @@
 import Database from "better-sqlite3";
+import type { Database as BetterSqlite3Database } from "better-sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
+
+type SqlStatement = import("better-sqlite3").Statement;
 
 // Recreate __filename and __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -9,7 +12,7 @@ const dbPath = process.env.DB_PATH
   ? process.env.DB_PATH
   : path.join(__dirname, "../../finance.db");
 
-const db = new Database(dbPath);
+const db: BetterSqlite3Database = new Database(dbPath);
 
 // Enable WAL mode for better performance
 db.pragma("journal_mode = WAL");
@@ -40,7 +43,15 @@ db.exec(`
 `);
 
 // Expense queries
-export const expenseQueries = {
+export const expenseQueries: {
+  insert: SqlStatement;
+  getAll: SqlStatement;
+  getByCategory: SqlStatement;
+  getMonthly: SqlStatement;
+  getTotalSpend: SqlStatement;
+  deleteAll: SqlStatement;
+  deleteById: SqlStatement;
+} = {
   insert: db.prepare(`
     INSERT INTO expenses (description, amount, category, date)
     VALUES (@description, @amount, @category, @date)
@@ -77,7 +88,11 @@ export const expenseQueries = {
 };
 
 // Conversation queries
-export const conversationQueries = {
+export const conversationQueries: {
+  insert: SqlStatement;
+  getRecent: SqlStatement;
+  clearAll: SqlStatement;
+} = {
   insert: db.prepare(`
     INSERT INTO conversations (role, content)
     VALUES (@role, @content)
@@ -92,7 +107,13 @@ export const conversationQueries = {
   clearAll: db.prepare(`DELETE FROM conversations`),
 };
 
-export const budgetQueries = {
+export const budgetQueries: {
+  upsert: SqlStatement;
+  getAll: SqlStatement;
+  getByCategory: SqlStatement;
+  delete: SqlStatement;
+  deleteAll: SqlStatement;
+} = {
   upsert: db.prepare(`
     INSERT INTO budgets (category, limit_amount)
     VALUES (@category, @limit_amount)

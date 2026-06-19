@@ -101,7 +101,10 @@ class FinancialVectorStore {
   }
 
   private cosineSimilarity(a: number[], b: number[]): number {
-    const dot = a.reduce((sum, val, i) => sum + val * b[i], 0);
+    const dot = a.reduce((sum, val, i) => {
+      const bj = b[i] ?? 0;
+      return sum + val * bj;
+    }, 0);
     const magA = Math.sqrt(a.reduce((s, v) => s + v * v, 0));
     const magB = Math.sqrt(b.reduce((s, v) => s + v * v, 0));
     return dot / (magA * magB);

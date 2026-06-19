@@ -32,14 +32,18 @@ export async function generateWithFallback(
   let lastError: any;
 
   for (let i = 0; i < MODEL_CHAIN.length; i++) {
-    const modelName = MODEL_CHAIN[i];
+    const modelName = MODEL_CHAIN[i]!;
     // Try to generate content with the current model
     try {
-      const model = genAI.getGenerativeModel({
+      const modelParams = {
         model: modelName,
         tools: config.tools,
-        systemInstruction: config.systemInstruction,
-      });
+        ...(config.systemInstruction !== undefined
+          ? { systemInstruction: config.systemInstruction }
+          : {}),
+      };
+
+      const model = genAI.getGenerativeModel(modelParams);
 
       const result = await model.generateContent(request);
 
