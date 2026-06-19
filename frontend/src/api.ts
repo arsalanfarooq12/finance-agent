@@ -55,3 +55,28 @@ export const saveBulkExpenses = async (
 export const clearAll = async () => {
   await axios.delete("/api/expenses");
 };
+
+export interface BudgetStatus {
+  category: string;
+  limit: number;
+  spent: number;
+  remaining: number;
+  percentUsed: number;
+  status: "safe" | "warning" | "over";
+}
+
+export const getBudgets = async (): Promise<BudgetStatus[]> => {
+  const { data } = await axios.get("/api/budgets");
+  return data;
+};
+
+export const setBudget = async (
+  category: string,
+  limit: number
+): Promise<void> => {
+  await axios.post("/api/budgets", { category, limit });
+};
+
+export const deleteBudget = async (category: string): Promise<void> => {
+  await axios.delete(`/api/budgets/${category}`);
+};

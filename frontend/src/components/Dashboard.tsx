@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 // import PDFUpload from "./PDFUpload";
+import BudgetPanel from "./BudgetPanel";
 import {
   PieChart,
   Pie,
@@ -151,7 +152,7 @@ export default function Dashboard({ refreshKey }: Props) {
           </p>
         </div>
       </div>
-
+      <BudgetPanel refreshKey={refreshKey} />
       {/* Pie Chart */}
       <div className="bg-gray-800 rounded-xl p-4">
         <h3 className="text-white text-sm font-medium mb-3">

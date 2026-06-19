@@ -12,7 +12,7 @@ export default function UploadStatement({ fetchData }: UploadStatementProps) {
           backgroundColor: "var(--bg-surface)",
           border: "1px solid rgba(179,180,189,0.1)",
           borderRadius: "12px",
-          overflow: "scroll",
+          overflow: "hidden",
         }}
       >
         <button
