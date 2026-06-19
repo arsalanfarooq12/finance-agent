@@ -2,14 +2,12 @@ import { GoogleGenerativeAI, type Content } from "@google/generative-ai";
 import * as dotenv from "dotenv";
 import { agentTools, executeTool } from "./tools.js";
 import { conversationQueries } from "../db/database.js";
+import { generateWithFallback } from "./modelFallback.js";
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash-lite",
-  tools: agentTools,
-  systemInstruction: `You are a personal finance assistant for Indian users. You help users track expenses, analyze spending, manage budgets, and give practical financial advice.
+const SYSTEM_INSTRUCTION = `You are a personal finance assistant for Indian users. You help users track expenses, analyze spending, manage budgets, and give practical financial advice.
 
 Your capabilities:
 - Parse and save expenses from any format the user provides
@@ -27,29 +25,23 @@ Rules:
 - Use Indian Rupee (₹) for all amounts
 - Be concise, practical, and encouraging
 - If a budget status is "warning" or "over", mention it clearly but kindly
-- Never make up financial data — always query tools first`,
-});
+- Never make up financial data — always query tools first`;
 
 export async function runAgent(userMessage: string): Promise<{
   reply: string;
   toolsCalled: string[];
 }> {
-  // Load conversation history from DB
   const dbHistory = conversationQueries.getRecent.all() as Array<{
     role: string;
     content: string;
   }>;
 
-  // Build history in Gemini format
   const history: Content[] = dbHistory.map((h) => ({
     role: h.role as "user" | "model",
     parts: [{ text: h.content }],
   }));
 
-  // Add current user message
   history.push({ role: "user", parts: [{ text: userMessage }] });
-
-  // Save user message to DB
   conversationQueries.insert.run({ role: "user", content: userMessage });
 
   const toolsCalled: string[] = [];
@@ -59,11 +51,19 @@ export async function runAgent(userMessage: string): Promise<{
   while (stepCount < maxSteps) {
     stepCount++;
 
-    const response = await model.generateContent({ contents: history });
-    const candidate = response.response.candidates?.[0];
+    const { response, modelUsed } = await generateWithFallback(
+      genAI,
+      { tools: agentTools, systemInstruction: SYSTEM_INSTRUCTION },
+      { contents: history }
+    );
+
+    if (stepCount === 1 && modelUsed !== "gemini-2.5-flash") {
+      console.log(`[agent] This response used fallback model: ${modelUsed}`);
+    }
+
+    const candidate = response.candidates?.[0];
     const parts = candidate?.content?.parts ?? [];
 
-    // Add model response to history
     history.push({ role: "model", parts });
 
     const functionCall = parts.find((p) => p.functionCall)?.functionCall;
@@ -79,13 +79,9 @@ export async function runAgent(userMessage: string): Promise<{
         parts: [{ functionResponse: { name, response: { result } } }],
       });
     } else {
-      // Final answer
       const reply =
         parts.find((p) => p.text)?.text ?? "I couldn't generate a response.";
-
-      // Save assistant reply to DB
       conversationQueries.insert.run({ role: "model", content: reply });
-
       return { reply, toolsCalled };
     }
   }
