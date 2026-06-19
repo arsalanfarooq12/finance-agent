@@ -5,7 +5,11 @@ import { fileURLToPath } from "url";
 // Recreate __filename and __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const db = new Database(path.join(__dirname, "../../finance.db"));
+const dbPath = process.env.DB_PATH
+  ? process.env.DB_PATH
+  : path.join(__dirname, "../../finance.db");
+
+const db = new Database(dbPath);
 
 // Enable WAL mode for better performance
 db.pragma("journal_mode = WAL");
