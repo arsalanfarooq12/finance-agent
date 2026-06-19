@@ -27,6 +27,12 @@ db.exec(`
     content TEXT NOT NULL,
     created_at TEXT DEFAULT (datetime('now'))
   );
+  CREATE TABLE IF NOT EXISTS budgets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category TEXT NOT NULL UNIQUE,
+    limit_amount REAL NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 // Expense queries
@@ -80,6 +86,22 @@ export const conversationQueries = {
   `),
 
   clearAll: db.prepare(`DELETE FROM conversations`),
+};
+
+export const budgetQueries = {
+  upsert: db.prepare(`
+    INSERT INTO budgets (category, limit_amount)
+    VALUES (@category, @limit_amount)
+    ON CONFLICT(category) DO UPDATE SET limit_amount = @limit_amount
+  `),
+
+  getAll: db.prepare(`SELECT * FROM budgets`),
+
+  getByCategory: db.prepare(`SELECT * FROM budgets WHERE category = ?`),
+
+  delete: db.prepare(`DELETE FROM budgets WHERE category = ?`),
+
+  deleteAll: db.prepare(`DELETE FROM budgets`),
 };
 
 export default db;

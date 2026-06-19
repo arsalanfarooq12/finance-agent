@@ -1,7 +1,8 @@
 import { type Tool } from "@google/generative-ai";
 import { expenseQueries } from "../db/database.js";
 import { vectorStore } from "./knowledgeBase.js";
-
+import { budgetQueries } from "../db/database.js";
+import { getBudgetStatuses } from "./budgetTools.js";
 // Tool definitions for Gemini
 export const agentTools: Tool[] = [
   {
@@ -73,6 +74,36 @@ export const agentTools: Tool[] = [
         name: "clearExpenses",
         description:
           "Delete all expenses from the database. Only use this if the user explicitly asks to clear, reset, or delete all their data.",
+        parameters: {
+          type: "object" as any,
+          properties: {},
+        },
+      },
+      // Add this to functionDeclarations array, alongside existing tools
+      {
+        name: "setBudget",
+        description:
+          "Set or update a budget limit. Use category 'Overall' for total monthly budget, or a specific category name like 'Food' or 'Transport' for category-specific budgets. Use this when the user wants to set, change, or define spending limits.",
+        parameters: {
+          type: "object" as any,
+          properties: {
+            category: {
+              type: "string" as any,
+              description:
+                "Budget category: 'Overall' or a specific expense category",
+            },
+            limit: {
+              type: "number" as any,
+              description: "The budget limit amount in rupees",
+            },
+          },
+          required: ["category", "limit"],
+        },
+      },
+      {
+        name: "checkBudgetStatus",
+        description:
+          "Check current spending against all set budgets. Use this whenever expenses are added, or when the user asks about their budget status, how much they have left, or if they're overspending.",
         parameters: {
           type: "object" as any,
           properties: {},
@@ -172,7 +203,35 @@ ${monthlyBreakdown}`;
       expenseQueries.deleteAll.run();
       return "All expenses have been cleared from the database.";
     }
+    case "setBudget": {
+      budgetQueries.upsert.run({
+        category: args.category,
+        limit_amount: args.limit,
+      });
+      return `Budget set: ${args.category} → ₹${args.limit.toLocaleString(
+        "en-IN"
+      )}`;
+    }
 
+    case "checkBudgetStatus": {
+      const statuses = getBudgetStatuses();
+      if (statuses.length === 0) {
+        return "No budgets have been set yet. Suggest the user set one using setBudget.";
+      }
+
+      const summary = statuses
+        .map(
+          (s) =>
+            `${s.category}: ₹${s.spent.toLocaleString(
+              "en-IN"
+            )} / ₹${s.limit.toLocaleString("en-IN")} (${s.percentUsed.toFixed(
+              0
+            )}%) — ${s.status.toUpperCase()}`
+        )
+        .join("\n");
+
+      return `BUDGET STATUS:\n${summary}`;
+    }
     default:
       return `Unknown tool: ${name}`;
   }
