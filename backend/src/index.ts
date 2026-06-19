@@ -32,7 +32,7 @@ app.get("/api/health", (req, res) => {
 async function start() {
   await vectorStore.initialize();
   app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on PORT ${PORT}`);
   });
 }
 
