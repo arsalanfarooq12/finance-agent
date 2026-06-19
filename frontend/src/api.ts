@@ -1,28 +1,28 @@
 import axios from "axios";
 import { type CategoryData, type Expense, type MonthlyData } from "./types";
-
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 export const sendMessage = async (message: string) => {
-  const { data } = await axios.post("/api/chat", { message });
+  const { data } = await axios.post(`${API_URL}/chat`, { message });
   return data as { reply: string; toolsCalled: string[] };
 };
 
 export const getExpenses = async (): Promise<Expense[]> => {
-  const { data } = await axios.get("/api/expenses");
+  const { data } = await axios.get(`${API_URL}/expeses`);
   return data;
 };
 
 export const getCategories = async (): Promise<CategoryData[]> => {
-  const { data } = await axios.get("/api/expenses/categories");
+  const { data } = await axios.get(`${API_URL}/expenses/categories`);
   return data;
 };
 
 export const getMonthly = async (): Promise<MonthlyData[]> => {
-  const { data } = await axios.get("/api/expenses/monthly");
+  const { data } = await axios.get(`${API_URL}/expenses/monthly`);
   return data;
 };
 
 export const deleteExpense = async (id: number) => {
-  await axios.delete(`/api/expenses/${id}`);
+  await axios.delete(`${API_URL}/expenses/${id}`);
 };
 export interface ExtractedExpense {
   description: string;
@@ -41,7 +41,7 @@ export const uploadPDF = async (
   const formData = new FormData();
   formData.append("pdf", file);
 
-  const { data } = await axios.post("/api/upload", formData, {
+  const { data } = await axios.post(`${API_URL}/upload`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return data;
@@ -50,10 +50,10 @@ export const uploadPDF = async (
 export const saveBulkExpenses = async (
   expenses: ExtractedExpense[]
 ): Promise<void> => {
-  await axios.post("/api/expenses/bulk", { expenses });
+  await axios.post(`${API_URL}/expenses/bulk`, { expenses });
 };
 export const clearAll = async () => {
-  await axios.delete("/api/expenses");
+  await axios.delete(`${API_URL}/expenses`);
 };
 
 export interface BudgetStatus {
@@ -66,7 +66,7 @@ export interface BudgetStatus {
 }
 
 export const getBudgets = async (): Promise<BudgetStatus[]> => {
-  const { data } = await axios.get("/api/budgets");
+  const { data } = await axios.get(`${API_URL}/budgets`);
   return data;
 };
 
@@ -74,9 +74,9 @@ export const setBudget = async (
   category: string,
   limit: number
 ): Promise<void> => {
-  await axios.post("/api/budgets", { category, limit });
+  await axios.post(`${API_URL}/budgets`, { category, limit });
 };
 
 export const deleteBudget = async (category: string): Promise<void> => {
-  await axios.delete(`/api/budgets/${category}`);
+  await axios.delete(`${API_URL}/budgets/${category}`);
 };
