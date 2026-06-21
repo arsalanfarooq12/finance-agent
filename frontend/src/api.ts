@@ -7,7 +7,7 @@ export const sendMessage = async (message: string) => {
 };
 
 export const getExpenses = async (): Promise<Expense[]> => {
-  const { data } = await axios.get(`${API_URL}/expeses`);
+  const { data } = await axios.get(`${API_URL}/expenses`);
   return data;
 };
 
