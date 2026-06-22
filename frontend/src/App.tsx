@@ -4,7 +4,6 @@ import Dashboard from "./components/Dashboard";
 
 export default function App() {
   const [refreshKey, setRefreshKey] = useState(0);
-  const [activeTab, setActiveTab] = useState<"chat" | "dashboard">("chat");
 
   return (
     <div
@@ -59,23 +58,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Status badge — desktop */}
-        {/* <div
-          style={{
-            backgroundColor: "var(--kombu)",
-            border: "1px solid var(--border)",
-            borderRadius: "99px",
-          }}
-          className="hidden md:flex items-center gap-2 px-3 py-1.5"
-        >
-          <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-          <span style={{ color: "var(--tan)" }} className="text-xs font-sans">
-            Gemini Active
-          </span>
-        </div> */}
-
         {/* Mobile tab toggle */}
-        <div
+        {/* <div
           style={{ backgroundColor: "var(--kombu)", borderRadius: "10px" }}
           className="flex md:hidden p-0.5 gap-0.5"
         >
@@ -94,30 +78,35 @@ export default function App() {
               {tab}
             </button>
           ))}
-        </div>
+        </div> */}
       </header>
 
       {/* Main */}
-      <main className="flex-1 flex overflow-hidden">
-        {/* Chat — narrow fixed width */}
-        <div
-          className={`
-          ${activeTab === "chat" ? "flex" : "hidden"} md:flex
-          flex-col w-full md:w-[360px] lg:w-[400px] shrink-0
-        `}
-          style={{ borderRight: "1px solid var(--border)" }}
-        >
-          <Chat onAgentReply={() => setRefreshKey((k) => k + 1)} />
-        </div>
 
-        {/* Dashboard — fills rest */}
-        <div
-          className={`
-          ${activeTab === "dashboard" ? "flex" : "hidden"} md:flex
-          flex-col flex-1 overflow-hidden
-        `}
-        >
-          <Dashboard refreshKey={refreshKey} />
+      <main className="flex-1 flex overflow-hidden">
+        {/* Mobile: stacked, scrollable. Desktop: side-by-side */}
+        <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
+          {/* Chat */}
+          <div
+            className="flex flex-col w-full md:w-[360px] lg:w-[400px] shrink-0"
+            style={{
+              borderBottom: "1px solid var(--border)", // mobile separator
+              borderRight: "none",
+            }}
+          >
+            {/* Give chat a fixed height on mobile so it doesn't collapse */}
+            <div className="h-[60vh] md:h-full flex flex-col">
+              <Chat onAgentReply={() => setRefreshKey((k) => k + 1)} />
+            </div>
+          </div>
+
+          {/* Dashboard */}
+          <div
+            className="flex flex-col flex-1 md:overflow-hidden"
+            style={{ borderLeft: "1px solid var(--border)" }}
+          >
+            <Dashboard refreshKey={refreshKey} />
+          </div>
         </div>
       </main>
     </div>
