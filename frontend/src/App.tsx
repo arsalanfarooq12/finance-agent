@@ -22,21 +22,9 @@ export default function App() {
           {/* Logo */}
           <div
             style={{ backgroundColor: "var(--moss)", borderRadius: "10px" }}
-            className="w-8 h-8 flex items-center justify-center shrink-0"
+            className="w-8 h-8 flex  items-center justify-center shrink-0"
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#E5D7C4"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="12" y1="1" x2="12" y2="23" />
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
+            <img src="./favicon.svg" alt="logo" />
           </div>
           <div>
             <h1
