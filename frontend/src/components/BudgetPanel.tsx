@@ -24,6 +24,32 @@ interface Props {
   refreshKey: number;
 }
 
+function BudgetRowSkeleton() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-1.5">
+        <div
+          className="h-3 w-20 rounded animate-pulse"
+          style={{ backgroundColor: "#3d3d3d" }}
+        />
+        <div
+          className="h-3 w-28 rounded animate-pulse"
+          style={{ backgroundColor: "#3d3d3d" }}
+        />
+      </div>
+      <div
+        className="h-1.5 rounded-full overflow-hidden"
+        style={{ backgroundColor: "#3d3d3d" }}
+      >
+        <div
+          className="h-full rounded-full animate-pulse"
+          style={{ width: "55%", backgroundColor: "#4d4d4d" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function BudgetPanel({ refreshKey }: Props) {
   const [budgets, setBudgets] = useState<BudgetStatus[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -63,40 +89,33 @@ export default function BudgetPanel({ refreshKey }: Props) {
 
   return (
     <div
-      style={{
-        backgroundColor: "var(--bg-surface)",
-        border: "1px solid rgba(179,180,189,0.1)",
-        borderRadius: "12px",
-      }}
-      className="p-4"
+      className="p-4 rounded-xl"
+      style={{ backgroundColor: "#2d2d2d", border: "1px solid #3d3d3d" }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <h3
-            style={{ color: "var(--white)" }}
-            className="text-sm font-semibold"
-          >
+          <h3 className="text-sm font-semibold" style={{ color: "#ececec" }}>
             Budgets
           </h3>
           {overBudgetCount > 0 && (
             <span
+              className="text-xs px-2 py-0.5 rounded-full font-medium"
               style={{
                 backgroundColor: "rgba(248,113,113,0.15)",
                 color: "#f87171",
               }}
-              className="text-xs px-2 py-0.5 rounded-full font-medium"
             >
               {overBudgetCount} over
             </span>
           )}
           {warningCount > 0 && overBudgetCount === 0 && (
             <span
+              className="text-xs px-2 py-0.5 rounded-full font-medium"
               style={{
                 backgroundColor: "rgba(251,191,36,0.15)",
                 color: "#fbbf24",
               }}
-              className="text-xs px-2 py-0.5 rounded-full font-medium"
             >
               {warningCount} near limit
             </span>
@@ -104,8 +123,8 @@ export default function BudgetPanel({ refreshKey }: Props) {
         </div>
         <button
           onClick={() => setShowForm((prev) => !prev)}
-          style={{ color: "var(--accent)" }}
-          className="text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
+          className="text-xs font-medium cursor-pointer transition-opacity hover:opacity-70"
+          style={{ color: "#0a21c0" }}
         >
           {showForm ? "Cancel" : "+ Add"}
         </button>
@@ -117,13 +136,14 @@ export default function BudgetPanel({ refreshKey }: Props) {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            className="text-xs px-2 py-2 outline-none cursor-pointer flex-1 rounded-lg"
             style={{
-              backgroundColor: "var(--bg-base)",
-              color: "var(--white)",
-              border: "1px solid rgba(179,180,189,0.2)",
-              borderRadius: "8px",
+              backgroundColor: "#212121",
+              color: "#ececec",
+              border: "1px solid #3d3d3d",
             }}
-            className="text-xs px-2 py-2 outline-none cursor-pointer flex-1"
+            onFocus={(e) => (e.currentTarget.style.borderColor = "#0a21c0")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "#3d3d3d")}
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>
@@ -136,22 +156,19 @@ export default function BudgetPanel({ refreshKey }: Props) {
             value={limit}
             onChange={(e) => setLimit(e.target.value)}
             placeholder="₹ limit"
+            className="text-xs px-3 py-2 outline-none w-24 rounded-lg"
             style={{
-              backgroundColor: "var(--bg-base)",
-              color: "var(--white)",
-              border: "1px solid rgba(179,180,189,0.2)",
-              borderRadius: "8px",
+              backgroundColor: "#212121",
+              color: "#ececec",
+              border: "1px solid #3d3d3d",
             }}
-            className="text-xs px-3 py-2 outline-none w-24"
+            onFocus={(e) => (e.currentTarget.style.borderColor = "#0a21c0")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "#3d3d3d")}
           />
           <button
             onClick={handleSave}
-            style={{
-              backgroundColor: "var(--accent)",
-              color: "white",
-              borderRadius: "8px",
-            }}
-            className="text-xs px-3 py-2 font-medium cursor-pointer"
+            className="text-xs px-3 py-2 font-medium cursor-pointer text-white rounded-lg transition-opacity hover:opacity-80"
+            style={{ backgroundColor: "#0a21c0" }}
           >
             Save
           </button>
@@ -160,11 +177,13 @@ export default function BudgetPanel({ refreshKey }: Props) {
 
       {/* Budget list */}
       {loading ? (
-        <p style={{ color: "var(--muted)" }} className="text-xs">
-          Loading...
-        </p>
+        <div className="space-y-3">
+          {[...Array(2)].map((_, i) => (
+            <BudgetRowSkeleton key={i} />
+          ))}
+        </div>
       ) : budgets.length === 0 ? (
-        <p style={{ color: "var(--muted)" }} className="text-xs">
+        <p className="text-xs" style={{ color: "#8e8ea0" }}>
           No budgets set yet. Add one or tell the agent in chat — e.g. "Set my
           food budget to ₹8000"
         </p>
@@ -174,47 +193,51 @@ export default function BudgetPanel({ refreshKey }: Props) {
             <div key={b.category}>
               <div className="flex justify-between items-center mb-1.5">
                 <span
-                  style={{ color: "var(--white)" }}
                   className="text-xs font-medium"
+                  style={{ color: "#ececec" }}
                 >
                   {b.category}
                 </span>
                 <div className="flex items-center gap-2">
                   <span
-                    style={{ color: STATUS_COLORS[b.status] }}
                     className="text-xs font-medium"
+                    style={{ color: STATUS_COLORS[b.status] }}
                   >
                     ₹{b.spent.toLocaleString("en-IN")} / ₹
                     {b.limit.toLocaleString("en-IN")}
                   </span>
                   <button
                     onClick={() => handleDelete(b.category)}
-                    style={{ color: "var(--muted)" }}
-                    className="hover:text-red-400 transition-colors cursor-pointer text-xs"
+                    className="text-xs transition-colors cursor-pointer"
+                    style={{ color: "#3d3d3d" }}
+                    onMouseEnter={(e) =>
+                      ((e.currentTarget as HTMLButtonElement).style.color =
+                        "#f87171")
+                    }
+                    onMouseLeave={(e) =>
+                      ((e.currentTarget as HTMLButtonElement).style.color =
+                        "#3d3d3d")
+                    }
                   >
                     ✕
                   </button>
                 </div>
               </div>
               <div
-                style={{
-                  backgroundColor: "var(--bg-base)",
-                  borderRadius: "99px",
-                }}
-                className="h-1.5 overflow-hidden"
+                className="h-1.5 rounded-full overflow-hidden"
+                style={{ backgroundColor: "#3d3d3d" }}
               >
                 <div
+                  className="h-full rounded-full"
                   style={{
                     width: `${Math.min(b.percentUsed, 100)}%`,
                     backgroundColor: STATUS_COLORS[b.status],
-                    borderRadius: "99px",
                     transition: "width 0.6s ease",
                   }}
-                  className="h-full"
                 />
               </div>
               {b.status === "over" && (
-                <p style={{ color: "#f87171" }} className="text-xs mt-1">
+                <p className="text-xs mt-1" style={{ color: "#f87171" }}>
                   Over by ₹{(b.spent - b.limit).toLocaleString("en-IN")}
                 </p>
               )}

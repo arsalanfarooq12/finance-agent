@@ -39,19 +39,15 @@ export default function PDFUpload({ onSaved }: Props) {
       setState("error");
       return;
     }
-
     setState("uploading");
     setErrorMsg("");
-
     try {
       const result = await uploadPDF(file);
-
       if (result.expenses.length === 0) {
         setErrorMsg(result.message);
         setState("error");
         return;
       }
-
       setExpenses(result.expenses);
       setPageCount(result.pageCount);
       setState("preview");
@@ -93,7 +89,6 @@ export default function PDFUpload({ onSaved }: Props) {
       await saveBulkExpenses(expenses);
       setState("done");
       onSaved();
-      // Reset after 2 seconds
       setTimeout(() => {
         setState("idle");
         setExpenses([]);
@@ -106,7 +101,7 @@ export default function PDFUpload({ onSaved }: Props) {
 
   const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
 
-  // ── IDLE / DRAG DROP ──────────────────────────
+  // ── IDLE / ERROR ──────────────────────────────
   if (state === "idle" || state === "error")
     return (
       <div className="p-4">
@@ -118,33 +113,24 @@ export default function PDFUpload({ onSaved }: Props) {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
+          className="flex flex-col items-center justify-center py-8 px-4 text-center cursor-pointer transition-all rounded-xl"
           style={{
-            border: `2px dashed ${
-              isDragging ? "var(--accent)" : "rgba(179,180,189,0.25)"
-            }`,
+            border: `2px dashed ${isDragging ? "#0a21c0" : "#3d3d3d"}`,
             backgroundColor: isDragging
-              ? "rgba(10,33,192,0.08)"
+              ? "rgba(10,33,192,0.06)"
               : "transparent",
-            borderRadius: "12px",
-            transition: "all 0.2s",
-            cursor: "pointer",
           }}
-          className="flex flex-col items-center justify-center py-8 px-4 text-center"
         >
           <div
-            style={{
-              backgroundColor: "var(--bg-surface)",
-              border: "1px solid rgba(179,180,189,0.15)",
-              borderRadius: "12px",
-            }}
-            className="w-12 h-12 flex items-center justify-center mb-3"
+            className="w-12 h-12 flex items-center justify-center mb-3 rounded-xl"
+            style={{ backgroundColor: "#2d2d2d", border: "1px solid #3d3d3d" }}
           >
             <svg
               width="22"
               height="22"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="var(--accent)"
+              stroke="#0a21c0"
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -155,32 +141,22 @@ export default function PDFUpload({ onSaved }: Props) {
               <line x1="9" y1="15" x2="15" y2="15" />
             </svg>
           </div>
-
-          <p
-            style={{ color: "var(--white)" }}
-            className="text-sm font-medium mb-1"
-          >
+          <p className="text-sm font-medium mb-1" style={{ color: "#ececec" }}>
             Drop your bank statement here
           </p>
-          <p style={{ color: "var(--muted)" }} className="text-xs mb-3">
+          <p className="text-xs mb-3" style={{ color: "#8e8ea0" }}>
             PDF format · max 10MB
           </p>
           <div
-            style={{
-              backgroundColor: "var(--accent)",
-              borderRadius: "8px",
-              color: "white",
-            }}
-            className="text-xs px-4 py-2 font-medium"
+            className="text-xs px-4 py-2 font-medium text-white rounded-lg"
+            style={{ backgroundColor: "#0a21c0" }}
           >
             Browse file
           </div>
-
           {state === "error" && (
             <p className="text-red-400 text-xs mt-3">{errorMsg}</p>
           )}
         </div>
-
         <input
           ref={fileInputRef}
           type="file"
@@ -191,18 +167,15 @@ export default function PDFUpload({ onSaved }: Props) {
       </div>
     );
 
-  // ── UPLOADING ──────────────────────────────────
+  // ── UPLOADING ─────────────────────────────────
   if (state === "uploading")
     return (
       <div className="p-8 flex flex-col items-center justify-center gap-3">
         <div
-          style={{
-            borderColor: "var(--accent)",
-            borderTopColor: "transparent",
-          }}
           className="w-8 h-8 rounded-full border-2 animate-spin"
+          style={{ borderColor: "#0a21c0", borderTopColor: "transparent" }}
         />
-        <p style={{ color: "var(--muted)" }} className="text-sm">
+        <p className="text-sm" style={{ color: "#8e8ea0" }}>
           Extracting transactions...
         </p>
       </div>
@@ -213,11 +186,8 @@ export default function PDFUpload({ onSaved }: Props) {
     return (
       <div className="p-8 flex flex-col items-center justify-center gap-2">
         <div
-          style={{
-            backgroundColor: "rgba(52,211,153,0.15)",
-            borderRadius: "50%",
-          }}
-          className="w-10 h-10 flex items-center justify-center"
+          className="w-10 h-10 flex items-center justify-center rounded-full"
+          style={{ backgroundColor: "rgba(52,211,153,0.15)" }}
         >
           <svg
             width="20"
@@ -232,7 +202,7 @@ export default function PDFUpload({ onSaved }: Props) {
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <p style={{ color: "var(--white)" }} className="text-sm font-medium">
+        <p className="text-sm font-medium" style={{ color: "#ececec" }}>
           {expenses.length} expenses saved!
         </p>
       </div>
@@ -242,18 +212,17 @@ export default function PDFUpload({ onSaved }: Props) {
   return (
     <div
       className="flex flex-col h-full"
-      style={{ backgroundColor: "var(--bg-base)" }}
+      style={{ backgroundColor: "#212121" }}
     >
-      {/* Preview header */}
       <div
         className="px-4 py-3 shrink-0 flex items-center justify-between"
-        style={{ borderBottom: "1px solid rgba(179,180,189,0.15)" }}
+        style={{ borderBottom: "1px solid #3d3d3d" }}
       >
         <div>
-          <p style={{ color: "var(--white)" }} className="text-sm font-medium">
+          <p className="text-sm font-medium" style={{ color: "#ececec" }}>
             Review {expenses.length} transactions
           </p>
-          <p style={{ color: "var(--muted)" }} className="text-xs mt-0.5">
+          <p className="text-xs mt-0.5" style={{ color: "#8e8ea0" }}>
             {pageCount} page PDF · ₹{total.toLocaleString("en-IN")} total · Edit
             or remove before saving
           </p>
@@ -263,67 +232,74 @@ export default function PDFUpload({ onSaved }: Props) {
             setState("idle");
             setExpenses([]);
           }}
-          style={{ color: "var(--muted)" }}
-          className="text-xs hover:text-white transition-colors cursor-pointer px-2 py-1"
+          className="text-xs px-2 py-1 transition-colors cursor-pointer"
+          style={{ color: "#8e8ea0" }}
+          onMouseEnter={(e) =>
+            ((e.currentTarget as HTMLButtonElement).style.color = "#ececec")
+          }
+          onMouseLeave={(e) =>
+            ((e.currentTarget as HTMLButtonElement).style.color = "#8e8ea0")
+          }
         >
           ✕ Cancel
         </button>
       </div>
 
-      {/* Table */}
       <div className="flex-1 overflow-y-auto px-4 py-3">
         <table className="w-full text-xs">
           <thead>
-            <tr
-              style={{
-                color: "var(--muted)",
-                borderBottom: "1px solid rgba(179,180,189,0.1)",
-              }}
-            >
+            <tr style={{ color: "#8e8ea0", borderBottom: "1px solid #3d3d3d" }}>
               <th className="text-left py-2 font-medium">Description</th>
               <th className="text-left py-2 font-medium">Category</th>
               <th className="text-right py-2 font-medium">Amount</th>
               <th className="text-right py-2 font-medium">Date</th>
-              <th className="py-2 w-6"></th>
+              <th className="py-2 w-6" />
             </tr>
           </thead>
           <tbody>
             {expenses.map((exp, i) => (
               <tr
                 key={i}
-                style={{ borderBottom: "1px solid rgba(179,180,189,0.06)" }}
+                style={{ borderBottom: "1px solid rgba(61,61,61,0.5)" }}
               >
-                {/* Description */}
                 <td className="py-2 pr-2">
                   <input
                     value={exp.description}
                     onChange={(e) =>
                       updateExpense(i, "description", e.target.value)
                     }
+                    className="w-full px-2 py-1 text-xs outline-none rounded-md"
                     style={{
-                      backgroundColor: "var(--bg-surface)",
-                      color: "var(--white)",
+                      backgroundColor: "#2d2d2d",
+                      color: "#ececec",
                       border: "1px solid transparent",
-                      borderRadius: "6px",
                     }}
-                    className="w-full px-2 py-1 text-xs outline-none focus:border-blue-600"
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#0a21c0")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "transparent")
+                    }
                   />
                 </td>
-
-                {/* Category */}
                 <td className="py-2 pr-2">
                   <select
                     value={exp.category}
                     onChange={(e) =>
                       updateExpense(i, "category", e.target.value)
                     }
+                    className="w-full px-2 py-1 text-xs outline-none cursor-pointer rounded-md"
                     style={{
-                      backgroundColor: "var(--bg-surface)",
-                      color: "var(--white)",
+                      backgroundColor: "#2d2d2d",
+                      color: "#ececec",
                       border: "1px solid transparent",
-                      borderRadius: "6px",
                     }}
-                    className="w-full px-2 py-1 text-xs outline-none cursor-pointer focus:border-blue-600"
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#0a21c0")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "transparent")
+                    }
                   >
                     {CATEGORIES.map((c) => (
                       <option key={c} value={c}>
@@ -332,8 +308,6 @@ export default function PDFUpload({ onSaved }: Props) {
                     ))}
                   </select>
                 </td>
-
-                {/* Amount */}
                 <td className="py-2 pr-2">
                   <input
                     type="number"
@@ -345,38 +319,52 @@ export default function PDFUpload({ onSaved }: Props) {
                         parseFloat(e.target.value) || 0
                       )
                     }
+                    className="w-full px-2 py-1 text-xs outline-none text-right rounded-md"
                     style={{
-                      backgroundColor: "var(--bg-surface)",
-                      color: "var(--white)",
+                      backgroundColor: "#2d2d2d",
+                      color: "#ececec",
                       border: "1px solid transparent",
-                      borderRadius: "6px",
                     }}
-                    className="w-full px-2 py-1 text-xs outline-none text-right focus:border-blue-600"
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#0a21c0")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "transparent")
+                    }
                   />
                 </td>
-
-                {/* Date */}
                 <td className="py-2 pr-2">
                   <input
                     type="date"
                     value={exp.date}
                     onChange={(e) => updateExpense(i, "date", e.target.value)}
+                    className="w-full px-2 py-1 text-xs outline-none rounded-md"
                     style={{
-                      backgroundColor: "var(--bg-surface)",
-                      color: "var(--white)",
+                      backgroundColor: "#2d2d2d",
+                      color: "#ececec",
                       border: "1px solid transparent",
-                      borderRadius: "6px",
                     }}
-                    className="w-full px-2 py-1 text-xs outline-none focus:border-blue-600"
+                    onFocus={(e) =>
+                      (e.currentTarget.style.borderColor = "#0a21c0")
+                    }
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderColor = "transparent")
+                    }
                   />
                 </td>
-
-                {/* Delete */}
                 <td className="py-2 text-center">
                   <button
                     onClick={() => removeExpense(i)}
-                    style={{ color: "var(--muted)" }}
-                    className="hover:text-red-400 transition-colors cursor-pointer"
+                    className="transition-colors cursor-pointer"
+                    style={{ color: "#3d3d3d" }}
+                    onMouseEnter={(e) =>
+                      ((e.currentTarget as HTMLButtonElement).style.color =
+                        "#ef4444")
+                    }
+                    onMouseLeave={(e) =>
+                      ((e.currentTarget as HTMLButtonElement).style.color =
+                        "#3d3d3d")
+                    }
                   >
                     ✕
                   </button>
@@ -387,18 +375,17 @@ export default function PDFUpload({ onSaved }: Props) {
         </table>
       </div>
 
-      {/* Footer */}
       <div
         className="px-4 py-3 shrink-0 flex items-center justify-between"
-        style={{ borderTop: "1px solid rgba(179,180,189,0.15)" }}
+        style={{ borderTop: "1px solid #3d3d3d" }}
       >
         <div>
-          <p style={{ color: "var(--muted)" }} className="text-xs">
+          <p className="text-xs" style={{ color: "#8e8ea0" }}>
             {expenses.length} transactions
           </p>
           <p
-            style={{ color: "var(--white)" }}
             className="text-sm font-semibold mt-0.5"
+            style={{ color: "#ececec" }}
           >
             ₹{total.toLocaleString("en-IN")} total
           </p>
@@ -406,13 +393,8 @@ export default function PDFUpload({ onSaved }: Props) {
         <button
           onClick={handleSaveAll}
           disabled={state === "saving" || expenses.length === 0}
-          style={{
-            backgroundColor: "var(--accent)",
-            color: "white",
-            borderRadius: "10px",
-            opacity: state === "saving" ? 0.6 : 1,
-          }}
-          className="px-5 py-2.5 text-sm font-medium transition-all cursor-pointer disabled:cursor-not-allowed"
+          className="px-5 py-2.5 text-sm font-medium text-white rounded-xl transition-opacity disabled:cursor-not-allowed disabled:opacity-40 hover:opacity-80"
+          style={{ backgroundColor: "#0a21c0" }}
         >
           {state === "saving"
             ? "Saving..."
