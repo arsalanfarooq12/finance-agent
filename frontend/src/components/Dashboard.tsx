@@ -20,6 +20,7 @@ import {
 import { type CategoryData, type Expense, type MonthlyData } from "../types";
 import UploadStatement from "./UploadStatement";
 
+import ConfirmDialog from "./ConfirmDialog";
 const COLORS = [
   "#6366f1",
   "#8b5cf6",
@@ -160,7 +161,7 @@ export default function Dashboard({ refreshKey }: Props) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -183,12 +184,17 @@ export default function Dashboard({ refreshKey }: Props) {
   }, [refreshKey]);
 
   const handleDelete = async (id: number) => {
+    if (!window.confirm("Delete this transaction?")) return;
     await deleteExpense(id);
     fetchData();
   };
 
-  const handleClearAll = async () => {
-    if (!confirm("Clear all expenses and conversation history?")) return;
+  const handleClearAll = () => {
+    setShowClearConfirm(true);
+  };
+
+  const confirmClearAll = async () => {
+    setShowClearConfirm(false);
     await clearAll();
     fetchData();
   };
@@ -436,6 +442,16 @@ export default function Dashboard({ refreshKey }: Props) {
           ))}
         </div>
       </div>
+
+      {showClearConfirm && (
+        <ConfirmDialog
+          title="Clear all data?"
+          message="This will permanently delete all expenses and conversation history. This cannot be undone."
+          confirmLabel="Clear all"
+          onConfirm={confirmClearAll}
+          onCancel={() => setShowClearConfirm(false)}
+        />
+      )}
     </div>
   );
 }

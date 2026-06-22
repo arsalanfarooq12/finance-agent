@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getBudgets, setBudget, deleteBudget, type BudgetStatus } from "../api";
-
+import ConfirmDialog from "./ConfirmDialog";
 const CATEGORIES = [
   "Overall",
   "Housing",
@@ -56,7 +56,7 @@ export default function BudgetPanel({ refreshKey }: Props) {
   const [category, setCategory] = useState("Overall");
   const [limit, setLimit] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const fetchBudgets = async () => {
     setLoading(true);
     try {
@@ -79,8 +79,14 @@ export default function BudgetPanel({ refreshKey }: Props) {
     fetchBudgets();
   };
 
-  const handleDelete = async (cat: string) => {
-    await deleteBudget(cat);
+  const handleDelete = (cat: string) => {
+    setConfirmDelete(cat);
+  };
+
+  const confirmDeleteBudget = async () => {
+    if (!confirmDelete) return;
+    await deleteBudget(confirmDelete);
+    setConfirmDelete(null);
     fetchBudgets();
   };
 
@@ -244,6 +250,15 @@ export default function BudgetPanel({ refreshKey }: Props) {
             </div>
           ))}
         </div>
+      )}
+      {confirmDelete && (
+        <ConfirmDialog
+          title={`Delete ${confirmDelete} budget?`}
+          message={`The budget limit for "${confirmDelete}" will be removed. Your expenses won't be affected.`}
+          confirmLabel="Delete budget"
+          onConfirm={confirmDeleteBudget}
+          onCancel={() => setConfirmDelete(null)}
+        />
       )}
     </div>
   );
