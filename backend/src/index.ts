@@ -1,14 +1,13 @@
+import "./env.js";
 import express from "express";
 import cors from "cors";
-import * as dotenv from "dotenv";
+
 import chatRoutes from "./routes/chat.js";
 import expenseRoutes from "./routes/expenses.js";
 import { vectorStore } from "./agent/knowledgeBase.js";
 import uploadRoutes from "./routes/upload.js";
 import budgetRoutes from "./routes/budget.js";
 import { verifyToken } from "./middleware/verifyToken.js";
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
