@@ -17,7 +17,6 @@
     "@google/genai": "^2.8.0",
     "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.108.2",
-    "better-sqlite3": "^12.11.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -26,7 +25,6 @@
     "pdfjs-dist": "^6.0.227"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/multer": "^2.1.0",

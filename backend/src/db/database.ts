@@ -1,132 +1,175 @@
-import Database from "better-sqlite3";
-import type { Database as BetterSqlite3Database } from "better-sqlite3";
-import path from "path";
-import { fileURLToPath } from "url";
+import { supabase } from "../lib/supabase.js";
 
-type SqlStatement = import("better-sqlite3").Statement;
+// ── EXPENSES ─────────────────────────────────────────────────
 
-// Recreate __filename and __dirname for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dbPath = process.env.DB_PATH
-  ? process.env.DB_PATH
-  : path.join(__dirname, "../../finance.db");
+export async function insertExpense(
+  userId: string,
+  expense: {
+    description: string;
+    amount: number;
+    category: string;
+    date: string;
+  }
+) {
+  const { error } = await supabase
+    .from("expenses")
+    .insert({ ...expense, user_id: userId });
+  if (error) throw error;
+}
 
-const db: BetterSqlite3Database = new Database(dbPath);
+export async function getAllExpenses(userId: string) {
+  const { data, error } = await supabase
+    .from("expenses")
+    .select("*")
+    .eq("user_id", userId)
+    .order("date", { ascending: false });
+  if (error) throw error;
+  return data;
+}
 
-// Enable WAL mode for better performance
-db.pragma("journal_mode = WAL");
+export async function getExpensesByCategory(userId: string) {
+  const { data, error } = await supabase
+    .from("expenses")
+    .select("category, amount")
+    .eq("user_id", userId);
+  if (error) throw error;
 
-// Create tables
-db.exec(`
-  CREATE TABLE IF NOT EXISTS expenses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    description TEXT NOT NULL,
-    amount REAL NOT NULL,
-    category TEXT NOT NULL,
-    date TEXT NOT NULL,
-    created_at TEXT DEFAULT (datetime('now'))
-  );
+  // Group by category client-side
+  const grouped: Record<string, { total: number; count: number }> = {};
+  for (const row of data) {
+    if (!grouped[row.category]) grouped[row.category] = { total: 0, count: 0 };
+    grouped[row.category]!.total += Number(row.amount);
+    grouped[row.category]!.count += 1;
+  }
 
-  CREATE TABLE IF NOT EXISTS conversations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    role TEXT NOT NULL,
-    content TEXT NOT NULL,
-    created_at TEXT DEFAULT (datetime('now'))
-  );
-  CREATE TABLE IF NOT EXISTS budgets (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    category TEXT NOT NULL UNIQUE,
-    limit_amount REAL NOT NULL,
-    created_at TEXT DEFAULT (datetime('now'))
-  );
-`);
+  return Object.entries(grouped)
+    .map(([category, { total, count }]) => ({ category, total, count }))
+    .sort((a, b) => b.total - a.total);
+}
 
-// Expense queries
-export const expenseQueries: {
-  insert: SqlStatement;
-  getAll: SqlStatement;
-  getByCategory: SqlStatement;
-  getMonthly: SqlStatement;
-  getTotalSpend: SqlStatement;
-  deleteAll: SqlStatement;
-  deleteById: SqlStatement;
-} = {
-  insert: db.prepare(`
-    INSERT INTO expenses (description, amount, category, date)
-    VALUES (@description, @amount, @category, @date)
-  `),
+export async function getMonthlyExpenses(userId: string) {
+  const { data, error } = await supabase
+    .from("expenses")
+    .select("date, amount")
+    .eq("user_id", userId);
+  if (error) throw error;
 
-  getAll: db.prepare(`
-    SELECT * FROM expenses ORDER BY date DESC
-  `),
+  // Group by YYYY-MM client-side
+  const grouped: Record<string, { total: number; count: number }> = {};
+  for (const row of data) {
+    const month = row.date.slice(0, 7);
+    if (!grouped[month]) grouped[month] = { total: 0, count: 0 };
+    grouped[month].total += Number(row.amount);
+    grouped[month].count += 1;
+  }
 
-  getByCategory: db.prepare(`
-    SELECT category, SUM(amount) as total, COUNT(*) as count
-    FROM expenses
-    GROUP BY category
-    ORDER BY total DESC
-  `),
+  return Object.entries(grouped)
+    .map(([month, { total, count }]) => ({ month, total, count }))
+    .sort((a, b) => b.month.localeCompare(a.month));
+}
 
-  getMonthly: db.prepare(`
-    SELECT 
-      strftime('%Y-%m', date) as month,
-      SUM(amount) as total,
-      COUNT(*) as count
-    FROM expenses
-    GROUP BY month
-    ORDER BY month DESC
-  `),
+export async function getTotalSpend(userId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from("expenses")
+    .select("amount")
+    .eq("user_id", userId);
+  if (error) throw error;
+  return data.reduce((sum, row) => sum + Number(row.amount), 0);
+}
 
-  getTotalSpend: db.prepare(`
-    SELECT SUM(amount) as total FROM expenses
-  `),
+export async function deleteExpenseById(userId: string, id: string) {
+  const { error } = await supabase
+    .from("expenses")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userId); // safety: user can only delete their own
+  if (error) throw error;
+}
 
-  deleteAll: db.prepare(`DELETE FROM expenses`),
+export async function deleteAllExpenses(userId: string) {
+  const { error } = await supabase
+    .from("expenses")
+    .delete()
+    .eq("user_id", userId);
+  if (error) throw error;
+}
 
-  deleteById: db.prepare(`DELETE FROM expenses WHERE id = ?`),
-};
+export async function bulkInsertExpenses(
+  userId: string,
+  expenses: Array<{
+    description: string;
+    amount: number;
+    category: string;
+    date: string;
+  }>
+) {
+  const rows = expenses.map((e) => ({ ...e, user_id: userId }));
+  const { error } = await supabase.from("expenses").insert(rows);
+  if (error) throw error;
+}
 
-// Conversation queries
-export const conversationQueries: {
-  insert: SqlStatement;
-  getRecent: SqlStatement;
-  clearAll: SqlStatement;
-} = {
-  insert: db.prepare(`
-    INSERT INTO conversations (role, content)
-    VALUES (@role, @content)
-  `),
+// ── BUDGETS ──────────────────────────────────────────────────
 
-  getRecent: db.prepare(`
-    SELECT role, content FROM conversations
-    ORDER BY created_at ASC
-    LIMIT 20
-  `),
+export async function upsertBudget(
+  userId: string,
+  category: string,
+  limitAmount: number
+) {
+  const { error } = await supabase
+    .from("budgets")
+    .upsert(
+      { user_id: userId, category, limit_amount: limitAmount },
+      { onConflict: "user_id,category" }
+    );
+  if (error) throw error;
+}
 
-  clearAll: db.prepare(`DELETE FROM conversations`),
-};
+export async function getAllBudgets(userId: string) {
+  const { data, error } = await supabase
+    .from("budgets")
+    .select("*")
+    .eq("user_id", userId);
+  if (error) throw error;
+  return data;
+}
 
-export const budgetQueries: {
-  upsert: SqlStatement;
-  getAll: SqlStatement;
-  getByCategory: SqlStatement;
-  delete: SqlStatement;
-  deleteAll: SqlStatement;
-} = {
-  upsert: db.prepare(`
-    INSERT INTO budgets (category, limit_amount)
-    VALUES (@category, @limit_amount)
-    ON CONFLICT(category) DO UPDATE SET limit_amount = @limit_amount
-  `),
+export async function deleteBudgetByCategory(userId: string, category: string) {
+  const { error } = await supabase
+    .from("budgets")
+    .delete()
+    .eq("user_id", userId)
+    .eq("category", category);
+  if (error) throw error;
+}
 
-  getAll: db.prepare(`SELECT * FROM budgets`),
+// ── CONVERSATIONS ─────────────────────────────────────────────
 
-  getByCategory: db.prepare(`SELECT * FROM budgets WHERE category = ?`),
+export async function insertConversation(
+  userId: string,
+  role: string,
+  content: string
+) {
+  const { error } = await supabase
+    .from("conversations")
+    .insert({ user_id: userId, role, content });
+  if (error) throw error;
+}
 
-  delete: db.prepare(`DELETE FROM budgets WHERE category = ?`),
+export async function getRecentConversations(userId: string) {
+  const { data, error } = await supabase
+    .from("conversations")
+    .select("role, content")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true })
+    .limit(20);
+  if (error) throw error;
+  return data;
+}
 
-  deleteAll: db.prepare(`DELETE FROM budgets`),
-};
-
-export default db;
+export async function clearConversations(userId: string) {
+  const { error } = await supabase
+    .from("conversations")
+    .delete()
+    .eq("user_id", userId);
+  if (error) throw error;
+}

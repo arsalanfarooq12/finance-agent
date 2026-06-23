@@ -1,5 +1,8 @@
-import { budgetQueries, expenseQueries } from "../db/database.js";
-
+import {
+  getAllBudgets,
+  getExpensesByCategory,
+  getTotalSpend,
+} from "../db/database.js";
 export interface BudgetStatus {
   category: string;
   limit: number;
@@ -9,41 +12,30 @@ export interface BudgetStatus {
   status: "safe" | "warning" | "over";
 }
 
-export function getBudgetStatuses(): BudgetStatus[] {
-  const budgets = budgetQueries.getAll.all() as Array<{
-    category: string;
-    limit_amount: number;
-  }>;
+export async function getBudgetStatuses(userId: string) {
+  const budgets = await getAllBudgets(userId);
   if (budgets.length === 0) return [];
 
-  // Get current month's spending by category
-  const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+  const byCategory = await getExpensesByCategory(userId);
+  const totalSpend = await getTotalSpend(userId);
 
-  const byCategory = expenseQueries.getByCategory.all() as Array<{
-    category: string;
-    total: number;
-  }>;
-
-  const totalSpend = byCategory.reduce((sum, c) => sum + c.total, 0);
-
-  return budgets.map((budget) => {
+  return budgets.map((budget: any) => {
     const spent =
       budget.category === "Overall"
         ? totalSpend
-        : byCategory.find((c) => c.category === budget.category)?.total ?? 0;
+        : byCategory.find((c: any) => c.category === budget.category)?.total ??
+          0;
 
-    const percentUsed = (spent / budget.limit_amount) * 100;
-
-    let status: BudgetStatus["status"] = "safe";
-    if (percentUsed >= 100) status = "over";
-    else if (percentUsed >= 80) status = "warning";
+    const percentUsed = (spent / Number(budget.limit_amount)) * 100;
+    const status =
+      percentUsed >= 100 ? "over" : percentUsed >= 80 ? "warning" : "safe";
 
     return {
       category: budget.category,
-      limit: budget.limit_amount,
+      limit: Number(budget.limit_amount),
       spent,
-      remaining: Math.max(budget.limit_amount - spent, 0),
-      percentUsed: Math.min(percentUsed, 999),
+      remaining: Math.max(Number(budget.limit_amount) - spent, 0),
+      percentUsed,
       status,
     };
   });

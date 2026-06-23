@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI, type Content } from "@google/generative-ai";
 import * as dotenv from "dotenv";
 import { agentTools, executeTool } from "./tools.js";
-import { conversationQueries } from "../db/database.js";
+import { getRecentConversations, insertConversation } from "../db/database.js";
 import { generateWithFallback } from "./modelFallback.js";
 dotenv.config();
 
@@ -27,14 +27,14 @@ Rules:
 - If a budget status is "warning" or "over", mention it clearly but kindly
 - Never make up financial data — always query tools first`;
 
-export async function runAgent(userMessage: string): Promise<{
+export async function runAgent(
+  userMessage: string,
+  userId: string
+): Promise<{
   reply: string;
   toolsCalled: string[];
 }> {
-  const dbHistory = conversationQueries.getRecent.all() as Array<{
-    role: string;
-    content: string;
-  }>;
+  const dbHistory = await getRecentConversations(userId);
 
   const history: Content[] = dbHistory.map((h) => ({
     role: h.role as "user" | "model",
@@ -42,7 +42,7 @@ export async function runAgent(userMessage: string): Promise<{
   }));
 
   history.push({ role: "user", parts: [{ text: userMessage }] });
-  conversationQueries.insert.run({ role: "user", content: userMessage });
+  await insertConversation(userId, "user", userMessage);
 
   const toolsCalled: string[] = [];
   let stepCount = 0;
@@ -72,7 +72,11 @@ export async function runAgent(userMessage: string): Promise<{
       const { name, args } = functionCall;
       toolsCalled.push(name);
 
-      const result = await executeTool(name, args as Record<string, any>);
+      const result = await executeTool(
+        name,
+        args as Record<string, any>,
+        userId
+      );
 
       history.push({
         role: "user",
@@ -81,7 +85,7 @@ export async function runAgent(userMessage: string): Promise<{
     } else {
       const reply =
         parts.find((p) => p.text)?.text ?? "I couldn't generate a response.";
-      conversationQueries.insert.run({ role: "model", content: reply });
+      await insertConversation(userId, "model", reply);
       return { reply, toolsCalled };
     }
   }

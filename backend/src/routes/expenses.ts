@@ -1,62 +1,79 @@
 import { Router } from "express";
-import { expenseQueries } from "../db/database.js";
-import { conversationQueries } from "../db/database.js";
+import { type AuthRequest } from "../middleware/verifyToken.js";
+import {
+  getAllExpenses,
+  getExpensesByCategory,
+  getMonthlyExpenses,
+  deleteExpenseById,
+  deleteAllExpenses,
+  bulkInsertExpenses,
+} from "../db/database.js";
+import { clearConversations } from "../db/database.js";
 
 const router = Router();
 
-// Get all expenses
-router.get("/", (req, res) => {
-  const expenses = expenseQueries.getAll.all();
-  res.json(expenses);
-});
-
-// Get category breakdown
-router.get("/categories", (req, res) => {
-  const categories = expenseQueries.getByCategory.all();
-  res.json(categories);
-});
-
-// Get monthly summary
-router.get("/monthly", (req, res) => {
-  const monthly = expenseQueries.getMonthly.all();
-  res.json(monthly);
-});
-
-// Delete single expense
-router.delete("/:id", (req, res) => {
-  expenseQueries.deleteById.run(req.params.id);
-  res.json({ success: true });
-});
-// pdf upload and expense extraction is handled in upload.ts,
-// this route is for saving extracted expenses to the database
-router.post("/bulk", (req, res) => {
-  const { expenses } = req.body;
-
-  if (!Array.isArray(expenses) || expenses.length === 0) {
-    return res.status(400).json({ error: "No expenses provided" });
+router.get("/", async (req: AuthRequest, res) => {
+  try {
+    const data = await getAllExpenses(req.userId!);
+    res.json(data);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
-
-  const today = new Date().toISOString().split("T")[0];
-  let saved = 0;
-
-  for (const exp of expenses) {
-    expenseQueries.insert.run({
-      description: exp.description,
-      amount: Math.abs(exp.amount),
-      category: exp.category,
-      date: exp.date ?? today,
-    });
-    saved++;
-  }
-
-  res.json({ saved, message: `${saved} expenses saved successfully` });
 });
 
-// Clear all data
-router.delete("/", (req, res) => {
-  expenseQueries.deleteAll.run();
-  conversationQueries.clearAll.run();
-  res.json({ success: true });
+router.get("/categories", async (req: AuthRequest, res) => {
+  try {
+    const data = await getExpensesByCategory(req.userId!);
+    res.json(data);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/monthly", async (req: AuthRequest, res) => {
+  try {
+    const data = await getMonthlyExpenses(req.userId!);
+    res.json(data);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/bulk", async (req: AuthRequest, res) => {
+  try {
+    const { expenses } = req.body;
+    if (!Array.isArray(expenses) || expenses.length === 0) {
+      return res.status(400).json({ error: "No expenses provided" });
+    }
+    await bulkInsertExpenses(req.userId!, expenses);
+    res.json({ saved: expenses.length });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete("/", async (req: AuthRequest, res) => {
+  try {
+    await deleteAllExpenses(req.userId!);
+    await clearConversations(req.userId!);
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete("/:id", async (req: AuthRequest, res) => {
+  try {
+    const expenseId = req.params.id;
+    if (typeof expenseId !== "string") {
+      return res.status(400).json({ error: "Invalid expense id" });
+    }
+
+    await deleteExpenseById(req.userId!, expenseId);
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 export default router;

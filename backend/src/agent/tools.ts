@@ -1,8 +1,17 @@
 import { type Tool } from "@google/generative-ai";
-import { expenseQueries } from "../db/database.js";
+
 import { vectorStore } from "./knowledgeBase.js";
-import { budgetQueries } from "../db/database.js";
+
 import { getBudgetStatuses } from "./budgetTools.js";
+import {
+  insertExpense,
+  getExpensesByCategory,
+  getTotalSpend,
+  getMonthlyExpenses,
+  deleteAllExpenses,
+  bulkInsertExpenses,
+  upsertBudget,
+} from "../db/database.js";
 // Tool definitions for Gemini
 export const agentTools: Tool[] = [
   {
@@ -116,82 +125,36 @@ export const agentTools: Tool[] = [
 // Tool implementations
 export async function executeTool(
   name: string,
-  args: Record<string, any>
+  args: Record<string, any>,
+  userId: string
 ): Promise<string> {
   switch (name) {
     case "parseAndSaveExpenses": {
-      const expenses = args.expenses as Array<{
-        description: string;
-        amount: number;
-        category: string;
-        date: string;
-      }>;
-
       const today = new Date().toISOString().split("T")[0];
-      let saved = 0;
-
-      for (const expense of expenses) {
-        expenseQueries.insert.run({
+      for (const expense of args.expenses) {
+        await insertExpense(userId, {
           description: expense.description,
-          amount: expense.amount,
+          amount: Math.abs(expense.amount),
           category: expense.category,
-          date: today,
+          date: today!,
         });
-        saved++;
       }
-
-      return `Successfully saved ${saved} expenses to the database.`;
+      return `Successfully saved ${args.expenses.length} expenses.`;
     }
-
     case "analyzeSpending": {
-      const byCategory = expenseQueries.getByCategory.all() as Array<{
-        category: string;
-        total: number;
-        count: number;
-      }>;
-
-      const totalResult = expenseQueries.getTotalSpend.get() as {
-        total: number;
-      };
-      const total = totalResult?.total || 0;
-
-      if (total === 0) {
-        return "No expenses found in the database. Please add some expenses first.";
-      }
-
-      const monthly = expenseQueries.getMonthly.all() as Array<{
-        month: string;
-        total: number;
-        count: number;
-      }>;
-
-      const categoryBreakdown = byCategory
+      const byCategory = await getExpensesByCategory(userId);
+      const total = await getTotalSpend(userId);
+      if (total === 0) return "No expenses found.";
+      const breakdown = byCategory
         .map(
           (c) =>
             `${c.category}: ₹${c.total.toLocaleString("en-IN")} (${(
               (c.total / total) *
               100
-            ).toFixed(1)}%, ${c.count} transactions)`
+            ).toFixed(1)}%)`
         )
         .join("\n");
-
-      const monthlyBreakdown = monthly
-        .map(
-          (m) =>
-            `${m.month}: ₹${m.total.toLocaleString("en-IN")} (${
-              m.count
-            } transactions)`
-        )
-        .join("\n");
-
-      return `SPENDING ANALYSIS:
-Total Spend: ₹${total.toLocaleString("en-IN")}
-
-By Category:
-${categoryBreakdown}
-
-Monthly Summary:
-${monthlyBreakdown}`;
+      return `Total: ₹${total.toLocaleString("en-IN")}\n\n${breakdown}`;
     }
 
     case "getFinancialAdvice": {
@@ -200,37 +163,32 @@ ${monthlyBreakdown}`;
     }
 
     case "clearExpenses": {
-      expenseQueries.deleteAll.run();
-      return "All expenses have been cleared from the database.";
+      await deleteAllExpenses(userId);
+      return "All expenses cleared.";
     }
     case "setBudget": {
-      budgetQueries.upsert.run({
-        category: args.category,
-        limit_amount: args.limit,
-      });
+      await upsertBudget(userId, args.category, args.limit);
       return `Budget set: ${args.category} → ₹${args.limit.toLocaleString(
         "en-IN"
       )}`;
     }
 
     case "checkBudgetStatus": {
-      const statuses = getBudgetStatuses();
-      if (statuses.length === 0) {
-        return "No budgets have been set yet. Suggest the user set one using setBudget.";
-      }
-
-      const summary = statuses
-        .map(
-          (s) =>
-            `${s.category}: ₹${s.spent.toLocaleString(
-              "en-IN"
-            )} / ₹${s.limit.toLocaleString("en-IN")} (${s.percentUsed.toFixed(
-              0
-            )}%) — ${s.status.toUpperCase()}`
-        )
-        .join("\n");
-
-      return `BUDGET STATUS:\n${summary}`;
+      const statuses = await getBudgetStatuses(userId);
+      if (statuses.length === 0) return "No budgets set yet.";
+      return (
+        "BUDGET STATUS:\n" +
+        statuses
+          .map(
+            (s) =>
+              `${s.category}: ₹${s.spent.toLocaleString(
+                "en-IN"
+              )} / ₹${s.limit.toLocaleString("en-IN")} (${s.percentUsed.toFixed(
+                0
+              )}%) — ${s.status.toUpperCase()}`
+          )
+          .join("\n")
+      );
     }
     default:
       return `Unknown tool: ${name}`;
