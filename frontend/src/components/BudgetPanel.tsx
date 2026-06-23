@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getBudgets, setBudget, deleteBudget, type BudgetStatus } from "../api";
+import { getBudgets, setBudget, deleteBudget } from "../api";
 import ConfirmDialog from "./ConfirmDialog";
 const CATEGORIES = [
   "Overall",
@@ -14,7 +14,7 @@ const CATEGORIES = [
   "Other",
 ];
 
-const STATUS_COLORS = {
+const STATUS_COLORS: Record<string, string> = {
   safe: "#34d399",
   warning: "#fbbf24",
   over: "#f87171",
@@ -22,6 +22,14 @@ const STATUS_COLORS = {
 
 interface Props {
   refreshKey: number;
+}
+
+interface BudgetStatus {
+  category: string;
+  spent: number;
+  limit: number;
+  percentUsed: number;
+  status: "safe" | "warning" | "over";
 }
 
 function BudgetRowSkeleton() {

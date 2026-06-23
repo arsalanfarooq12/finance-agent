@@ -48,7 +48,7 @@ export const getMonthly = async () => {
   return data;
 };
 
-export const deleteExpense = async (id: string) => {
+export const deleteExpense = async (id: number) => {
   await axios.delete(`${API_URL}/expenses/${id}`, {
     headers: await authHeaders(),
   });

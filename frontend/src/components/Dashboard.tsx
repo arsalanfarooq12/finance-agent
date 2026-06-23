@@ -173,7 +173,7 @@ export default function Dashboard({ refreshKey }: Props) {
       setCategories(cats);
       setMonthly(mon);
       setExpenses(exps);
-      setTotal(cats.reduce((sum, c) => sum + c.total, 0));
+      setTotal(cats.reduce((sum: number, c: CategoryData) => sum + c.total, 0));
     } finally {
       setLoading(false);
     }
