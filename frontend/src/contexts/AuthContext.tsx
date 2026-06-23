@@ -6,9 +6,12 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
+  displayName: string;
+  avatarUrl: string | null;
   signUp: (
     email: string,
-    password: string
+    password: string,
+    fullName: string
   ) => Promise<{ error: string | null }>;
   signIn: (
     email: string,
@@ -44,8 +47,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+  const signUp = async (email: string, password: string, fullName: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } },
+    });
     return { error: error?.message ?? null };
   };
 
@@ -69,6 +76,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     await supabase.auth.signOut();
   };
+  // Derive display name from user metadata (works for both Google + email)
+  const displayName =
+    user?.user_metadata?.full_name ??
+    user?.user_metadata?.name ?? // some Google accounts use 'name' not 'full_name'
+    user?.email?.split("@")[0] ?? // fallback: email prefix
+    "User";
+
+  const avatarUrl =
+    user?.user_metadata?.avatar_url ??
+    user?.user_metadata?.picture ?? // Google sometimes uses 'picture'
+    null;
 
   return (
     <AuthContext.Provider
@@ -80,6 +98,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signIn,
         signInWithGoogle,
         signOut,
+        displayName,
+        avatarUrl,
       }}
     >
       {children}

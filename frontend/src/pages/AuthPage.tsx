@@ -11,12 +11,17 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [fullName, setFullName] = useState("");
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) {
       setError("Email and password are required.");
       return;
     }
+    if (tab === "register" && !fullName.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setMessage("");
@@ -25,7 +30,7 @@ export default function AuthPage() {
       const { error } = await signIn(email, password);
       if (error) setError(error);
     } else {
-      const { error } = await signUp(email, password);
+      const { error } = await signUp(email, password, fullName.trim());
       if (error) setError(error);
       else setMessage("Check your email to confirm your account.");
     }
@@ -47,19 +52,7 @@ export default function AuthPage() {
             className="w-9 h-9 rounded-xl flex items-center justify-center"
             style={{ backgroundColor: "#0a21c0" }}
           >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="12" y1="1" x2="12" y2="23" />
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
+            <img src="./favicon.svg" alt="logo" />
           </div>
           <div>
             <h1
@@ -86,6 +79,7 @@ export default function AuthPage() {
                 setTab(t);
                 setError("");
                 setMessage("");
+                setFullName("");
               }}
               className="flex-1 py-2 text-sm rounded-md transition-all duration-200 cursor-pointer capitalize"
               style={{
@@ -100,6 +94,22 @@ export default function AuthPage() {
 
         {/* Fields */}
         <div className="space-y-3 mb-4">
+          {tab === "register" && (
+            <input
+              type="text"
+              placeholder="Full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              style={{
+                backgroundColor: "#171717",
+                border: "1px solid #3d3d3d",
+                color: "#ececec",
+                borderRadius: "10px",
+              }}
+              className="w-full px-4 py-2.5 text-sm outline-none placeholder-gray-600 focus:border-blue-600 transition-colors"
+            />
+          )}
           <input
             type="email"
             placeholder="Email"

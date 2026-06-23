@@ -3,11 +3,19 @@ import AuthPage from "./pages/AuthPage";
 import Chat from "./components/Chat";
 import Dashboard from "./components/Dashboard";
 import { useState } from "react";
-
+import ConfirmDialog from "./components/ConfirmDialog";
 export default function App() {
-  const { session, user, loading, signOut } = useAuth();
+  const { session, loading, signOut, displayName, avatarUrl } = useAuth();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [SignOutConfirm, setSignOutConfirm] = useState(false);
+  const handleSignOut = () => {
+    setSignOutConfirm(true);
+  };
 
+  const confirmSignOut = async () => {
+    setSignOutConfirm(false);
+    await signOut();
+  };
   // Show nothing while checking session
   if (loading)
     return (
@@ -43,41 +51,58 @@ export default function App() {
             style={{ backgroundColor: "#0a21c0", borderRadius: "10px" }}
             className="w-7 h-7 flex items-center justify-center"
           >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="12" y1="1" x2="12" y2="23" />
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
+            <img src="./favicon.svg" alt="logo" />
           </div>
           <div>
             <h1 className="text-white font-semibold text-sm leading-none">
               FinanceAI
             </h1>
             <p style={{ color: "#8e8ea0" }} className="text-xs mt-0.5">
-              {user?.email}
+              Personal Finance Agent
             </p>
           </div>
         </div>
 
-        <button
-          onClick={signOut}
-          style={{
-            color: "#8e8ea0",
-            border: "1px solid #3d3d3d",
-            borderRadius: "8px",
-          }}
-          className="text-xs px-3 py-1.5 hover:text-white transition-colors cursor-pointer"
-        >
-          Sign out
-        </button>
+        {/* Right side — avatar + name + sign out */}
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
+            {/* Avatar — Google profile pic or initial */}
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                className="w-7 h-7 rounded-full object-cover"
+                style={{ border: "1px solid #3d3d3d" }}
+              />
+            ) : (
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold"
+                style={{
+                  backgroundColor: "#2d2d2d",
+                  color: "#ececec",
+                  border: "1px solid #3d3d3d",
+                }}
+              >
+                {displayName!.charAt(0)!.toUpperCase() || "U"}
+              </div>
+            )}
+            <span style={{ color: "#ececec" }} className="text-xs font-medium">
+              {displayName}
+            </span>
+          </div>
+
+          <button
+            onClick={handleSignOut}
+            style={{
+              color: "#8e8ea0",
+              border: "1px solid #3d3d3d",
+              borderRadius: "8px",
+            }}
+            className="text-xs px-3 py-1.5 hover:text-white transition-colors cursor-pointer"
+          >
+            Sign out
+          </button>
+        </div>
       </header>
 
       {/* Main — stacked on mobile, side by side on desktop */}
@@ -93,6 +118,15 @@ export default function App() {
           <Dashboard refreshKey={refreshKey} />
         </div>
       </main>
+      {SignOutConfirm && (
+        <ConfirmDialog
+          title="Sign out?"
+          message="Are you sure you want to sign out?"
+          confirmLabel="Sign out"
+          onConfirm={confirmSignOut}
+          onCancel={() => setSignOutConfirm(false)}
+        />
+      )}
     </div>
   );
 }
