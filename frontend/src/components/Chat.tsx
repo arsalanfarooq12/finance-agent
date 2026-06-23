@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { sendMessage } from "../api";
 import { type Message } from "../types";
-
-const TOOL_LABELS: Record<string, string> = {
-  parseAndSaveExpenses: "💾 Saving expenses",
-  analyzeSpending: "📊 Analyzing spending",
-  getFinancialAdvice: "💡 Getting advice",
-  clearExpenses: "🗑️ Clearing data",
-};
+import ReactMarkdown from "react-markdown";
+// const TOOL_LABELS: Record<string, string> = {
+//   parseAndSaveExpenses: "💾 Saving expenses",
+//   analyzeSpending: "📊 Analyzing spending",
+//   getFinancialAdvice: "💡 Getting advice",
+//   clearExpenses: "🗑️ Clearing data",
+// };
 
 interface Props {
   onAgentReply: () => void;
@@ -89,7 +89,7 @@ export default function Chat({ onAgentReply }: Props) {
           >
             <div className="max-w-[85%]">
               {/* Tool badges */}
-              {msg.toolsCalled && msg.toolsCalled.length > 0 && (
+              {/* {msg.toolsCalled && msg.toolsCalled.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-1.5">
                   {msg.toolsCalled.map((tool) => (
                     <span
@@ -105,7 +105,7 @@ export default function Chat({ onAgentReply }: Props) {
                     </span>
                   ))}
                 </div>
-              )}
+              )} */}
 
               {/* Bubble */}
               <div
@@ -125,9 +125,86 @@ export default function Chat({ onAgentReply }: Props) {
                       }
                 }
               >
-                {msg.content}
+                {/* Message content markdown */}
+                {msg.role === "assistant" ? (
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => (
+                        <p className="mb-2 last:mb-0 leading-relaxed">
+                          {children}
+                        </p>
+                      ),
+                      strong: ({ children }) => (
+                        <strong style={{ color: "#ececec", fontWeight: 600 }}>
+                          {children}
+                        </strong>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="list-disc pl-4 mb-2 space-y-1">
+                          {children}
+                        </ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="list-decimal pl-4 mb-2 space-y-1">
+                          {children}
+                        </ol>
+                      ),
+                      li: ({ children }) => (
+                        <li className="leading-relaxed">{children}</li>
+                      ),
+                      code: ({ children }) => (
+                        <code
+                          className="px-1.5 py-0.5 rounded text-xs font-mono"
+                          style={{
+                            backgroundColor: "#171717",
+                            color: "#ececec",
+                          }}
+                        >
+                          {children}
+                        </code>
+                      ),
+                      pre: ({ children }) => (
+                        <pre
+                          className="p-3 rounded-lg text-xs font-mono overflow-x-auto mb-2"
+                          style={{ backgroundColor: "#171717" }}
+                        >
+                          {children}
+                        </pre>
+                      ),
+                      h3: ({ children }) => (
+                        <h3
+                          className="font-semibold text-sm mb-1 mt-2"
+                          style={{ color: "#ececec" }}
+                        >
+                          {children}
+                        </h3>
+                      ),
+                      blockquote: ({ children }) => (
+                        <blockquote
+                          className="pl-3 my-2 text-sm italic"
+                          style={{
+                            borderLeft: "2px solid #3d3d3d",
+                            color: "#8e8ea0",
+                          }}
+                        >
+                          {children}
+                        </blockquote>
+                      ),
+                      hr: () => (
+                        <hr
+                          className="my-2"
+                          style={{ borderColor: "#3d3d3d" }}
+                        />
+                      ),
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                ) : (
+                  msg.content
+                )}
               </div>
-
+              {/* Timestamp */}
               <p className="text-xs mt-1.5 px-1" style={{ color: "#4d4d4d" }}>
                 {msg.timestamp.toLocaleTimeString([], {
                   hour: "2-digit",
