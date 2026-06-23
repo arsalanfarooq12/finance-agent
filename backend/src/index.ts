@@ -16,8 +16,6 @@ const allowedOrigins = [
   process.env.FRONTEND_URL?.trim().replace(/\/$/, ""), // trim + strip trailing slash
 ].filter((origin): origin is string => Boolean(origin));
 
-console.log("Allowed CORS origins:", allowedOrigins); // temporary debug log
-
 app.use(
   cors({
     origin: function (origin, callback) {

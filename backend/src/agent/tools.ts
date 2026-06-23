@@ -82,13 +82,12 @@ export const agentTools: Tool[] = [
       {
         name: "clearExpenses",
         description:
-          "Delete all expenses from the database. Only use this if the user explicitly asks to clear, reset, or delete all their data.",
+          "Delete all expenses from the database. Only use this if the user explicitly asks to clear, reset, or delete all their data, Always confirm with the user before performing this action. Always warn the user that this action is irreversible.",
         parameters: {
           type: "object" as any,
           properties: {},
         },
       },
-      // Add this to functionDeclarations array, alongside existing tools
       {
         name: "setBudget",
         description:
