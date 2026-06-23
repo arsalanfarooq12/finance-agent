@@ -6,6 +6,7 @@ import expenseRoutes from "./routes/expenses.js";
 import { vectorStore } from "./agent/knowledgeBase.js";
 import uploadRoutes from "./routes/upload.js";
 import budgetRoutes from "./routes/budget.js";
+import { verifyToken } from "./middleware/verifyToken.js";
 
 dotenv.config();
 
@@ -36,11 +37,11 @@ app.use(
 );
 app.use(express.json());
 
-app.use("/api/chat", chatRoutes);
-app.use("/api/expenses", expenseRoutes);
-app.use("/api/upload", uploadRoutes);
+app.use("/api/chat", verifyToken, chatRoutes);
+app.use("/api/expenses", verifyToken, expenseRoutes);
+app.use("/api/upload", verifyToken, uploadRoutes);
 
-app.use("/api/budgets", budgetRoutes);
+app.use("/api/budgets", verifyToken, budgetRoutes);
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
