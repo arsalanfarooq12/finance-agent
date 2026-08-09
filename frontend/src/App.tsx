@@ -106,20 +106,18 @@ export default function App() {
       </header>
 
       {/* Main — stacked on mobile, side by side on desktop */}
-      <div className="overflow-scroll md:overflow-hidden">
-        <main className=" flex flex-1 flex-col md:flex-row overflow-hidden">
-          <div
-            className="h-[60vh] md:h-auto md:w-[380px] lg:w-[420px] shrink-0"
-            style={{ borderBottom: "1px solid #3d3d3d" }}
-            // md: switch to right border
-          >
-            <Chat onAgentReply={() => setRefreshKey((k) => k + 1)} />
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <Dashboard refreshKey={refreshKey} />
-          </div>
-        </main>
-      </div>
+      <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        <div
+          className="max-h-[60vh] md:h-auto md:w-[380px] lg:w-[420px] shrink-0"
+          style={{ borderBottom: "1px solid #3d3d3d" }}
+          // md: switch to right border
+        >
+          <Chat onAgentReply={() => setRefreshKey((k) => k + 1)} />
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <Dashboard refreshKey={refreshKey} />
+        </div>
+      </main>
       {SignOutConfirm && (
         <ConfirmDialog
           title="Sign out?"
