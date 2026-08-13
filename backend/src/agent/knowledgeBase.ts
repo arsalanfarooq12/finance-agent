@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
 // Financial advice knowledge base
 export const financialKnowledge = [
