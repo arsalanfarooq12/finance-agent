@@ -100,3 +100,52 @@ export const deleteBudget = async (category: string) => {
     headers: await authHeaders(),
   });
 };
+
+export async function streamMessage(
+  message: string,
+  onToken: (token: string) => void,
+  onAgent: (agent: string) => void,
+  onDone: () => void,
+  onError: () => void
+): Promise<void> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const response = await fetch(`${API_URL}/chat/stream`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session?.access_token ?? ""}`,
+    },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!response.ok || !response.body) {
+    onError();
+    return;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const text = decoder.decode(value);
+    const lines = text.split("\n").filter((l) => l.startsWith("data: "));
+
+    for (const line of lines) {
+      try {
+        const { chunk, type } = JSON.parse(line.slice(6));
+        if (type === "token") onToken(chunk);
+        else if (type === "agent") onAgent(chunk);
+        else if (type === "done") onDone();
+        else if (type === "error") onError();
+      } catch {
+        // skip malformed chunk
+      }
+    }
+  }
+}

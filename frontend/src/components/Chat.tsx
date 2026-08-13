@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { sendMessage } from "../api";
+// import { sendMessage } from "../api";
 import { type Message } from "../types";
 import ReactMarkdown from "react-markdown";
 // const TOOL_LABELS: Record<string, string> = {
@@ -8,6 +8,14 @@ import ReactMarkdown from "react-markdown";
 //   getFinancialAdvice: "💡 Getting advice",
 //   clearExpenses: "🗑️ Clearing data",
 // };
+import { streamMessage } from "../api";
+
+const AGENT_LABELS: Record<string, string> = {
+  expenseAgent: "💰 Expense Agent",
+  budgetAgent: "📊 Budget Agent",
+  adviceAgent: "💡 Advice Agent",
+  generalAgent: "🤖 General",
+};
 
 interface Props {
   onAgentReply: () => void;
@@ -30,40 +38,78 @@ export default function Chat({ onAgentReply }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
-    const userMessage: Message = {
-      role: "user",
-      content: input.trim(),
-      timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, userMessage]);
+  const handleSend = async (text?: string) => {
+    const msg = (text ?? input).trim();
+    if (!msg || loading) return;
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "user",
+        content: msg,
+        timestamp: new Date(),
+      },
+    ]);
     setInput("");
     setLoading(true);
-    try {
-      const { reply, toolsCalled } = await sendMessage(userMessage.content);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: reply,
-          toolsCalled,
-          timestamp: new Date(),
-        },
-      ]);
-      onAgentReply();
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Something went wrong. Please try again.",
-          timestamp: new Date(),
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
+
+    // Add empty assistant message that will fill in as tokens arrive
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: "",
+        toolsCalled: [],
+        timestamp: new Date(),
+      },
+    ]);
+
+    await streamMessage(
+      msg,
+      // onToken — append each word to the last message
+      (token) => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const last = updated[updated.length - 1];
+          if (last.role === "assistant") {
+            updated[updated.length - 1] = {
+              ...last,
+              content: last.content + token,
+            };
+          }
+          return updated;
+        });
+      },
+      // onAgent — show which specialist is running
+      (agent) => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const last = updated[updated.length - 1];
+          if (last.role === "assistant") {
+            updated[updated.length - 1] = {
+              ...last,
+              toolsCalled: [AGENT_LABELS[agent] ?? agent],
+            };
+          }
+          return updated;
+        });
+        onAgentReply();
+      },
+      // onDone
+      () => setLoading(false),
+      // onError
+      () => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            ...updated[updated.length - 1],
+            content: "Something went wrong. Please try again.",
+          };
+          return updated;
+        });
+        setLoading(false);
+      }
+    );
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -259,7 +305,7 @@ export default function Chat({ onAgentReply }: Props) {
             }}
           />
           <button
-            onClick={handleSend}
+            onClick={() => handleSend()}
             disabled={loading || !input.trim()}
             className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             style={{ backgroundColor: input.trim() ? "#0a21c0" : "#3d3d3d" }}
