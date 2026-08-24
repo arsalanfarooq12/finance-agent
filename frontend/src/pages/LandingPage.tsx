@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import {
   ArrowRight,
   BarChart3,
@@ -657,549 +658,558 @@ export default function FinanceLandingPage() {
   const [darkMode, setDarkMode] = useState(true);
 
   const navigate = useNavigate();
+  const { session } = useAuth();
   // Every authentication CTA uses this.
   const openAuth = () => {
     navigate("/app");
   };
-
-  return (
-    <main
-      className={`min-h-screen overflow-hidden transition-colors duration-300 ${
-        darkMode ? "bg-slate-950 text-white" : "bg-white text-slate-950"
-      }`}
-    >
-      {/* Navbar */}
-      <header className="fixed inset-x-0 top-0 z-50">
-        <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
-          <div
-            className={`flex items-center justify-between rounded-2xl border px-4 py-3 shadow-sm backdrop-blur-xl sm:px-6 ${
-              darkMode
-                ? "border-slate-800 bg-slate-900/90"
-                : "border-slate-200/80 bg-white/90"
-            }`}
-          >
-            {/* Logo */}
-            <button
-              onClick={() => navigate("/")}
-              className="flex items-center gap-2.5"
+  if (session) {
+    navigate("/app");
+  } else {
+    return (
+      <main
+        className={`min-h-screen overflow-hidden transition-colors duration-300 ${
+          darkMode ? "bg-slate-950 text-white" : "bg-white text-slate-950"
+        }`}
+      >
+        {/* Navbar */}
+        <header className="fixed inset-x-0 top-0 z-50">
+          <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+            <div
+              className={`flex items-center justify-between rounded-2xl border px-4 py-3 shadow-sm backdrop-blur-xl sm:px-6 ${
+                darkMode
+                  ? "border-slate-800 bg-slate-900/90"
+                  : "border-slate-200/80 bg-white/90"
+              }`}
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
+              {/* Logo */}
+              <button
+                onClick={() => navigate("/")}
+                className="flex items-center gap-2.5"
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
+                  <img src="./favicon.svg" alt="Finance-AI Logo" />
+                </div>
+
+                <span
+                  className={`text-lg font-black tracking-tight ${
+                    darkMode ? "text-white" : "text-slate-950"
+                  }`}
+                >
+                  Finance-AI
+                </span>
+              </button>
+
+              {/* Desktop nav */}
+              <nav
+                className={`hidden items-center gap-7 text-sm font-medium md:flex ${
+                  darkMode ? "text-slate-400" : "text-slate-500"
+                }`}
+              >
+                <a
+                  href="#features"
+                  className="transition hover:text-indigo-500"
+                >
+                  Features
+                </a>
+
+                <a
+                  href="#how-it-works"
+                  className="transition hover:text-indigo-500"
+                >
+                  How it works
+                </a>
+
+                <a
+                  href="#ai-advisor"
+                  className="transition hover:text-indigo-500"
+                >
+                  AI Advisor
+                </a>
+              </nav>
+
+              {/* Right actions */}
+              <div className="flex items-center gap-2">
+                {/* Theme toggle */}
+                <button
+                  onClick={() => setDarkMode((prev) => !prev)}
+                  aria-label="Toggle dark mode"
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl border transition ${
+                    darkMode
+                      ? "border-slate-700 bg-slate-800 text-yellow-300 hover:bg-slate-700"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                </button>
+
+                {/* Sign in */}
+                <button
+                  onClick={openAuth}
+                  className={`hidden rounded-xl px-4 py-2 text-sm font-semibold transition sm:block ${
+                    darkMode
+                      ? "text-slate-300 hover:bg-slate-800"
+                      : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  Sign in
+                </button>
+
+                {/* Get started */}
+                <button
+                  onClick={openAuth}
+                  className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-700"
+                >
+                  Get started
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Hero */}
+        <section className="relative px-4 pb-20 pt-36 sm:px-6 lg:px-8 lg:pt-44">
+          <div className="absolute inset-0 -z-10">
+            <div
+              className={`absolute left-1/2 top-0 h-[550px] w-[900px] -translate-x-1/2 rounded-full blur-3xl ${
+                darkMode ? "bg-indigo-600/10" : "bg-indigo-100/60"
+              }`}
+            />
+
+            <div
+              className={`absolute right-0 top-72 h-72 w-72 rounded-full blur-3xl ${
+                darkMode ? "bg-violet-600/10" : "bg-violet-100/40"
+              }`}
+            />
+          </div>
+
+          <div className="mx-auto max-w-5xl text-center">
+            <Badge darkMode={darkMode}>Your money, understood by AI</Badge>
+
+            <h1
+              className={`mx-auto mt-7 max-w-5xl text-5xl font-black leading-[0.98] tracking-[-0.045em] sm:text-6xl lg:text-8xl ${
+                darkMode ? "text-white" : "text-slate-950"
+              }`}
+            >
+              Stop tracking money.
+              <span className="block text-indigo-500">
+                Start understanding it.
+              </span>
+            </h1>
+
+            <p
+              className={`mx-auto mt-7 max-w-2xl text-base leading-7 sm:text-lg ${
+                darkMode ? "text-slate-400" : "text-slate-500"
+              }`}
+            >
+              Finance-AI turns your expenses, bank statements, budgets, and
+              financial questions into actionable insights through a real-time
+              AI financial advisor.
+            </p>
+
+            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <button
+                onClick={openAuth}
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 sm:w-auto"
+              >
+                Start analyzing your money
+                <ArrowRight
+                  size={18}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </button>
+
+              <a
+                href="#how-it-works"
+                className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-6 py-4 text-base font-bold shadow-sm transition sm:w-auto ${
+                  darkMode
+                    ? "border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                See how it works
+                <ChevronRight size={18} />
+              </a>
+            </div>
+
+            <div
+              className={`mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm ${
+                darkMode ? "text-slate-500" : "text-slate-400"
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <Check size={15} className="text-indigo-500" />
+                No spreadsheets
+              </span>
+
+              <span className="flex items-center gap-2">
+                <Check size={15} className="text-indigo-500" />
+                PDF statement support
+              </span>
+
+              <span className="flex items-center gap-2">
+                <Check size={15} className="text-indigo-500" />
+                Real-time AI
+              </span>
+            </div>
+          </div>
+
+          <DashboardPreview darkMode={darkMode} />
+        </section>
+
+        {/* Trust strip */}
+        <section
+          className={`border-y ${
+            darkMode
+              ? "border-slate-800 bg-slate-900/50"
+              : "border-slate-200 bg-slate-50/70"
+          }`}
+        >
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-7 text-center sm:flex-row sm:px-6 sm:text-left lg:px-8">
+            <p
+              className={`text-sm font-semibold ${
+                darkMode ? "text-slate-400" : "text-slate-500"
+              }`}
+            >
+              Built for people who want clarity, not complexity.
+            </p>
+
+            <div
+              className={`flex items-center gap-6 ${
+                darkMode ? "text-slate-500" : "text-slate-400"
+              }`}
+            >
+              <div className="flex items-center gap-2 text-sm">
+                <ShieldCheck size={17} />
+                Secure
+              </div>
+
+              <div className="flex items-center gap-2 text-sm">
+                <Zap size={17} />
+                Real-time
+              </div>
+
+              <div className="flex items-center gap-2 text-sm">
+                <Bot size={17} />
+                AI-powered
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section
+          id="features"
+          className={`px-4 py-24 sm:px-6 lg:px-8 lg:py-32 ${
+            darkMode ? "bg-slate-950" : "bg-white"
+          }`}
+        >
+          <SectionHeading
+            darkMode={darkMode}
+            eyebrow="Everything in one place"
+            title="Your finances should answer questions, not create them."
+            description="Finance-AI combines transaction parsing, document extraction, budgeting, analytics, and conversational AI into one financial command center."
+          />
+
+          <div className="mx-auto mt-16 grid max-w-6xl gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+
+              return (
+                <div
+                  key={feature.title}
+                  className={`group rounded-3xl border p-7 transition duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                    darkMode
+                      ? "border-slate-800 bg-slate-900 hover:border-indigo-500/40 hover:shadow-indigo-950/20"
+                      : "border-slate-200 bg-white hover:border-indigo-200 hover:shadow-indigo-100/50"
+                  }`}
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-600 group-hover:text-white">
+                    <Icon size={21} />
+                  </div>
+
+                  <h3
+                    className={`mt-6 text-xl font-bold ${
+                      darkMode ? "text-white" : "text-slate-950"
+                    }`}
+                  >
+                    {feature.title}
+                  </h3>
+
+                  <p
+                    className={`mt-3 text-sm leading-6 ${
+                      darkMode ? "text-slate-400" : "text-slate-500"
+                    }`}
+                  >
+                    {feature.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section
+          id="how-it-works"
+          className="bg-slate-950 px-4 py-24 text-white sm:px-6 lg:px-8 lg:py-32"
+        >
+          <div className="mx-auto max-w-6xl">
+            <div className="grid items-center gap-16 lg:grid-cols-2">
+              <div>
+                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-400">
+                  How it works
+                </div>
+
+                <h2 className="mt-5 text-4xl font-black tracking-tight sm:text-5xl">
+                  Give your AI the raw data.
+                  <span className="block text-indigo-400">
+                    Get the full picture.
+                  </span>
+                </h2>
+
+                <p className="mt-6 max-w-xl text-base leading-7 text-slate-400">
+                  Stop spending hours categorizing transactions and building
+                  spreadsheets. Finance-AI handles the messy work so you can
+                  focus on decisions.
+                </p>
+
+                <div className="mt-10 space-y-6">
+                  {[
+                    {
+                      number: "01",
+                      title: "Import your finances",
+                      description:
+                        "Paste expenses, upload a CSV, or drop in a PDF bank statement.",
+                    },
+                    {
+                      number: "02",
+                      title: "Set your goals",
+                      description:
+                        "Tell Finance-AI your budgets, spending limits, and savings targets.",
+                    },
+                    {
+                      number: "03",
+                      title: "Ask anything",
+                      description:
+                        "Chat with your financial AI and receive instant analysis and advice.",
+                    },
+                  ].map((step) => (
+                    <div key={step.number} className="flex gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-xs font-bold text-indigo-400">
+                        {step.number}
+                      </div>
+
+                      <div>
+                        <h3 className="font-bold">{step.title}</h3>
+
+                        <p className="mt-1 text-sm leading-6 text-slate-400">
+                          {step.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* AI Chat */}
+              <div className="relative">
+                <div className="absolute -inset-10 rounded-full bg-indigo-600/15 blur-3xl" />
+
+                <div className="relative rounded-[2rem] border border-slate-800 bg-slate-900 p-5 shadow-2xl">
+                  <div className="mb-5 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600">
+                      <Bot size={18} />
+                    </div>
+
+                    <div>
+                      <p className="font-bold">Finance-AI Advisor</p>
+                      <p className="text-xs text-slate-500">
+                        Streaming response
+                      </p>
+                    </div>
+
+                    <div className="ml-auto flex items-center gap-2 text-xs text-green-400">
+                      <span className="h-2 w-2 rounded-full bg-green-400" />
+                      Online
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-indigo-600 p-4 text-sm text-white">
+                      Why did my spending increase this month?
+                    </div>
+
+                    <div className="max-w-[90%] rounded-2xl rounded-bl-md border border-slate-800 bg-slate-950 p-4 text-sm leading-6 text-slate-300">
+                      Your spending increased by <strong>12.4%</strong> compared
+                      with last month.
+                      <br />
+                      <br />
+                      The biggest changes came from dining (+₹1,260), online
+                      shopping (+₹940), and transportation (+₹610).
+                      <br />
+                      <br />
+                      You can still stay within your monthly budget by reducing
+                      discretionary spending by about ₹180 per day.
+                    </div>
+
+                    <div className="flex items-center gap-2 px-2 text-xs text-slate-500">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-500" />
+                      Analyzing your latest transactions...
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950 p-3">
+                    <input
+                      placeholder="Ask about your finances..."
+                      className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600"
+                    />
+
+                    <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white">
+                      <ArrowRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* AI advisor CTA */}
+        <section
+          id="ai-advisor"
+          className={`px-4 py-24 sm:px-6 lg:px-8 lg:py-32 ${
+            darkMode ? "bg-slate-950" : "bg-white"
+          }`}
+        >
+          <div className="mx-auto max-w-6xl rounded-[2rem] bg-indigo-600 px-6 py-12 text-white sm:px-10 lg:px-16 lg:py-16">
+            <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.85fr]">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
+                  <Sparkles size={15} />
+                  Your personal financial AI
+                </div>
+
+                <h2 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
+                  Ask better questions.
+                  <span className="block text-indigo-100">
+                    Make better decisions.
+                  </span>
+                </h2>
+
+                <p className="mt-6 max-w-xl text-base leading-7 text-indigo-100">
+                  “Can I afford a ₹9000 vacation?” “Where am I overspending?”
+                  “How much should I save this month?” Your financial data
+                  becomes a conversation.
+                </p>
+
+                <button
+                  onClick={openAuth}
+                  className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-bold text-indigo-700 shadow-xl transition hover:bg-indigo-50"
+                >
+                  Talk to Finance-AI
+                  <ArrowRight size={17} />
+                </button>
+              </div>
+
+              <div className="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur">
+                <div className="space-y-3">
+                  {[
+                    "Analyze my spending this month",
+                    "Am I on track for my savings goal?",
+                    "Find 3 areas where I can cut costs",
+                    "Create a budget for next month",
+                  ].map((question) => (
+                    <div
+                      key={question}
+                      className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-4 text-sm"
+                    >
+                      <span>{question}</span>
+                      <ChevronRight size={17} className="text-indigo-200" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section
+          className={`border-t px-4 py-24 sm:px-6 lg:px-8 ${
+            darkMode
+              ? "border-slate-800 bg-slate-950"
+              : "border-slate-200 bg-white"
+          }`}
+        >
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-xl shadow-indigo-600/20">
+              <CreditCard size={23} />
+            </div>
+
+            <h2
+              className={`mt-7 text-4xl font-black tracking-tight sm:text-6xl ${
+                darkMode ? "text-white" : "text-slate-950"
+              }`}
+            >
+              Your money deserves
+              <span className="block text-indigo-500">
+                an intelligent system.
+              </span>
+            </h2>
+
+            <p
+              className={`mx-auto mt-6 max-w-2xl text-base leading-7 sm:text-lg ${
+                darkMode ? "text-slate-400" : "text-slate-500"
+              }`}
+            >
+              Import your first statement, set your budget, and let Finance-AI
+              turn your financial data into decisions.
+            </p>
+
+            <button
+              onClick={openAuth}
+              className="mt-9 inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-7 py-4 text-base font-bold text-white shadow-xl shadow-indigo-600/20 transition hover:bg-indigo-700"
+            >
+              Get started for free
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer
+          className={`border-t ${
+            darkMode
+              ? "border-slate-800 bg-slate-900"
+              : "border-slate-200 bg-slate-50"
+          }`}
+        >
+          <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
                 <img src="./favicon.svg" alt="Finance-AI Logo" />
               </div>
 
               <span
-                className={`text-lg font-black tracking-tight ${
+                className={`font-black ${
                   darkMode ? "text-white" : "text-slate-950"
                 }`}
               >
                 Finance-AI
               </span>
-            </button>
+            </div>
 
-            {/* Desktop nav */}
-            <nav
-              className={`hidden items-center gap-7 text-sm font-medium md:flex ${
-                darkMode ? "text-slate-400" : "text-slate-500"
+            <p
+              className={`text-sm ${
+                darkMode ? "text-slate-500" : "text-slate-400"
               }`}
             >
-              <a href="#features" className="transition hover:text-indigo-500">
-                Features
-              </a>
-
-              <a
-                href="#how-it-works"
-                className="transition hover:text-indigo-500"
-              >
-                How it works
-              </a>
-
-              <a
-                href="#ai-advisor"
-                className="transition hover:text-indigo-500"
-              >
-                AI Advisor
-              </a>
-            </nav>
-
-            {/* Right actions */}
-            <div className="flex items-center gap-2">
-              {/* Theme toggle */}
-              <button
-                onClick={() => setDarkMode((prev) => !prev)}
-                aria-label="Toggle dark mode"
-                className={`flex h-10 w-10 items-center justify-center rounded-xl border transition ${
-                  darkMode
-                    ? "border-slate-700 bg-slate-800 text-yellow-300 hover:bg-slate-700"
-                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                }`}
-              >
-                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
-
-              {/* Sign in */}
-              <button
-                onClick={openAuth}
-                className={`hidden rounded-xl px-4 py-2 text-sm font-semibold transition sm:block ${
-                  darkMode
-                    ? "text-slate-300 hover:bg-slate-800"
-                    : "text-slate-600 hover:bg-slate-50"
-                }`}
-              >
-                Sign in
-              </button>
-
-              {/* Get started */}
-              <button
-                onClick={openAuth}
-                className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-700"
-              >
-                Get started
-              </button>
-            </div>
+              Intelligent personal finance, powered by AI.
+            </p>
           </div>
-        </div>
-      </header>
-
-      {/* Hero */}
-      <section className="relative px-4 pb-20 pt-36 sm:px-6 lg:px-8 lg:pt-44">
-        <div className="absolute inset-0 -z-10">
-          <div
-            className={`absolute left-1/2 top-0 h-[550px] w-[900px] -translate-x-1/2 rounded-full blur-3xl ${
-              darkMode ? "bg-indigo-600/10" : "bg-indigo-100/60"
-            }`}
-          />
-
-          <div
-            className={`absolute right-0 top-72 h-72 w-72 rounded-full blur-3xl ${
-              darkMode ? "bg-violet-600/10" : "bg-violet-100/40"
-            }`}
-          />
-        </div>
-
-        <div className="mx-auto max-w-5xl text-center">
-          <Badge darkMode={darkMode}>Your money, understood by AI</Badge>
-
-          <h1
-            className={`mx-auto mt-7 max-w-5xl text-5xl font-black leading-[0.98] tracking-[-0.045em] sm:text-6xl lg:text-8xl ${
-              darkMode ? "text-white" : "text-slate-950"
-            }`}
-          >
-            Stop tracking money.
-            <span className="block text-indigo-500">
-              Start understanding it.
-            </span>
-          </h1>
-
-          <p
-            className={`mx-auto mt-7 max-w-2xl text-base leading-7 sm:text-lg ${
-              darkMode ? "text-slate-400" : "text-slate-500"
-            }`}
-          >
-            Finance-AI turns your expenses, bank statements, budgets, and
-            financial questions into actionable insights through a real-time AI
-            financial advisor.
-          </p>
-
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <button
-              onClick={openAuth}
-              className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 sm:w-auto"
-            >
-              Start analyzing your money
-              <ArrowRight
-                size={18}
-                className="transition-transform group-hover:translate-x-1"
-              />
-            </button>
-
-            <a
-              href="#how-it-works"
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-6 py-4 text-base font-bold shadow-sm transition sm:w-auto ${
-                darkMode
-                  ? "border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
-                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-              }`}
-            >
-              See how it works
-              <ChevronRight size={18} />
-            </a>
-          </div>
-
-          <div
-            className={`mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm ${
-              darkMode ? "text-slate-500" : "text-slate-400"
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              <Check size={15} className="text-indigo-500" />
-              No spreadsheets
-            </span>
-
-            <span className="flex items-center gap-2">
-              <Check size={15} className="text-indigo-500" />
-              PDF statement support
-            </span>
-
-            <span className="flex items-center gap-2">
-              <Check size={15} className="text-indigo-500" />
-              Real-time AI
-            </span>
-          </div>
-        </div>
-
-        <DashboardPreview darkMode={darkMode} />
-      </section>
-
-      {/* Trust strip */}
-      <section
-        className={`border-y ${
-          darkMode
-            ? "border-slate-800 bg-slate-900/50"
-            : "border-slate-200 bg-slate-50/70"
-        }`}
-      >
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-7 text-center sm:flex-row sm:px-6 sm:text-left lg:px-8">
-          <p
-            className={`text-sm font-semibold ${
-              darkMode ? "text-slate-400" : "text-slate-500"
-            }`}
-          >
-            Built for people who want clarity, not complexity.
-          </p>
-
-          <div
-            className={`flex items-center gap-6 ${
-              darkMode ? "text-slate-500" : "text-slate-400"
-            }`}
-          >
-            <div className="flex items-center gap-2 text-sm">
-              <ShieldCheck size={17} />
-              Secure
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <Zap size={17} />
-              Real-time
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <Bot size={17} />
-              AI-powered
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section
-        id="features"
-        className={`px-4 py-24 sm:px-6 lg:px-8 lg:py-32 ${
-          darkMode ? "bg-slate-950" : "bg-white"
-        }`}
-      >
-        <SectionHeading
-          darkMode={darkMode}
-          eyebrow="Everything in one place"
-          title="Your finances should answer questions, not create them."
-          description="Finance-AI combines transaction parsing, document extraction, budgeting, analytics, and conversational AI into one financial command center."
-        />
-
-        <div className="mx-auto mt-16 grid max-w-6xl gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => {
-            const Icon = feature.icon;
-
-            return (
-              <div
-                key={feature.title}
-                className={`group rounded-3xl border p-7 transition duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                  darkMode
-                    ? "border-slate-800 bg-slate-900 hover:border-indigo-500/40 hover:shadow-indigo-950/20"
-                    : "border-slate-200 bg-white hover:border-indigo-200 hover:shadow-indigo-100/50"
-                }`}
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-600 group-hover:text-white">
-                  <Icon size={21} />
-                </div>
-
-                <h3
-                  className={`mt-6 text-xl font-bold ${
-                    darkMode ? "text-white" : "text-slate-950"
-                  }`}
-                >
-                  {feature.title}
-                </h3>
-
-                <p
-                  className={`mt-3 text-sm leading-6 ${
-                    darkMode ? "text-slate-400" : "text-slate-500"
-                  }`}
-                >
-                  {feature.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section
-        id="how-it-works"
-        className="bg-slate-950 px-4 py-24 text-white sm:px-6 lg:px-8 lg:py-32"
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="grid items-center gap-16 lg:grid-cols-2">
-            <div>
-              <div className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-400">
-                How it works
-              </div>
-
-              <h2 className="mt-5 text-4xl font-black tracking-tight sm:text-5xl">
-                Give your AI the raw data.
-                <span className="block text-indigo-400">
-                  Get the full picture.
-                </span>
-              </h2>
-
-              <p className="mt-6 max-w-xl text-base leading-7 text-slate-400">
-                Stop spending hours categorizing transactions and building
-                spreadsheets. Finance-AI handles the messy work so you can focus
-                on decisions.
-              </p>
-
-              <div className="mt-10 space-y-6">
-                {[
-                  {
-                    number: "01",
-                    title: "Import your finances",
-                    description:
-                      "Paste expenses, upload a CSV, or drop in a PDF bank statement.",
-                  },
-                  {
-                    number: "02",
-                    title: "Set your goals",
-                    description:
-                      "Tell Finance-AI your budgets, spending limits, and savings targets.",
-                  },
-                  {
-                    number: "03",
-                    title: "Ask anything",
-                    description:
-                      "Chat with your financial AI and receive instant analysis and advice.",
-                  },
-                ].map((step) => (
-                  <div key={step.number} className="flex gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-xs font-bold text-indigo-400">
-                      {step.number}
-                    </div>
-
-                    <div>
-                      <h3 className="font-bold">{step.title}</h3>
-
-                      <p className="mt-1 text-sm leading-6 text-slate-400">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* AI Chat */}
-            <div className="relative">
-              <div className="absolute -inset-10 rounded-full bg-indigo-600/15 blur-3xl" />
-
-              <div className="relative rounded-[2rem] border border-slate-800 bg-slate-900 p-5 shadow-2xl">
-                <div className="mb-5 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600">
-                    <Bot size={18} />
-                  </div>
-
-                  <div>
-                    <p className="font-bold">Finance-AI Advisor</p>
-                    <p className="text-xs text-slate-500">Streaming response</p>
-                  </div>
-
-                  <div className="ml-auto flex items-center gap-2 text-xs text-green-400">
-                    <span className="h-2 w-2 rounded-full bg-green-400" />
-                    Online
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-indigo-600 p-4 text-sm text-white">
-                    Why did my spending increase this month?
-                  </div>
-
-                  <div className="max-w-[90%] rounded-2xl rounded-bl-md border border-slate-800 bg-slate-950 p-4 text-sm leading-6 text-slate-300">
-                    Your spending increased by <strong>12.4%</strong> compared
-                    with last month.
-                    <br />
-                    <br />
-                    The biggest changes came from dining (+₹1,260), online
-                    shopping (+₹940), and transportation (+₹610).
-                    <br />
-                    <br />
-                    You can still stay within your monthly budget by reducing
-                    discretionary spending by about ₹180 per day.
-                  </div>
-
-                  <div className="flex items-center gap-2 px-2 text-xs text-slate-500">
-                    <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-500" />
-                    Analyzing your latest transactions...
-                  </div>
-                </div>
-
-                <div className="mt-5 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950 p-3">
-                  <input
-                    placeholder="Ask about your finances..."
-                    className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600"
-                  />
-
-                  <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white">
-                    <ArrowRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* AI advisor CTA */}
-      <section
-        id="ai-advisor"
-        className={`px-4 py-24 sm:px-6 lg:px-8 lg:py-32 ${
-          darkMode ? "bg-slate-950" : "bg-white"
-        }`}
-      >
-        <div className="mx-auto max-w-6xl rounded-[2rem] bg-indigo-600 px-6 py-12 text-white sm:px-10 lg:px-16 lg:py-16">
-          <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.85fr]">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-                <Sparkles size={15} />
-                Your personal financial AI
-              </div>
-
-              <h2 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
-                Ask better questions.
-                <span className="block text-indigo-100">
-                  Make better decisions.
-                </span>
-              </h2>
-
-              <p className="mt-6 max-w-xl text-base leading-7 text-indigo-100">
-                “Can I afford a ₹9000 vacation?” “Where am I overspending?” “How
-                much should I save this month?” Your financial data becomes a
-                conversation.
-              </p>
-
-              <button
-                onClick={openAuth}
-                className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-bold text-indigo-700 shadow-xl transition hover:bg-indigo-50"
-              >
-                Talk to Finance-AI
-                <ArrowRight size={17} />
-              </button>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur">
-              <div className="space-y-3">
-                {[
-                  "Analyze my spending this month",
-                  "Am I on track for my savings goal?",
-                  "Find 3 areas where I can cut costs",
-                  "Create a budget for next month",
-                ].map((question) => (
-                  <div
-                    key={question}
-                    className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-4 text-sm"
-                  >
-                    <span>{question}</span>
-                    <ChevronRight size={17} className="text-indigo-200" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section
-        className={`border-t px-4 py-24 sm:px-6 lg:px-8 ${
-          darkMode
-            ? "border-slate-800 bg-slate-950"
-            : "border-slate-200 bg-white"
-        }`}
-      >
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-xl shadow-indigo-600/20">
-            <CreditCard size={23} />
-          </div>
-
-          <h2
-            className={`mt-7 text-4xl font-black tracking-tight sm:text-6xl ${
-              darkMode ? "text-white" : "text-slate-950"
-            }`}
-          >
-            Your money deserves
-            <span className="block text-indigo-500">
-              an intelligent system.
-            </span>
-          </h2>
-
-          <p
-            className={`mx-auto mt-6 max-w-2xl text-base leading-7 sm:text-lg ${
-              darkMode ? "text-slate-400" : "text-slate-500"
-            }`}
-          >
-            Import your first statement, set your budget, and let Finance-AI
-            turn your financial data into decisions.
-          </p>
-
-          <button
-            onClick={openAuth}
-            className="mt-9 inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-7 py-4 text-base font-bold text-white shadow-xl shadow-indigo-600/20 transition hover:bg-indigo-700"
-          >
-            Get started for free
-            <ArrowRight size={18} />
-          </button>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer
-        className={`border-t ${
-          darkMode
-            ? "border-slate-800 bg-slate-900"
-            : "border-slate-200 bg-slate-50"
-        }`}
-      >
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
-              <img src="./favicon.svg" alt="Finance-AI Logo" />
-            </div>
-
-            <span
-              className={`font-black ${
-                darkMode ? "text-white" : "text-slate-950"
-              }`}
-            >
-              Finance-AI
-            </span>
-          </div>
-
-          <p
-            className={`text-sm ${
-              darkMode ? "text-slate-500" : "text-slate-400"
-            }`}
-          >
-            Intelligent personal finance, powered by AI.
-          </p>
-        </div>
-      </footer>
-    </main>
-  );
+        </footer>
+      </main>
+    );
+  }
 }
