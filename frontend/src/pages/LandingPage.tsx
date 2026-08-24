@@ -9,22 +9,13 @@ import {
   FileText,
   MessageSquare,
   Moon,
-  PieChart,
   ShieldCheck,
   Sparkles,
   Sun,
-  Upload,
-  Wallet,
   Zap,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
-
-const stats = [
-  { label: "Total spent", value: "₹2,847.32", change: "+4.8%" },
-  { label: "Budget remaining", value: "₹1,152.68", change: "40%" },
-  { label: "Savings rate", value: "24.8%", change: "+6.2%" },
-];
 
 const features = [
   {
@@ -63,13 +54,6 @@ const features = [
     description:
       "Your financial information stays protected with secure handling and controlled access.",
   },
-];
-
-const categories = [
-  { name: "Housing", value: 32, amount: "₹9,912" },
-  { name: "Food", value: 19, amount: "₹3,541" },
-  { name: "Transport", value: 14, amount: "₹5,398" },
-  { name: "Shopping", value: 12, amount: "₹6,342" },
 ];
 
 function Badge({
