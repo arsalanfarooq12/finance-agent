@@ -13,9 +13,11 @@
     "@supabase/supabase-js": "^2.108.2",
     "@tailwindcss/vite": "^4.3.1",
     "axios": "^1.18.0",
+    "lucide-react": "^1.34.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.18.2",
     "recharts": "^3.8.1",
     "tailwindcss": "^4.3.1"
   },
