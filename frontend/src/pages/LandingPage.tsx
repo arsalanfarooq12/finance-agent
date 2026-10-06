@@ -101,7 +101,7 @@ function SectionHeading({
 
       <h2
         className={`text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl ${
-          darkMode ? "text-white" : "text-neutral-950"
+          darkMode ? "text-white" : "text-slate-950"
         }`}
       >
         {title}
@@ -109,7 +109,7 @@ function SectionHeading({
 
       <p
         className={`mt-5 text-base leading-7 sm:text-lg ${
-          darkMode ? "text-neutral-400" : "text-neutral-500"
+          darkMode ? "text-neutral-400" : "text-slate-500"
         }`}
       >
         {description}
@@ -121,10 +121,10 @@ function SectionHeading({
 function DashboardPreview({ darkMode }: { darkMode: boolean }) {
   const surface = darkMode
     ? "border-neutral-800 bg-[#242424]"
-    : "border-neutral-200 bg-white";
+    : "border-slate-200 bg-white";
 
-  const textPrimary = darkMode ? "text-white" : "text-neutral-950";
-  const textSecondary = darkMode ? "text-neutral-400" : "text-neutral-500";
+  const textPrimary = darkMode ? "text-white" : "text-slate-950";
+  const textSecondary = darkMode ? "text-neutral-400" : "text-slate-500";
 
   const categories = [
     {
@@ -177,7 +177,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
           className={`flex h-12 items-center justify-between border-b px-4 ${
             darkMode
               ? "border-neutral-800 bg-[#171717]"
-              : "border-neutral-200 bg-neutral-50"
+              : "border-slate-200 bg-slate-50"
           }`}
         >
           <div className="flex items-center gap-2">
@@ -190,7 +190,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
             className={`hidden rounded-md border px-5 py-1 text-[11px] sm:block ${
               darkMode
                 ? "border-neutral-800 bg-[#202020] text-neutral-500"
-                : "border-neutral-200 bg-white text-neutral-400"
+                : "border-slate-200 bg-white text-slate-400"
             }`}
           >
             finance-ai.app/dashboard
@@ -204,7 +204,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
           className={`flex h-[72px] items-center justify-between border-b px-5 sm:px-7 ${
             darkMode
               ? "border-neutral-800 bg-[#151515]"
-              : "border-neutral-200 bg-white"
+              : "border-slate-200 bg-white"
           }`}
         >
           <div className="flex items-center gap-3">
@@ -235,7 +235,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
               className={`hidden rounded-lg border px-3 py-2 text-xs sm:block ${
                 darkMode
                   ? "border-neutral-700 text-neutral-300"
-                  : "border-neutral-200 text-neutral-600"
+                  : "border-slate-200 text-slate-600"
               }`}
             >
               Sign out
@@ -250,13 +250,13 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
             className={`relative hidden min-h-[650px] flex-col border-r md:flex ${
               darkMode
                 ? "border-neutral-800 bg-[#1d1d1d]"
-                : "border-neutral-200 bg-neutral-50"
+                : "border-slate-200 bg-slate-50"
             }`}
           >
             <div className="p-5 sm:p-6">
               <div
                 className={`text-[13px] leading-7 ${
-                  darkMode ? "text-neutral-200" : "text-neutral-700"
+                  darkMode ? "text-neutral-200" : "text-slate-700"
                 }`}
               >
                 <p>
@@ -268,7 +268,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
                 <p
                   className={`mt-2 italic ${
-                    darkMode ? "text-neutral-300" : "text-neutral-600"
+                    darkMode ? "text-neutral-300" : "text-slate-600"
                   }`}
                 >
                   Coffee 200, Rent 20000, Uber 1500, Groceries 5000
@@ -276,7 +276,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
                 <p
                   className={`mt-4 text-[11px] ${
-                    darkMode ? "text-neutral-600" : "text-neutral-400"
+                    darkMode ? "text-neutral-600" : "text-slate-400"
                   }`}
                 >
                   18:16
@@ -290,19 +290,25 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                 className={`rounded-2xl border p-2 ${
                   darkMode
                     ? "border-neutral-700 bg-[#292929]"
-                    : "border-neutral-200 bg-white"
+                    : "border-slate-200 bg-white"
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <div
                     className={`flex-1 px-3 py-3 text-sm ${
-                      darkMode ? "text-neutral-500" : "text-neutral-400"
+                      darkMode ? "text-neutral-500" : "text-slate-400"
                     }`}
                   >
                     Message Finance-AI...
                   </div>
 
-                  <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-700 text-neutral-300">
+                  <button
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                      darkMode
+                        ? "bg-neutral-700 text-neutral-300"
+                        : "bg-slate-700 text-slate-300"
+                    }`}
+                  >
                     <ArrowRight size={17} />
                   </button>
                 </div>
@@ -310,7 +316,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
               <p
                 className={`mt-3 text-center text-[10px] ${
-                  darkMode ? "text-neutral-600" : "text-neutral-400"
+                  darkMode ? "text-neutral-600" : "text-slate-400"
                 }`}
               >
                 Enter to send · Shift+Enter for new line
@@ -321,7 +327,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
           {/* Dashboard */}
           <div
             className={`min-w-0 overflow-hidden ${
-              darkMode ? "bg-[#202020]" : "bg-neutral-100"
+              darkMode ? "bg-[#202020]" : "bg-slate-100/50"
             }`}
           >
             <div className="p-4 sm:p-7">
@@ -355,7 +361,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                 className={`mt-5 flex items-center justify-between rounded-2xl border px-4 py-4 sm:px-5 ${
                   darkMode
                     ? "border-neutral-700 bg-[#292929]"
-                    : "border-neutral-200 bg-white"
+                    : "border-slate-200 bg-white"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -397,7 +403,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                     className={`rounded-2xl border p-5 ${
                       darkMode
                         ? "border-neutral-700 bg-[#292929]"
-                        : "border-neutral-200 bg-white"
+                        : "border-slate-200 bg-white"
                     }`}
                   >
                     <p className={`text-xs ${textSecondary}`}>{item.label}</p>
@@ -409,7 +415,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                     {item.secondary && (
                       <p
                         className={`mt-1 text-sm font-semibold ${
-                          darkMode ? "text-white" : "text-neutral-700"
+                          darkMode ? "text-white" : "text-slate-700"
                         }`}
                       >
                         {item.secondary}
@@ -424,7 +430,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                 className={`mt-5 rounded-2xl border p-5 ${
                   darkMode
                     ? "border-neutral-700 bg-[#292929]"
-                    : "border-neutral-200 bg-white"
+                    : "border-slate-200 bg-white"
                 }`}
               >
                 <div className="mb-5 flex items-center justify-between">
@@ -465,7 +471,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
                       <div
                         className={`h-2 overflow-hidden rounded-full ${
-                          darkMode ? "bg-neutral-800" : "bg-neutral-200"
+                          darkMode ? "bg-neutral-800" : "bg-slate-200"
                         }`}
                       >
                         <div
@@ -483,7 +489,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                 className={`mt-5 rounded-2xl border p-5 ${
                   darkMode
                     ? "border-neutral-700 bg-[#292929]"
-                    : "border-neutral-200 bg-white"
+                    : "border-slate-200 bg-white"
                 }`}
               >
                 <h3 className={`font-bold ${textPrimary}`}>
@@ -570,12 +576,16 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                 className={`mt-5 rounded-2xl border p-5 ${
                   darkMode
                     ? "border-neutral-700 bg-[#292929]"
-                    : "border-neutral-200 bg-white"
+                    : "border-slate-200 bg-white"
                 }`}
               >
                 <h3 className={`font-bold ${textPrimary}`}>Monthly Spending</h3>
 
-                <div className="mt-6 flex h-48 items-end justify-center gap-6 border-b border-neutral-700/60 px-2 sm:gap-12 sm:px-6">
+                <div
+                  className={`mt-6 flex h-48 items-end justify-center gap-6 border-b px-2 sm:gap-12 sm:px-6 ${
+                    darkMode ? "border-neutral-700/60" : "border-slate-700/60"
+                  }`}
+                >
                   {[
                     {
                       month: "2026-08",
@@ -614,7 +624,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                 className={`mt-5 rounded-2xl border p-5 ${
                   darkMode
                     ? "border-neutral-700 bg-[#292929]"
-                    : "border-neutral-200 bg-white"
+                    : "border-slate-200 bg-white"
                 }`}
               >
                 <h3 className={`font-bold ${textPrimary}`}>
@@ -636,7 +646,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
                       <div
                         className={`h-2 overflow-hidden rounded-full ${
-                          darkMode ? "bg-neutral-800" : "bg-neutral-200"
+                          darkMode ? "bg-neutral-800" : "bg-slate-200"
                         }`}
                       >
                         <div
@@ -671,7 +681,7 @@ export default function FinanceLandingPage() {
     return (
       <main
         className={`min-h-screen overflow-hidden transition-colors duration-300 ${
-          darkMode ? "bg-neutral-950 text-white" : "bg-white text-neutral-950"
+          darkMode ? "bg-neutral-950 text-white" : "bg-white text-slate-950"
         }`}
       >
         {/* Navbar */}
@@ -681,7 +691,7 @@ export default function FinanceLandingPage() {
               className={`flex items-center justify-between rounded-2xl border px-4 py-3 shadow-sm backdrop-blur-xl sm:px-6 ${
                 darkMode
                   ? "border-neutral-800 bg-neutral-900/90"
-                  : "border-neutral-200/80 bg-white/90"
+                  : "border-slate-200/80 bg-white/90"
               }`}
             >
               {/* Logo */}
@@ -695,7 +705,7 @@ export default function FinanceLandingPage() {
 
                 <span
                   className={`text-lg font-black tracking-tight ${
-                    darkMode ? "text-white" : "text-neutral-950"
+                    darkMode ? "text-white" : "text-slate-950"
                   }`}
                 >
                   Finance-AI
@@ -705,7 +715,7 @@ export default function FinanceLandingPage() {
               {/* Desktop nav */}
               <nav
                 className={`hidden items-center gap-7 text-sm font-medium md:flex ${
-                  darkMode ? "text-neutral-400" : "text-neutral-500"
+                  darkMode ? "text-neutral-400" : "text-slate-500"
                 }`}
               >
                 <a
@@ -739,7 +749,7 @@ export default function FinanceLandingPage() {
                   className={`flex h-10 w-10 items-center justify-center rounded-xl border transition ${
                     darkMode
                       ? "border-neutral-700 bg-neutral-800 text-yellow-300 hover:bg-neutral-700"
-                      : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   {darkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -751,7 +761,7 @@ export default function FinanceLandingPage() {
                   className={`hidden rounded-xl px-4 py-2 text-sm font-semibold transition sm:block ${
                     darkMode
                       ? "text-neutral-300 hover:bg-neutral-800"
-                      : "text-neutral-600 hover:bg-neutral-50"
+                      : "text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   Sign in
@@ -790,7 +800,7 @@ export default function FinanceLandingPage() {
 
             <h1
               className={`mx-auto mt-7 max-w-5xl text-5xl font-black leading-[0.98] tracking-[-0.045em] sm:text-6xl lg:text-8xl ${
-                darkMode ? "text-white" : "text-neutral-950"
+                darkMode ? "text-white" : "text-slate-950"
               }`}
             >
               Stop tracking money.
@@ -801,7 +811,7 @@ export default function FinanceLandingPage() {
 
             <p
               className={`mx-auto mt-7 max-w-2xl text-base leading-7 sm:text-lg ${
-                darkMode ? "text-neutral-400" : "text-neutral-500"
+                darkMode ? "text-neutral-400" : "text-slate-500"
               }`}
             >
               Finance-AI turns your expenses, bank statements, budgets, and
@@ -826,7 +836,7 @@ export default function FinanceLandingPage() {
                 className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-6 py-4 text-base font-bold shadow-sm transition sm:w-auto ${
                   darkMode
                     ? "border-neutral-700 bg-neutral-900 text-neutral-200 hover:bg-neutral-800"
-                    : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
                 See how it works
@@ -836,7 +846,7 @@ export default function FinanceLandingPage() {
 
             <div
               className={`mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm ${
-                darkMode ? "text-neutral-500" : "text-neutral-400"
+                darkMode ? "text-neutral-500" : "text-slate-400"
               }`}
             >
               <span className="flex items-center gap-2">
@@ -864,13 +874,13 @@ export default function FinanceLandingPage() {
           className={`border-y ${
             darkMode
               ? "border-neutral-800 bg-neutral-900/50"
-              : "border-neutral-200 bg-neutral-50/70"
+              : "border-slate-200 bg-slate-50/70"
           }`}
         >
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-7 text-center sm:flex-row sm:px-6 sm:text-left lg:px-8">
             <p
               className={`text-sm font-semibold ${
-                darkMode ? "text-neutral-400" : "text-neutral-500"
+                darkMode ? "text-neutral-400" : "text-slate-500"
               }`}
             >
               Built for people who want clarity, not complexity.
@@ -878,7 +888,7 @@ export default function FinanceLandingPage() {
 
             <div
               className={`flex items-center gap-6 ${
-                darkMode ? "text-neutral-500" : "text-neutral-400"
+                darkMode ? "text-neutral-500" : "text-slate-400"
               }`}
             >
               <div className="flex items-center gap-2 text-sm">
@@ -923,7 +933,7 @@ export default function FinanceLandingPage() {
                   className={`group rounded-3xl border p-7 transition duration-300 hover:-translate-y-1 hover:shadow-xl ${
                     darkMode
                       ? "border-neutral-800 bg-neutral-900 hover:border-emerald-500/40 hover:shadow-emerald-950/20"
-                      : "border-neutral-200 bg-white hover:border-emerald-200 hover:shadow-emerald-100/50"
+                      : "border-slate-200 bg-white hover:border-emerald-200 hover:shadow-emerald-100/50"
                   }`}
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500 transition group-hover:bg-emerald-600 group-hover:text-white">
@@ -932,7 +942,7 @@ export default function FinanceLandingPage() {
 
                   <h3
                     className={`mt-6 text-xl font-bold ${
-                      darkMode ? "text-white" : "text-neutral-950"
+                      darkMode ? "text-white" : "text-slate-950"
                     }`}
                   >
                     {feature.title}
@@ -940,7 +950,7 @@ export default function FinanceLandingPage() {
 
                   <p
                     className={`mt-3 text-sm leading-6 ${
-                      darkMode ? "text-neutral-400" : "text-neutral-500"
+                      darkMode ? "text-neutral-400" : "text-slate-500"
                     }`}
                   >
                     {feature.description}
@@ -951,7 +961,7 @@ export default function FinanceLandingPage() {
           </div>
         </section>
 
-        {/* How it works */}
+        {/* How it works — always dark, so it uses neutral */}
         <section
           id="how-it-works"
           className="bg-neutral-950 px-4 py-24 text-white sm:px-6 lg:px-8 lg:py-32"
@@ -1141,7 +1151,7 @@ export default function FinanceLandingPage() {
           className={`border-t px-4 py-24 sm:px-6 lg:px-8 ${
             darkMode
               ? "border-neutral-800 bg-neutral-950"
-              : "border-neutral-200 bg-white"
+              : "border-slate-200 bg-white"
           }`}
         >
           <div className="mx-auto max-w-4xl text-center">
@@ -1151,7 +1161,7 @@ export default function FinanceLandingPage() {
 
             <h2
               className={`mt-7 text-4xl font-black tracking-tight sm:text-6xl ${
-                darkMode ? "text-white" : "text-neutral-950"
+                darkMode ? "text-white" : "text-slate-950"
               }`}
             >
               Your money deserves
@@ -1162,7 +1172,7 @@ export default function FinanceLandingPage() {
 
             <p
               className={`mx-auto mt-6 max-w-2xl text-base leading-7 sm:text-lg ${
-                darkMode ? "text-neutral-400" : "text-neutral-500"
+                darkMode ? "text-neutral-400" : "text-slate-500"
               }`}
             >
               Import your first statement, set your budget, and let Finance-AI
@@ -1184,7 +1194,7 @@ export default function FinanceLandingPage() {
           className={`border-t ${
             darkMode
               ? "border-neutral-800 bg-neutral-900"
-              : "border-neutral-200 bg-neutral-50"
+              : "border-slate-200 bg-slate-50"
           }`}
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
@@ -1195,7 +1205,7 @@ export default function FinanceLandingPage() {
 
               <span
                 className={`font-black ${
-                  darkMode ? "text-white" : "text-neutral-950"
+                  darkMode ? "text-white" : "text-slate-950"
                 }`}
               >
                 Finance-AI
@@ -1204,7 +1214,7 @@ export default function FinanceLandingPage() {
 
             <p
               className={`text-sm ${
-                darkMode ? "text-neutral-500" : "text-neutral-400"
+                darkMode ? "text-neutral-500" : "text-slate-400"
               }`}
             >
               Intelligent personal finance, powered by AI.
