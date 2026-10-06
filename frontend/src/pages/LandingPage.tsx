@@ -68,8 +68,8 @@ function Badge({
     <div
       className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium ${
         darkMode
-          ? "border-indigo-400/20 bg-indigo-400/10 text-indigo-300"
-          : "border-indigo-100 bg-indigo-50 text-indigo-700"
+          ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300"
+          : "border-emerald-100 bg-emerald-50 text-emerald-700"
       }`}
     >
       <Sparkles size={15} />
@@ -93,7 +93,7 @@ function SectionHeading({
     <div className="mx-auto max-w-3xl text-center">
       <div
         className={`mb-4 text-sm font-semibold uppercase tracking-[0.18em] ${
-          darkMode ? "text-indigo-400" : "text-indigo-600"
+          darkMode ? "text-emerald-400" : "text-emerald-600"
         }`}
       >
         {eyebrow}
@@ -101,7 +101,7 @@ function SectionHeading({
 
       <h2
         className={`text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl ${
-          darkMode ? "text-white" : "text-slate-950"
+          darkMode ? "text-white" : "text-neutral-950"
         }`}
       >
         {title}
@@ -109,7 +109,7 @@ function SectionHeading({
 
       <p
         className={`mt-5 text-base leading-7 sm:text-lg ${
-          darkMode ? "text-slate-400" : "text-slate-500"
+          darkMode ? "text-neutral-400" : "text-neutral-500"
         }`}
       >
         {description}
@@ -120,11 +120,11 @@ function SectionHeading({
 
 function DashboardPreview({ darkMode }: { darkMode: boolean }) {
   const surface = darkMode
-    ? "border-slate-800 bg-[#242424]"
-    : "border-slate-200 bg-white";
+    ? "border-neutral-800 bg-[#242424]"
+    : "border-neutral-200 bg-white";
 
-  const textPrimary = darkMode ? "text-white" : "text-slate-950";
-  const textSecondary = darkMode ? "text-slate-400" : "text-slate-500";
+  const textPrimary = darkMode ? "text-white" : "text-neutral-950";
+  const textSecondary = darkMode ? "text-neutral-400" : "text-neutral-500";
 
   const categories = [
     {
@@ -132,21 +132,21 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
       amount: "₹23,000",
       items: "3 items",
       width: "63%",
-      color: "bg-indigo-500",
+      color: "bg-emerald-500",
     },
     {
       name: "Food",
       amount: "₹6,200",
       items: "4 items",
       width: "17%",
-      color: "bg-violet-500",
+      color: "bg-teal-500",
     },
     {
       name: "Other",
       amount: "₹4,500",
       items: "2 items",
       width: "12%",
-      color: "bg-pink-500",
+      color: "bg-orange-500",
     },
     {
       name: "Transport",
@@ -158,17 +158,17 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
   ];
 
   return (
-    <div className="relative mx-auto mt-16 max-w-[1250px]">
+    <div className="relative mx-auto mt-10 max-w-[1250px] sm:mt-16">
       {/* Glow */}
       <div
         className={`absolute -inset-10 rounded-[4rem] blur-3xl ${
-          darkMode ? "bg-indigo-500/10" : "bg-indigo-500/10"
+          darkMode ? "bg-emerald-500/10" : "bg-emerald-500/10"
         }`}
       />
 
       {/* Browser frame */}
       <div
-        className={`relative overflow-hidden rounded-[1.75rem] border shadow-[0_30px_100px_-30px_rgba(0,0,0,0.35)] ${
+        className={`relative overflow-hidden rounded-2xl border shadow-[0_30px_100px_-30px_rgba(0,0,0,0.35)] sm:rounded-[1.75rem] ${
           darkMode ? "bg-[#1b1b1b]" : "bg-white"
         } ${surface}`}
       >
@@ -176,8 +176,8 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
         <div
           className={`flex h-12 items-center justify-between border-b px-4 ${
             darkMode
-              ? "border-slate-800 bg-[#171717]"
-              : "border-slate-200 bg-slate-50"
+              ? "border-neutral-800 bg-[#171717]"
+              : "border-neutral-200 bg-neutral-50"
           }`}
         >
           <div className="flex items-center gap-2">
@@ -189,8 +189,8 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
           <div
             className={`hidden rounded-md border px-5 py-1 text-[11px] sm:block ${
               darkMode
-                ? "border-slate-800 bg-[#202020] text-slate-500"
-                : "border-slate-200 bg-white text-slate-400"
+                ? "border-neutral-800 bg-[#202020] text-neutral-500"
+                : "border-neutral-200 bg-white text-neutral-400"
             }`}
           >
             finance-ai.app/dashboard
@@ -203,12 +203,12 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
         <div
           className={`flex h-[72px] items-center justify-between border-b px-5 sm:px-7 ${
             darkMode
-              ? "border-slate-800 bg-[#151515]"
-              : "border-slate-200 bg-white"
+              ? "border-neutral-800 bg-[#151515]"
+              : "border-neutral-200 bg-white"
           }`}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white text-indigo-600">
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white text-emerald-600">
               <img src="./favicon.svg" alt="Finance-Ai Logo" />
             </div>
 
@@ -234,8 +234,8 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
             <button
               className={`hidden rounded-lg border px-3 py-2 text-xs sm:block ${
                 darkMode
-                  ? "border-slate-700 text-slate-300"
-                  : "border-slate-200 text-slate-600"
+                  ? "border-neutral-700 text-neutral-300"
+                  : "border-neutral-200 text-neutral-600"
               }`}
             >
               Sign out
@@ -243,20 +243,20 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
           </div>
         </div>
 
-        {/* App */}
-        <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[330px_1fr]">
+        {/* App — sidebar hides on mobile, dashboard takes full width */}
+        <div className="grid md:grid-cols-[280px_1fr] lg:grid-cols-[330px_1fr]">
           {/* AI Assistant */}
           <aside
-            className={`relative flex min-h-[650px] flex-col border-r ${
+            className={`relative hidden min-h-[650px] flex-col border-r md:flex ${
               darkMode
-                ? "border-slate-800 bg-[#1d1d1d]"
-                : "border-slate-200 bg-slate-50"
+                ? "border-neutral-800 bg-[#1d1d1d]"
+                : "border-neutral-200 bg-neutral-50"
             }`}
           >
             <div className="p-5 sm:p-6">
               <div
                 className={`text-[13px] leading-7 ${
-                  darkMode ? "text-slate-200" : "text-slate-700"
+                  darkMode ? "text-neutral-200" : "text-neutral-700"
                 }`}
               >
                 <p>
@@ -268,7 +268,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
                 <p
                   className={`mt-2 italic ${
-                    darkMode ? "text-slate-300" : "text-slate-600"
+                    darkMode ? "text-neutral-300" : "text-neutral-600"
                   }`}
                 >
                   Coffee 200, Rent 20000, Uber 1500, Groceries 5000
@@ -276,7 +276,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
                 <p
                   className={`mt-4 text-[11px] ${
-                    darkMode ? "text-slate-600" : "text-slate-400"
+                    darkMode ? "text-neutral-600" : "text-neutral-400"
                   }`}
                 >
                   18:16
@@ -289,20 +289,20 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
               <div
                 className={`rounded-2xl border p-2 ${
                   darkMode
-                    ? "border-slate-700 bg-[#292929]"
-                    : "border-slate-200 bg-white"
+                    ? "border-neutral-700 bg-[#292929]"
+                    : "border-neutral-200 bg-white"
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <div
                     className={`flex-1 px-3 py-3 text-sm ${
-                      darkMode ? "text-slate-500" : "text-slate-400"
+                      darkMode ? "text-neutral-500" : "text-neutral-400"
                     }`}
                   >
                     Message Finance-AI...
                   </div>
 
-                  <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-700 text-slate-300">
+                  <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-700 text-neutral-300">
                     <ArrowRight size={17} />
                   </button>
                 </div>
@@ -310,7 +310,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
               <p
                 className={`mt-3 text-center text-[10px] ${
-                  darkMode ? "text-slate-600" : "text-slate-400"
+                  darkMode ? "text-neutral-600" : "text-neutral-400"
                 }`}
               >
                 Enter to send · Shift+Enter for new line
@@ -321,10 +321,10 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
           {/* Dashboard */}
           <div
             className={`min-w-0 overflow-hidden ${
-              darkMode ? "bg-[#202020]" : "bg-slate-100/50"
+              darkMode ? "bg-[#202020]" : "bg-neutral-100"
             }`}
           >
-            <div className="p-5 sm:p-7">
+            <div className="p-4 sm:p-7">
               {/* Dashboard heading */}
               <div className="flex items-start justify-between">
                 <div>
@@ -342,7 +342,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                 <button
                   className={`rounded-lg border px-3 py-2 text-xs font-medium ${
                     darkMode
-                      ? "border-slate-700 text-red-400"
+                      ? "border-neutral-700 text-red-400"
                       : "border-red-200 text-red-500"
                   }`}
                 >
@@ -352,21 +352,23 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
               {/* Upload */}
               <div
-                className={`mt-5 flex items-center justify-between rounded-2xl border px-5 py-4 ${
+                className={`mt-5 flex items-center justify-between rounded-2xl border px-4 py-4 sm:px-5 ${
                   darkMode
-                    ? "border-slate-700 bg-[#292929]"
-                    : "border-slate-200 bg-white"
+                    ? "border-neutral-700 bg-[#292929]"
+                    : "border-neutral-200 bg-white"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <FileText className="text-indigo-500" size={19} />
+                  <FileText className="text-emerald-500" size={19} />
 
                   <span className={`text-sm font-bold ${textPrimary}`}>
                     Upload bank statement (PDF)
                   </span>
                 </div>
 
-                <span className={`text-xs ${textSecondary}`}>▼ expand</span>
+                <span className={`hidden text-xs sm:block ${textSecondary}`}>
+                  ▼ expand
+                </span>
               </div>
 
               {/* KPI cards */}
@@ -394,8 +396,8 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                     key={item.label}
                     className={`rounded-2xl border p-5 ${
                       darkMode
-                        ? "border-slate-700 bg-[#292929]"
-                        : "border-slate-200 bg-white"
+                        ? "border-neutral-700 bg-[#292929]"
+                        : "border-neutral-200 bg-white"
                     }`}
                   >
                     <p className={`text-xs ${textSecondary}`}>{item.label}</p>
@@ -407,7 +409,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                     {item.secondary && (
                       <p
                         className={`mt-1 text-sm font-semibold ${
-                          darkMode ? "text-white" : "text-slate-700"
+                          darkMode ? "text-white" : "text-neutral-700"
                         }`}
                       >
                         {item.secondary}
@@ -421,14 +423,14 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
               <div
                 className={`mt-5 rounded-2xl border p-5 ${
                   darkMode
-                    ? "border-slate-700 bg-[#292929]"
-                    : "border-slate-200 bg-white"
+                    ? "border-neutral-700 bg-[#292929]"
+                    : "border-neutral-200 bg-white"
                 }`}
               >
                 <div className="mb-5 flex items-center justify-between">
                   <h3 className={`font-bold ${textPrimary}`}>Budgets</h3>
 
-                  <button className="text-xs font-medium text-indigo-400">
+                  <button className="text-xs font-medium text-emerald-400">
                     + Add
                   </button>
                 </div>
@@ -463,7 +465,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
                       <div
                         className={`h-2 overflow-hidden rounded-full ${
-                          darkMode ? "bg-slate-800" : "bg-slate-200"
+                          darkMode ? "bg-neutral-800" : "bg-neutral-200"
                         }`}
                       >
                         <div
@@ -480,8 +482,8 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
               <div
                 className={`mt-5 rounded-2xl border p-5 ${
                   darkMode
-                    ? "border-slate-700 bg-[#292929]"
-                    : "border-slate-200 bg-white"
+                    ? "border-neutral-700 bg-[#292929]"
+                    : "border-neutral-200 bg-white"
                 }`}
               >
                 <h3 className={`font-bold ${textPrimary}`}>
@@ -495,7 +497,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                       className="relative h-44 w-44 rounded-full"
                       style={{
                         background:
-                          "conic-gradient(#6366f1 0deg 227deg, #8b5cf6 227deg 288deg, #ec4899 288deg 331deg, #f59e0b 331deg 360deg)",
+                          "conic-gradient(#10b981 0deg 227deg, #14b8a6 227deg 288deg, #f97316 288deg 331deg, #f59e0b 331deg 360deg)",
                       }}
                     >
                       <div
@@ -522,17 +524,17 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                       {
                         name: "Housing",
                         value: "63%",
-                        color: "bg-indigo-500",
+                        color: "bg-emerald-500",
                       },
                       {
                         name: "Food",
                         value: "17%",
-                        color: "bg-violet-500",
+                        color: "bg-teal-500",
                       },
                       {
                         name: "Other",
                         value: "12%",
-                        color: "bg-pink-500",
+                        color: "bg-orange-500",
                       },
                       {
                         name: "Transport",
@@ -567,13 +569,13 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
               <div
                 className={`mt-5 rounded-2xl border p-5 ${
                   darkMode
-                    ? "border-slate-700 bg-[#292929]"
-                    : "border-slate-200 bg-white"
+                    ? "border-neutral-700 bg-[#292929]"
+                    : "border-neutral-200 bg-white"
                 }`}
               >
                 <h3 className={`font-bold ${textPrimary}`}>Monthly Spending</h3>
 
-                <div className="mt-6 flex h-48 items-end justify-center gap-12 border-b border-slate-700/60 px-6">
+                <div className="mt-6 flex h-48 items-end justify-center gap-6 border-b border-neutral-700/60 px-2 sm:gap-12 sm:px-6">
                   {[
                     {
                       month: "2026-08",
@@ -588,14 +590,14 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                   ].map((bar) => (
                     <div
                       key={bar.month}
-                      className="flex h-full w-36 flex-col items-center justify-end"
+                      className="flex h-full w-24 flex-col items-center justify-end sm:w-36"
                     >
                       <span className={`mb-2 text-xs ${textSecondary}`}>
                         {bar.value}
                       </span>
 
                       <div
-                        className="w-full rounded-t-lg bg-indigo-500"
+                        className="w-full rounded-t-lg bg-emerald-500"
                         style={{ height: bar.height }}
                       />
 
@@ -611,8 +613,8 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
               <div
                 className={`mt-5 rounded-2xl border p-5 ${
                   darkMode
-                    ? "border-slate-700 bg-[#292929]"
-                    : "border-slate-200 bg-white"
+                    ? "border-neutral-700 bg-[#292929]"
+                    : "border-neutral-200 bg-white"
                 }`}
               >
                 <h3 className={`font-bold ${textPrimary}`}>
@@ -634,7 +636,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
                       <div
                         className={`h-2 overflow-hidden rounded-full ${
-                          darkMode ? "bg-slate-800" : "bg-slate-200"
+                          darkMode ? "bg-neutral-800" : "bg-neutral-200"
                         }`}
                       >
                         <div
@@ -669,7 +671,7 @@ export default function FinanceLandingPage() {
     return (
       <main
         className={`min-h-screen overflow-hidden transition-colors duration-300 ${
-          darkMode ? "bg-slate-950 text-white" : "bg-white text-slate-950"
+          darkMode ? "bg-neutral-950 text-white" : "bg-white text-neutral-950"
         }`}
       >
         {/* Navbar */}
@@ -678,8 +680,8 @@ export default function FinanceLandingPage() {
             <div
               className={`flex items-center justify-between rounded-2xl border px-4 py-3 shadow-sm backdrop-blur-xl sm:px-6 ${
                 darkMode
-                  ? "border-slate-800 bg-slate-900/90"
-                  : "border-slate-200/80 bg-white/90"
+                  ? "border-neutral-800 bg-neutral-900/90"
+                  : "border-neutral-200/80 bg-white/90"
               }`}
             >
               {/* Logo */}
@@ -687,13 +689,13 @@ export default function FinanceLandingPage() {
                 onClick={() => navigate("/")}
                 className="flex items-center gap-2.5"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-lg shadow-emerald-600/20">
                   <img src="./favicon.svg" alt="Finance-AI Logo" />
                 </div>
 
                 <span
                   className={`text-lg font-black tracking-tight ${
-                    darkMode ? "text-white" : "text-slate-950"
+                    darkMode ? "text-white" : "text-neutral-950"
                   }`}
                 >
                   Finance-AI
@@ -703,26 +705,26 @@ export default function FinanceLandingPage() {
               {/* Desktop nav */}
               <nav
                 className={`hidden items-center gap-7 text-sm font-medium md:flex ${
-                  darkMode ? "text-slate-400" : "text-slate-500"
+                  darkMode ? "text-neutral-400" : "text-neutral-500"
                 }`}
               >
                 <a
                   href="#features"
-                  className="transition hover:text-indigo-500"
+                  className="transition hover:text-emerald-500"
                 >
                   Features
                 </a>
 
                 <a
                   href="#how-it-works"
-                  className="transition hover:text-indigo-500"
+                  className="transition hover:text-emerald-500"
                 >
                   How it works
                 </a>
 
                 <a
                   href="#ai-advisor"
-                  className="transition hover:text-indigo-500"
+                  className="transition hover:text-emerald-500"
                 >
                   AI Advisor
                 </a>
@@ -736,8 +738,8 @@ export default function FinanceLandingPage() {
                   aria-label="Toggle dark mode"
                   className={`flex h-10 w-10 items-center justify-center rounded-xl border transition ${
                     darkMode
-                      ? "border-slate-700 bg-slate-800 text-yellow-300 hover:bg-slate-700"
-                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      ? "border-neutral-700 bg-neutral-800 text-yellow-300 hover:bg-neutral-700"
+                      : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50"
                   }`}
                 >
                   {darkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -748,8 +750,8 @@ export default function FinanceLandingPage() {
                   onClick={openAuth}
                   className={`hidden rounded-xl px-4 py-2 text-sm font-semibold transition sm:block ${
                     darkMode
-                      ? "text-slate-300 hover:bg-slate-800"
-                      : "text-slate-600 hover:bg-slate-50"
+                      ? "text-neutral-300 hover:bg-neutral-800"
+                      : "text-neutral-600 hover:bg-neutral-50"
                   }`}
                 >
                   Sign in
@@ -758,7 +760,7 @@ export default function FinanceLandingPage() {
                 {/* Get started */}
                 <button
                   onClick={openAuth}
-                  className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-700"
+                  className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700"
                 >
                   Get started
                 </button>
@@ -772,13 +774,13 @@ export default function FinanceLandingPage() {
           <div className="absolute inset-0 -z-10">
             <div
               className={`absolute left-1/2 top-0 h-[550px] w-[900px] -translate-x-1/2 rounded-full blur-3xl ${
-                darkMode ? "bg-indigo-600/10" : "bg-indigo-100/60"
+                darkMode ? "bg-emerald-600/10" : "bg-emerald-100/60"
               }`}
             />
 
             <div
               className={`absolute right-0 top-72 h-72 w-72 rounded-full blur-3xl ${
-                darkMode ? "bg-violet-600/10" : "bg-violet-100/40"
+                darkMode ? "bg-teal-600/10" : "bg-teal-100/40"
               }`}
             />
           </div>
@@ -788,18 +790,18 @@ export default function FinanceLandingPage() {
 
             <h1
               className={`mx-auto mt-7 max-w-5xl text-5xl font-black leading-[0.98] tracking-[-0.045em] sm:text-6xl lg:text-8xl ${
-                darkMode ? "text-white" : "text-slate-950"
+                darkMode ? "text-white" : "text-neutral-950"
               }`}
             >
               Stop tracking money.
-              <span className="block text-indigo-500">
+              <span className="block text-emerald-500">
                 Start understanding it.
               </span>
             </h1>
 
             <p
               className={`mx-auto mt-7 max-w-2xl text-base leading-7 sm:text-lg ${
-                darkMode ? "text-slate-400" : "text-slate-500"
+                darkMode ? "text-neutral-400" : "text-neutral-500"
               }`}
             >
               Finance-AI turns your expenses, bank statements, budgets, and
@@ -810,7 +812,7 @@ export default function FinanceLandingPage() {
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <button
                 onClick={openAuth}
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-emerald-600/20 transition hover:-translate-y-0.5 hover:bg-emerald-700 sm:w-auto"
               >
                 Start analyzing your money
                 <ArrowRight
@@ -823,8 +825,8 @@ export default function FinanceLandingPage() {
                 href="#how-it-works"
                 className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-6 py-4 text-base font-bold shadow-sm transition sm:w-auto ${
                   darkMode
-                    ? "border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    ? "border-neutral-700 bg-neutral-900 text-neutral-200 hover:bg-neutral-800"
+                    : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
                 }`}
               >
                 See how it works
@@ -834,21 +836,21 @@ export default function FinanceLandingPage() {
 
             <div
               className={`mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm ${
-                darkMode ? "text-slate-500" : "text-slate-400"
+                darkMode ? "text-neutral-500" : "text-neutral-400"
               }`}
             >
               <span className="flex items-center gap-2">
-                <Check size={15} className="text-indigo-500" />
+                <Check size={15} className="text-emerald-500" />
                 No spreadsheets
               </span>
 
               <span className="flex items-center gap-2">
-                <Check size={15} className="text-indigo-500" />
+                <Check size={15} className="text-emerald-500" />
                 PDF statement support
               </span>
 
               <span className="flex items-center gap-2">
-                <Check size={15} className="text-indigo-500" />
+                <Check size={15} className="text-emerald-500" />
                 Real-time AI
               </span>
             </div>
@@ -861,14 +863,14 @@ export default function FinanceLandingPage() {
         <section
           className={`border-y ${
             darkMode
-              ? "border-slate-800 bg-slate-900/50"
-              : "border-slate-200 bg-slate-50/70"
+              ? "border-neutral-800 bg-neutral-900/50"
+              : "border-neutral-200 bg-neutral-50/70"
           }`}
         >
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-7 text-center sm:flex-row sm:px-6 sm:text-left lg:px-8">
             <p
               className={`text-sm font-semibold ${
-                darkMode ? "text-slate-400" : "text-slate-500"
+                darkMode ? "text-neutral-400" : "text-neutral-500"
               }`}
             >
               Built for people who want clarity, not complexity.
@@ -876,7 +878,7 @@ export default function FinanceLandingPage() {
 
             <div
               className={`flex items-center gap-6 ${
-                darkMode ? "text-slate-500" : "text-slate-400"
+                darkMode ? "text-neutral-500" : "text-neutral-400"
               }`}
             >
               <div className="flex items-center gap-2 text-sm">
@@ -901,7 +903,7 @@ export default function FinanceLandingPage() {
         <section
           id="features"
           className={`px-4 py-24 sm:px-6 lg:px-8 lg:py-32 ${
-            darkMode ? "bg-slate-950" : "bg-white"
+            darkMode ? "bg-neutral-950" : "bg-white"
           }`}
         >
           <SectionHeading
@@ -920,17 +922,17 @@ export default function FinanceLandingPage() {
                   key={feature.title}
                   className={`group rounded-3xl border p-7 transition duration-300 hover:-translate-y-1 hover:shadow-xl ${
                     darkMode
-                      ? "border-slate-800 bg-slate-900 hover:border-indigo-500/40 hover:shadow-indigo-950/20"
-                      : "border-slate-200 bg-white hover:border-indigo-200 hover:shadow-indigo-100/50"
+                      ? "border-neutral-800 bg-neutral-900 hover:border-emerald-500/40 hover:shadow-emerald-950/20"
+                      : "border-neutral-200 bg-white hover:border-emerald-200 hover:shadow-emerald-100/50"
                   }`}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-600 group-hover:text-white">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500 transition group-hover:bg-emerald-600 group-hover:text-white">
                     <Icon size={21} />
                   </div>
 
                   <h3
                     className={`mt-6 text-xl font-bold ${
-                      darkMode ? "text-white" : "text-slate-950"
+                      darkMode ? "text-white" : "text-neutral-950"
                     }`}
                   >
                     {feature.title}
@@ -938,7 +940,7 @@ export default function FinanceLandingPage() {
 
                   <p
                     className={`mt-3 text-sm leading-6 ${
-                      darkMode ? "text-slate-400" : "text-slate-500"
+                      darkMode ? "text-neutral-400" : "text-neutral-500"
                     }`}
                   >
                     {feature.description}
@@ -952,23 +954,23 @@ export default function FinanceLandingPage() {
         {/* How it works */}
         <section
           id="how-it-works"
-          className="bg-slate-950 px-4 py-24 text-white sm:px-6 lg:px-8 lg:py-32"
+          className="bg-neutral-950 px-4 py-24 text-white sm:px-6 lg:px-8 lg:py-32"
         >
           <div className="mx-auto max-w-6xl">
             <div className="grid items-center gap-16 lg:grid-cols-2">
               <div>
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-400">
+                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-400">
                   How it works
                 </div>
 
                 <h2 className="mt-5 text-4xl font-black tracking-tight sm:text-5xl">
                   Give your AI the raw data.
-                  <span className="block text-indigo-400">
+                  <span className="block text-emerald-400">
                     Get the full picture.
                   </span>
                 </h2>
 
-                <p className="mt-6 max-w-xl text-base leading-7 text-slate-400">
+                <p className="mt-6 max-w-xl text-base leading-7 text-neutral-400">
                   Stop spending hours categorizing transactions and building
                   spreadsheets. Finance-AI handles the messy work so you can
                   focus on decisions.
@@ -996,14 +998,14 @@ export default function FinanceLandingPage() {
                     },
                   ].map((step) => (
                     <div key={step.number} className="flex gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-xs font-bold text-indigo-400">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900 text-xs font-bold text-emerald-400">
                         {step.number}
                       </div>
 
                       <div>
                         <h3 className="font-bold">{step.title}</h3>
 
-                        <p className="mt-1 text-sm leading-6 text-slate-400">
+                        <p className="mt-1 text-sm leading-6 text-neutral-400">
                           {step.description}
                         </p>
                       </div>
@@ -1014,17 +1016,17 @@ export default function FinanceLandingPage() {
 
               {/* AI Chat */}
               <div className="relative">
-                <div className="absolute -inset-10 rounded-full bg-indigo-600/15 blur-3xl" />
+                <div className="absolute -inset-10 rounded-full bg-emerald-600/15 blur-3xl" />
 
-                <div className="relative rounded-[2rem] border border-slate-800 bg-slate-900 p-5 shadow-2xl">
+                <div className="relative rounded-[2rem] border border-neutral-800 bg-neutral-900 p-5 shadow-2xl">
                   <div className="mb-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600">
                       <Bot size={18} />
                     </div>
 
                     <div>
                       <p className="font-bold">Finance-AI Advisor</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-neutral-500">
                         Streaming response
                       </p>
                     </div>
@@ -1036,11 +1038,11 @@ export default function FinanceLandingPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-indigo-600 p-4 text-sm text-white">
+                    <div className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-emerald-600 p-4 text-sm text-white">
                       Why did my spending increase this month?
                     </div>
 
-                    <div className="max-w-[90%] rounded-2xl rounded-bl-md border border-slate-800 bg-slate-950 p-4 text-sm leading-6 text-slate-300">
+                    <div className="max-w-[90%] rounded-2xl rounded-bl-md border border-neutral-800 bg-neutral-950 p-4 text-sm leading-6 text-neutral-300">
                       Your spending increased by <strong>12.4%</strong> compared
                       with last month.
                       <br />
@@ -1053,19 +1055,19 @@ export default function FinanceLandingPage() {
                       discretionary spending by about ₹180 per day.
                     </div>
 
-                    <div className="flex items-center gap-2 px-2 text-xs text-slate-500">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-500" />
+                    <div className="flex items-center gap-2 px-2 text-xs text-neutral-500">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                       Analyzing your latest transactions...
                     </div>
                   </div>
 
-                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950 p-3">
+                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-neutral-800 bg-neutral-950 p-3">
                     <input
                       placeholder="Ask about your finances..."
-                      className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600"
+                      className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-neutral-600"
                     />
 
-                    <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white">
+                    <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-white">
                       <ArrowRight size={16} />
                     </button>
                   </div>
@@ -1079,10 +1081,10 @@ export default function FinanceLandingPage() {
         <section
           id="ai-advisor"
           className={`px-4 py-24 sm:px-6 lg:px-8 lg:py-32 ${
-            darkMode ? "bg-slate-950" : "bg-white"
+            darkMode ? "bg-neutral-950" : "bg-white"
           }`}
         >
-          <div className="mx-auto max-w-6xl rounded-[2rem] bg-indigo-600 px-6 py-12 text-white sm:px-10 lg:px-16 lg:py-16">
+          <div className="mx-auto max-w-6xl rounded-[2rem] bg-emerald-600 px-6 py-12 text-white sm:px-10 lg:px-16 lg:py-16">
             <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.85fr]">
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
@@ -1092,20 +1094,20 @@ export default function FinanceLandingPage() {
 
                 <h2 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
                   Ask better questions.
-                  <span className="block text-indigo-100">
+                  <span className="block text-emerald-100">
                     Make better decisions.
                   </span>
                 </h2>
 
-                <p className="mt-6 max-w-xl text-base leading-7 text-indigo-100">
-                  “Can I afford a ₹9000 vacation?” “Where am I overspending?”
-                  “How much should I save this month?” Your financial data
+                <p className="mt-6 max-w-xl text-base leading-7 text-emerald-100">
+                  "Can I afford a ₹9000 vacation?" "Where am I overspending?"
+                  "How much should I save this month?" Your financial data
                   becomes a conversation.
                 </p>
 
                 <button
                   onClick={openAuth}
-                  className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-bold text-indigo-700 shadow-xl transition hover:bg-indigo-50"
+                  className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-bold text-emerald-700 shadow-xl transition hover:bg-emerald-50"
                 >
                   Talk to Finance-AI
                   <ArrowRight size={17} />
@@ -1125,7 +1127,7 @@ export default function FinanceLandingPage() {
                       className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-4 text-sm"
                     >
                       <span>{question}</span>
-                      <ChevronRight size={17} className="text-indigo-200" />
+                      <ChevronRight size={17} className="text-emerald-200" />
                     </div>
                   ))}
                 </div>
@@ -1138,29 +1140,29 @@ export default function FinanceLandingPage() {
         <section
           className={`border-t px-4 py-24 sm:px-6 lg:px-8 ${
             darkMode
-              ? "border-slate-800 bg-slate-950"
-              : "border-slate-200 bg-white"
+              ? "border-neutral-800 bg-neutral-950"
+              : "border-neutral-200 bg-white"
           }`}
         >
           <div className="mx-auto max-w-4xl text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-xl shadow-indigo-600/20">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-600/20">
               <CreditCard size={23} />
             </div>
 
             <h2
               className={`mt-7 text-4xl font-black tracking-tight sm:text-6xl ${
-                darkMode ? "text-white" : "text-slate-950"
+                darkMode ? "text-white" : "text-neutral-950"
               }`}
             >
               Your money deserves
-              <span className="block text-indigo-500">
+              <span className="block text-emerald-500">
                 an intelligent system.
               </span>
             </h2>
 
             <p
               className={`mx-auto mt-6 max-w-2xl text-base leading-7 sm:text-lg ${
-                darkMode ? "text-slate-400" : "text-slate-500"
+                darkMode ? "text-neutral-400" : "text-neutral-500"
               }`}
             >
               Import your first statement, set your budget, and let Finance-AI
@@ -1169,7 +1171,7 @@ export default function FinanceLandingPage() {
 
             <button
               onClick={openAuth}
-              className="mt-9 inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-7 py-4 text-base font-bold text-white shadow-xl shadow-indigo-600/20 transition hover:bg-indigo-700"
+              className="mt-9 inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-7 py-4 text-base font-bold text-white shadow-xl shadow-emerald-600/20 transition hover:bg-emerald-700"
             >
               Get started for free
               <ArrowRight size={18} />
@@ -1181,19 +1183,19 @@ export default function FinanceLandingPage() {
         <footer
           className={`border-t ${
             darkMode
-              ? "border-slate-800 bg-slate-900"
-              : "border-slate-200 bg-slate-50"
+              ? "border-neutral-800 bg-neutral-900"
+              : "border-neutral-200 bg-neutral-50"
           }`}
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white">
                 <img src="./favicon.svg" alt="Finance-AI Logo" />
               </div>
 
               <span
                 className={`font-black ${
-                  darkMode ? "text-white" : "text-slate-950"
+                  darkMode ? "text-white" : "text-neutral-950"
                 }`}
               >
                 Finance-AI
@@ -1202,7 +1204,7 @@ export default function FinanceLandingPage() {
 
             <p
               className={`text-sm ${
-                darkMode ? "text-slate-500" : "text-slate-400"
+                darkMode ? "text-neutral-500" : "text-neutral-400"
               }`}
             >
               Intelligent personal finance, powered by AI.
