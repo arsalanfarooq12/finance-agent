@@ -45,7 +45,7 @@ async function extractExpensesFromText(
   text: string
 ): Promise<ExtractedExpense[]> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.5-flash",
     systemInstruction: `You are a bank statement parser. Extract all expense/debit transactions from the provided bank statement text.
     Respond ONLY with a valid JSON array. No explanation, no markdown, no code fences. Raw JSON array only.
     If you cannot find any transactions, return an empty array: []`,
