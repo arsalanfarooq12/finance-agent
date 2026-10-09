@@ -3,7 +3,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 // Primary model
 export function getPrimaryLLM() {
   return new ChatGoogleGenerativeAI({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.5-flash",
     temperature: 0,
     maxRetries: 0, // We handle retries ourselves via fallback
   });
@@ -11,9 +11,9 @@ export function getPrimaryLLM() {
 
 // Fallback models in order
 const FALLBACK_MODELS = [
-  "gemini-2.5-flash",
-  "gemini-2.5-flash-lite",
   "gemini-3.5-flash",
+  "gemini-3.5-flash-lite",
+  "gemini-3.5",
 ];
 
 // Wraps any LLM call with the 3-tier fallback chain
