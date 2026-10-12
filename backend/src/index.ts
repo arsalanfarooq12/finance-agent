@@ -36,7 +36,7 @@ app.use(express.json());
 
 app.use("/api/chat", verifyToken, chatRoutes);
 app.use("/api/expenses", verifyToken, expenseRoutes);
-app.use("/api/upload", verifyToken, uploadRoutes);
+// app.use("/api/upload", verifyToken, uploadRoutes); paused till the pdf error is resolved
 
 app.use("/api/budgets", verifyToken, budgetRoutes);
 // Health check endpoint
