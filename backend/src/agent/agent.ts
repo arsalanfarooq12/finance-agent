@@ -57,7 +57,7 @@ export async function runAgent(
       { contents: history }
     );
 
-    // if (stepCount === 1 && modelUsed !== "gemini-2.5-flash") {
+    // if (stepCount === 1 && modelUsed !== "gemini-3.5-flash") {
     //   console.log(`[agent] This response used fallback model: ${modelUsed}`);
     // }
 

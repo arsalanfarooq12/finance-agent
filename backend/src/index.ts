@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.FRONTEND_URL?.trim().replace(/\/$/, ""), // trim + strip trailing slash
+  process.env.FRONTEND_URL?.trim().replace(/\/$/, ""),
 ].filter((origin): origin is string => Boolean(origin));
 
 app.use(

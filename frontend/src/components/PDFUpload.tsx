@@ -153,9 +153,11 @@ export default function PDFUpload({ onSaved }: Props) {
           >
             Browse file
           </div>
-          {state === "error" && (
-            <p className="text-red-400 text-xs mt-3">{errorMsg}</p>
-          )}
+          {/* {state === "error" && (
+            <p className="text-xs mt-2" style={{ color: "#ef4444" }}>
+              {errorMsg}
+            </p>
+          )} */}
         </div>
         <input
           ref={fileInputRef}
