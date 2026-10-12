@@ -25,12 +25,12 @@ const features = [
     description:
       "Paste expenses naturally and let the AI understand, categorize, and analyze them instantly.",
   },
-  {
-    icon: FileText,
-    title: "Upload bank statements",
-    description:
-      "Drop in PDF statements and automatically extract transactions without manually entering every expense.",
-  },
+  // {
+  //   icon: FileText,
+  //   title: "Upload bank statements",
+  //   description:
+  //     "Drop in PDF statements and automatically extract transactions without manually entering every expense.",
+  // },
   {
     icon: Bot,
     title: "AI financial advisor",
@@ -68,8 +68,8 @@ function Badge({
     <div
       className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium backdrop-blur-sm ${
         darkMode
-          ? "border-emerald-400/20 bg-emerald-500/7 text-emerald-300"
-          : "border-emerald-200 bg-emerald-50 text-emerald-700"
+          ? "border-[#d9b87d]/25 bg-[#d9b87d]/10 text-[#f0d8a6]"
+          : "border-[#d9b87d]/25 bg-[#f7efe3] text-[#886a2e]"
       }`}
     >
       <Sparkles size={15} />
@@ -93,7 +93,7 @@ function SectionHeading({
     <div className="mx-auto max-w-3xl text-center">
       <div
         className={`mb-3 text-xs font-semibold uppercase tracking-[0.22em] ${
-          darkMode ? "text-emerald-300" : "text-emerald-600"
+          darkMode ? "text-[#d9b87d]" : "text-[#8d6d2f]"
         }`}
       >
         {eyebrow}
@@ -129,26 +129,26 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
     <div className="relative mx-auto mt-10 max-w-[1250px] sm:mt-16">
       <div
         className={`absolute -inset-10 rounded-[4rem] blur-3xl ${
-          darkMode ? "bg-emerald-500/10" : "bg-emerald-100/70"
+          darkMode ? "bg-[#d9b87d]/10" : "bg-[#f7efe3]/80"
         }`}
       />
 
       <div
-        className={`relative overflow-hidden rounded-[1.75rem] border shadow-[0_35px_80px_rgba(0,0,0,0.38)] ${
-          darkMode ? "bg-[#0d1217]" : "bg-white"
+        className={`relative overflow-hidden rounded-[1.75rem] border shadow-[0_35px_80px_rgba(26,18,10,0.22)] ${
+          darkMode ? "bg-[#120f0d]" : "bg-white"
         } ${surface}`}
       >
         <div
           className={`flex h-12 items-center justify-between border-b px-4 ${
             darkMode
-              ? "border-white/10 bg-[#0a0f13]"
-              : "border-slate-200 bg-slate-50"
+              ? "border-[#d9b87d]/10 bg-[#171310]"
+              : "border-[#ead8b4] bg-[#fbf7f2]"
           }`}
         >
           <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-slate-500" />
-            <span className="h-2.5 w-2.5 rounded-full bg-slate-500" />
-            <span className="h-2.5 w-2.5 rounded-full bg-slate-500" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#d9b87d]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#d9b87d]/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#d9b87d]/60" />
           </div>
 
           <div
@@ -167,12 +167,12 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
         <div
           className={`flex h-[72px] items-center justify-between border-b px-5 sm:px-7 ${
             darkMode
-              ? "border-white/10 bg-[#101820]"
-              : "border-slate-200 bg-white"
+              ? "border-[#d9b87d]/10 bg-[#171310]"
+              : "border-[#ead8b4] bg-[#fffdf9]"
           }`}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-[#d9b87d]/30 bg-[#d9b87d]/10 text-[#f0d8a6]">
               <img src="./favicon.svg" alt="Finance-AI Logo" />
             </div>
 
@@ -189,7 +189,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-medium text-emerald-300">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#d9b87d]/10 text-xs font-medium text-[#f0d8a6]">
               A
             </div>
             <span
@@ -268,7 +268,7 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
           <div
             className={`min-w-0 overflow-hidden ${
-              darkMode ? "bg-[#111b22]" : "bg-slate-100/50"
+              darkMode ? "bg-[#171310]" : "bg-[#fffaf2]"
             }`}
           >
             <div className="p-4 sm:p-7">
@@ -526,16 +526,16 @@ export default function FinanceLandingPage() {
     return (
       <main
         className={`min-h-screen overflow-hidden transition-colors duration-300 ${
-          darkMode ? "bg-[#050b10] text-white" : "bg-white text-slate-950"
+          darkMode ? "bg-[#0d0b09] text-white" : "bg-[#fffaf4] text-slate-950"
         }`}
       >
         <header className="fixed inset-x-0 top-0 z-50">
           <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
             <div
-              className={`flex items-center justify-between rounded-full border px-4 py-3 shadow-[0_16px_50px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:px-6 ${
+              className={`flex items-center justify-between rounded-full border px-4 py-3 shadow-[0_16px_50px_rgba(30,22,12,0.18)] backdrop-blur-xl sm:px-6 ${
                 darkMode
-                  ? "border-white/10 bg-[#0b1218]/80"
-                  : "border-slate-200/80 bg-white/80"
+                  ? "border-[#d9b87d]/15 bg-[#130f0d]/80"
+                  : "border-[#ead8b4]/80 bg-[#fffaf3]/85"
               }`}
             >
               <button
@@ -543,7 +543,7 @@ export default function FinanceLandingPage() {
                 className="flex items-center gap-2.5"
                 aria-label="Finance-AI home"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-white">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d9b87d]/30 bg-[#d9b87d]/10 text-white">
                   <img src="./favicon.svg" alt="Finance-AI Logo" />
                 </div>
                 <span
@@ -557,24 +557,21 @@ export default function FinanceLandingPage() {
 
               <nav
                 className={`hidden items-center gap-7 text-sm font-medium md:flex ${
-                  darkMode ? "text-slate-300" : "text-slate-600"
+                  darkMode ? "text-[#e7d9b8]" : "text-slate-600"
                 }`}
               >
-                <a
-                  href="#features"
-                  className="transition hover:text-emerald-300"
-                >
+                <a href="#features" className="transition hover:text-[#d9b87d]">
                   Features
                 </a>
                 <a
                   href="#how-it-works"
-                  className="transition hover:text-emerald-300"
+                  className="transition hover:text-[#d9b87d]"
                 >
                   How it works
                 </a>
                 <a
                   href="#ai-advisor"
-                  className="transition hover:text-emerald-300"
+                  className="transition hover:text-[#d9b87d]"
                 >
                   AI Advisor
                 </a>
@@ -586,8 +583,8 @@ export default function FinanceLandingPage() {
                   aria-label="Toggle dark mode"
                   className={`flex h-10 w-10 items-center justify-center rounded-full border transition ${
                     darkMode
-                      ? "border-white/10 bg-white/4 text-yellow-300 hover:bg-white/8"
-                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      ? "border-[#d9b87d]/15 bg-[#1a1714] text-[#f0d8a6] hover:bg-[#221d19]"
+                      : "border-[#ead8b4] bg-white text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   {darkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -597,7 +594,7 @@ export default function FinanceLandingPage() {
                   onClick={openAuth}
                   className={`hidden rounded-full px-4 py-2 text-sm font-semibold transition sm:block ${
                     darkMode
-                      ? "text-slate-200 hover:bg-white/5"
+                      ? "text-[#f3e7c5] hover:bg-[#1a1714]"
                       : "text-slate-600 hover:bg-slate-50"
                   }`}
                 >
@@ -606,7 +603,7 @@ export default function FinanceLandingPage() {
 
                 <button
                   onClick={openAuth}
-                  className="rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 px-4 py-2.5 text-sm font-semibold text-slate-950 shadow-[0_12px_40px_rgba(16,185,129,0.28)] transition hover:brightness-110"
+                  className="rounded-full bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] px-4 py-2.5 text-sm font-semibold text-[#1d140b] shadow-[0_12px_40px_rgba(217,184,125,0.28)] transition hover:brightness-110"
                 >
                   Get started
                 </button>
@@ -619,12 +616,12 @@ export default function FinanceLandingPage() {
           <div className="absolute inset-0 -z-10">
             <div
               className={`absolute left-1/2 top-0 h-[560px] w-[820px] -translate-x-1/2 rounded-full blur-3xl ${
-                darkMode ? "bg-emerald-500/10" : "bg-emerald-100/70"
+                darkMode ? "bg-[#d9b87d]/10" : "bg-[#f7efe3]/80"
               }`}
             />
             <div
               className={`absolute right-0 top-96 h-72 w-72 rounded-full blur-3xl ${
-                darkMode ? "bg-cyan-500/8" : "bg-cyan-100/50"
+                darkMode ? "bg-[#d9b87d]/8" : "bg-[#f0e6d1]/60"
               }`}
             />
           </div>
@@ -638,7 +635,7 @@ export default function FinanceLandingPage() {
               }`}
             >
               Stop tracking money.
-              <span className="block bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-[#f0d8a6] via-[#d9b87d] to-[#b9944e] bg-clip-text text-transparent">
                 Start understanding it.
               </span>
             </h1>
@@ -655,7 +652,7 @@ export default function FinanceLandingPage() {
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <button
                 onClick={openAuth}
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 px-6 py-4 text-base font-bold text-slate-950 shadow-[0_18px_45px_rgba(16,185,129,0.25)] transition hover:brightness-110 sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] px-6 py-4 text-base font-bold text-[#1d140b] shadow-[0_18px_45px_rgba(217,184,125,0.28)] transition hover:brightness-110 sm:w-auto"
               >
                 Start analyzing your money
                 <ArrowRight
@@ -683,12 +680,11 @@ export default function FinanceLandingPage() {
               }`}
             >
               <span className="flex items-center gap-2">
-                <Check size={15} className="text-emerald-400" />
+                <Check size={15} className="text-[#d9b87d]" />
                 No spreadsheets
               </span>
-              {/* <span className="flex items-center gap-2"><Check size={15} className="text-emerald-400" />PDF statement support</span> */}
               <span className="flex items-center gap-2">
-                <Check size={15} className="text-emerald-400" />
+                <Check size={15} className="text-[#d9b87d]" />
                 Real-time AI
               </span>
             </div>
@@ -755,11 +751,11 @@ export default function FinanceLandingPage() {
                   key={feature.title}
                   className={`group rounded-[1.6rem] border p-7 transition duration-300 hover:-translate-y-1 ${
                     darkMode
-                      ? "border-white/10 bg-[#0b1218] hover:border-emerald-500/30 hover:bg-[#0d151b]"
-                      : "border-slate-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/30"
+                      ? "border-[#d9b87d]/15 bg-[#120f0d] hover:border-[#d9b87d]/35 hover:bg-[#171310]"
+                      : "border-[#ead8b4] bg-[#fffaf2] hover:border-[#d9b87d]/35 hover:bg-[#f5ecdd]"
                   }`}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-300 transition group-hover:bg-emerald-500 group-hover:text-slate-950">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#d9b87d]/10 text-[#f0d8a6] transition group-hover:bg-[#d9b87d] group-hover:text-[#1d140b]">
                     <Icon size={21} />
                   </div>
 
@@ -790,13 +786,13 @@ export default function FinanceLandingPage() {
           <div className="mx-auto max-w-6xl">
             <div className="grid items-center gap-16 lg:grid-cols-2">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">
+                <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d9b87d]">
                   How it works
                 </div>
 
                 <h2 className="mt-5 text-4xl font-black tracking-[-0.05em] sm:text-5xl">
                   Give your AI the raw data.
-                  <span className="block text-emerald-300">
+                  <span className="block text-[#d9b87d]">
                     Get the full picture.
                   </span>
                 </h2>
@@ -828,7 +824,7 @@ export default function FinanceLandingPage() {
                     },
                   ].map((step) => (
                     <div key={step.number} className="flex gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/3 text-xs font-bold text-emerald-300">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#d9b87d]/15 bg-[#d9b87d]/5 text-xs font-bold text-[#f0d8a6]">
                         {step.number}
                       </div>
                       <div>
@@ -843,10 +839,10 @@ export default function FinanceLandingPage() {
               </div>
 
               <div className="relative">
-                <div className="absolute -inset-10 rounded-full bg-emerald-500/10 blur-3xl" />
-                <div className="relative rounded-[2rem] border border-white/10 bg-[#0b1218] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.38)]">
+                <div className="absolute -inset-10 rounded-full bg-[#d9b87d]/10 blur-3xl" />
+                <div className="relative rounded-[2rem] border border-[#d9b87d]/15 bg-[#120f0d] p-5 shadow-[0_30px_80px_rgba(20,14,8,0.42)]">
                   <div className="mb-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-300 text-slate-950">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#f0d8a6] to-[#d9b87d] text-[#1d140b]">
                       <Bot size={18} />
                     </div>
                     <div>
@@ -855,18 +851,18 @@ export default function FinanceLandingPage() {
                         Streaming response
                       </p>
                     </div>
-                    <div className="ml-auto flex items-center gap-2 text-xs text-emerald-300">
-                      <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    <div className="ml-auto flex items-center gap-2 text-xs text-[#f0d8a6]">
+                      <span className="h-2 w-2 rounded-full bg-[#d9b87d]" />
                       Online
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-gradient-to-r from-emerald-500 to-teal-400 p-4 text-sm font-medium text-slate-950">
+                    <div className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] p-4 text-sm font-medium text-[#1d140b]">
                       Why did my spending increase this month?
                     </div>
 
-                    <div className="max-w-[90%] rounded-2xl rounded-bl-md border border-white/10 bg-[#0e171d] p-4 text-sm leading-6 text-slate-300">
+                    <div className="max-w-[90%] rounded-2xl rounded-bl-md border border-[#d9b87d]/10 bg-[#1a1714] p-4 text-sm leading-6 text-slate-300">
                       Your spending increased by{" "}
                       <strong className="text-white">12.4%</strong> compared
                       with last month.
@@ -881,17 +877,17 @@ export default function FinanceLandingPage() {
                     </div>
 
                     <div className="flex items-center gap-2 px-2 text-xs text-slate-500">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-[#d9b87d]" />
                       Analyzing your latest transactions...
                     </div>
                   </div>
 
-                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-white/10 bg-[#0d151b] p-3">
+                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-[#d9b87d]/10 bg-[#1a1714] p-3">
                     <input
                       placeholder="Ask about your finances..."
                       className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
                     />
-                    <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950">
+                    <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] text-[#1d140b]">
                       <ArrowRight size={16} />
                     </button>
                   </div>
@@ -907,17 +903,17 @@ export default function FinanceLandingPage() {
             darkMode ? "bg-[#050b10]" : "bg-white"
           }`}
         >
-          <div className="mx-auto max-w-6xl rounded-[2rem] border border-emerald-500/20 bg-gradient-to-br from-emerald-500/18 to-slate-950 px-6 py-12 text-white sm:px-10 lg:px-16 lg:py-16">
+          <div className="mx-auto max-w-6xl rounded-[2rem] border border-[#d9b87d]/20 bg-gradient-to-br from-[#d9b87d]/12 to-[#120f0d] px-6 py-12 text-white sm:px-10 lg:px-16 lg:py-16">
             <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.85fr]">
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-500/8 px-4 py-2 text-sm font-medium text-emerald-200">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#d9b87d]/25 bg-[#d9b87d]/8 px-4 py-2 text-sm font-medium text-[#f0d8a6]">
                   <Sparkles size={15} />
                   Your personal financial AI
                 </div>
 
                 <h2 className="mt-6 text-4xl font-black tracking-[-0.05em] sm:text-5xl">
                   Ask better questions.
-                  <span className="block text-emerald-300">
+                  <span className="block text-[#d9b87d]">
                     Make better decisions.
                   </span>
                 </h2>
@@ -930,14 +926,14 @@ export default function FinanceLandingPage() {
 
                 <button
                   onClick={openAuth}
-                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-4 text-sm font-bold text-slate-950 shadow-[0_18px_45px_rgba(255,255,255,0.12)] transition hover:bg-emerald-50"
+                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-4 text-sm font-bold text-[#1d140b] shadow-[0_18px_45px_rgba(255,255,255,0.12)] transition hover:bg-[#f5ecdd]"
                 >
                   Talk to Finance-AI
                   <ArrowRight size={17} />
                 </button>
               </div>
 
-              <div className="rounded-[1.6rem] border border-white/10 bg-white/4 p-5 backdrop-blur-sm">
+              <div className="rounded-[1.6rem] border border-[#d9b87d]/10 bg-[#1a1714]/50 p-5 backdrop-blur-sm">
                 <div className="space-y-3">
                   {[
                     "Analyze my spending this month",
@@ -947,10 +943,10 @@ export default function FinanceLandingPage() {
                   ].map((question) => (
                     <div
                       key={question}
-                      className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/3 px-4 py-4 text-sm text-slate-200"
+                      className="flex items-center justify-between rounded-2xl border border-[#d9b87d]/10 bg-[#201d1a]/70 px-4 py-4 text-sm text-slate-200"
                     >
                       <span>{question}</span>
-                      <ChevronRight size={17} className="text-emerald-300" />
+                      <ChevronRight size={17} className="text-[#f0d8a6]" />
                     </div>
                   ))}
                 </div>
@@ -962,12 +958,12 @@ export default function FinanceLandingPage() {
         <section
           className={`border-t px-4 py-24 sm:px-6 lg:px-8 ${
             darkMode
-              ? "border-white/10 bg-[#050b10]"
-              : "border-slate-200 bg-white"
+              ? "border-[#d9b87d]/10 bg-[#0d0b09]"
+              : "border-[#ead8b4] bg-[#fffaf2]"
           }`}
         >
           <div className="mx-auto max-w-4xl text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 text-slate-950 shadow-[0_18px_45px_rgba(16,185,129,0.24)]">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#f0d8a6] to-[#d9b87d] text-[#1d140b] shadow-[0_18px_45px_rgba(217,184,125,0.24)]">
               <CreditCard size={23} />
             </div>
 
@@ -977,7 +973,7 @@ export default function FinanceLandingPage() {
               }`}
             >
               Your money deserves
-              <span className="block bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] bg-clip-text text-transparent">
                 an intelligent system.
               </span>
             </h2>
@@ -993,7 +989,7 @@ export default function FinanceLandingPage() {
 
             <button
               onClick={openAuth}
-              className="mt-9 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 px-7 py-4 text-base font-bold text-slate-950 shadow-[0_18px_45px_rgba(16,185,129,0.24)] transition hover:brightness-110"
+              className="mt-9 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] px-7 py-4 text-base font-bold text-[#1d140b] shadow-[0_18px_45px_rgba(217,184,125,0.24)] transition hover:brightness-110"
             >
               Get started for free
               <ArrowRight size={18} />
@@ -1004,13 +1000,13 @@ export default function FinanceLandingPage() {
         <footer
           className={`border-t ${
             darkMode
-              ? "border-white/10 bg-[#0b1218]"
-              : "border-slate-200 bg-slate-50"
+              ? "border-[#d9b87d]/10 bg-[#120f0d]"
+              : "border-[#ead8b4] bg-[#fffaf2]"
           }`}
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 text-slate-950">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#f0d8a6] to-[#d9b87d] text-[#1d140b]">
                 <img src="./favicon.svg" alt="Finance-AI Logo" />
               </div>
               <span
