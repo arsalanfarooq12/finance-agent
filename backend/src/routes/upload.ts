@@ -1,9 +1,10 @@
+import * as dotenv from "dotenv";
 import { Router } from "express";
 import type { Request, Response } from "express";
 import multer from "multer";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import * as dotenv from "dotenv";
+
 dotenv.config();
 // Using legacy build for better compatibility in Node environment
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
@@ -45,7 +46,7 @@ async function extractExpensesFromText(
   text: string
 ): Promise<ExtractedExpense[]> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-3.6-flash",
+    model: "gemini-2.5-flash",
     systemInstruction: `You are a bank statement parser. Extract all expense/debit transactions from the provided bank statement text.
     Respond ONLY with a valid JSON array. No explanation, no markdown, no code fences. Raw JSON array only.
     If you cannot find any transactions, return an empty array: []`,
