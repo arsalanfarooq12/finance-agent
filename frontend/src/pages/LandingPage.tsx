@@ -7,7 +7,6 @@ import {
   Check,
   ChevronRight,
   CreditCard,
-  FileText,
   MessageSquare,
   Moon,
   ShieldCheck,
@@ -66,9 +65,9 @@ function Badge({
 }) {
   return (
     <div
-      className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium backdrop-blur-sm ${
+      className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium tracking-[0.12em] uppercase backdrop-blur-sm ${
         darkMode
-          ? "border-[#d9b87d]/25 bg-[#d9b87d]/10 text-[#f0d8a6]"
+          ? "border-[#d9b87d]/30 bg-[#1a150f]/80 text-[#f3deaa] shadow-[0_0_0_1px_rgba(217,184,125,0.12)]"
           : "border-[#d9b87d]/25 bg-[#f7efe3] text-[#886a2e]"
       }`}
     >
@@ -119,9 +118,6 @@ function SectionHeading({
 }
 
 function DashboardPreview({ darkMode }: { darkMode: boolean }) {
-  const surface = darkMode
-    ? "border-white/10 bg-[#0f1419]"
-    : "border-slate-200 bg-white";
   const textPrimary = darkMode ? "text-white" : "text-slate-950";
   const textSecondary = darkMode ? "text-slate-400" : "text-slate-500";
 
@@ -129,20 +125,20 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
     <div className="relative mx-auto mt-10 max-w-[1250px] sm:mt-16">
       <div
         className={`absolute -inset-10 rounded-[4rem] blur-3xl ${
-          darkMode ? "bg-[#d9b87d]/10" : "bg-[#f7efe3]/80"
+          darkMode ? "bg-[#d9b87d]/12" : "bg-[#f7efe3]/80"
         }`}
       />
 
       <div
-        className={`relative overflow-hidden rounded-[1.75rem] border shadow-[0_35px_80px_rgba(26,18,10,0.22)] ${
-          darkMode ? "bg-[#120f0d]" : "bg-white"
-        } ${surface}`}
+        className={`relative overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_40px_100px_rgba(7,8,12,0.45)] backdrop-blur-2xl ${
+          darkMode ? "bg-[rgba(18,15,13,0.68)]" : "bg-[rgba(255,255,255,0.62)]"
+        }`}
       >
         <div
           className={`flex h-12 items-center justify-between border-b px-4 ${
             darkMode
-              ? "border-[#d9b87d]/10 bg-[#171310]"
-              : "border-[#ead8b4] bg-[#fbf7f2]"
+              ? "border-[#d9b87d]/10 bg-[rgba(23,19,16,0.78)]"
+              : "border-[#ead8b4] bg-[rgba(251,247,242,0.72)]"
           }`}
         >
           <div className="flex items-center gap-2">
@@ -167,8 +163,8 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
         <div
           className={`flex h-[72px] items-center justify-between border-b px-5 sm:px-7 ${
             darkMode
-              ? "border-[#d9b87d]/10 bg-[#171310]"
-              : "border-[#ead8b4] bg-[#fffdf9]"
+              ? "border-[#d9b87d]/10 bg-[rgba(23,19,16,0.70)]"
+              : "border-[#ead8b4] bg-[rgba(255,253,249,0.70)]"
           }`}
         >
           <div className="flex items-center gap-3">
@@ -202,10 +198,10 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
 
         <div className="grid md:grid-cols-[280px_1fr] lg:grid-cols-[330px_1fr]">
           <aside
-            className={`relative hidden min-h-[650px] flex-col border-r md:flex ${
+            className={`relative hidden min-h-[650px] flex-col border-r backdrop-blur-md md:flex ${
               darkMode
-                ? "border-white/10 bg-[#0d141a]"
-                : "border-slate-200 bg-slate-50"
+                ? "border-white/10 bg-[#0d141a]/55"
+                : "border-slate-200 bg-slate-50/60"
             }`}
           >
             <div className="p-5 sm:p-6">
@@ -214,14 +210,16 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
                   darkMode ? "text-slate-300" : "text-slate-700"
                 }`}
               >
-                <p>
+                <p className="text-[15px] leading-7 text-slate-200">
                   Hi! I’m your personal finance assistant. Paste your expenses
                   and I’ll make sense of them.
                 </p>
-                <p className="mt-6 font-medium text-white">Example:</p>
+                <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#d9b87d]">
+                  Example
+                </p>
                 <p
-                  className={`mt-2 italic ${
-                    darkMode ? "text-slate-400" : "text-slate-600"
+                  className={`mt-2 rounded-2xl border border-[#d9b87d]/15 bg-[#d9b87d]/5 px-3 py-2 italic ${
+                    darkMode ? "text-slate-300" : "text-slate-600"
                   }`}
                 >
                   Coffee 200, Rent 20000, Uber 1500, Groceries 5000
@@ -267,8 +265,8 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
           </aside>
 
           <div
-            className={`min-w-0 overflow-hidden ${
-              darkMode ? "bg-[#171310]" : "bg-[#fffaf2]"
+            className={`min-w-0 overflow-hidden backdrop-blur-md ${
+              darkMode ? "bg-[#171310]/70" : "bg-[#fffaf2]/60"
             }`}
           >
             <div className="p-4 sm:p-7">
@@ -526,16 +524,18 @@ export default function FinanceLandingPage() {
     return (
       <main
         className={`min-h-screen overflow-hidden transition-colors duration-300 ${
-          darkMode ? "bg-[#0d0b09] text-white" : "bg-[#fffaf4] text-slate-950"
+          darkMode
+            ? "bg-[radial-gradient(circle_at_top,_rgba(246,220,170,0.18),_transparent_28%),radial-gradient(circle_at_bottom,_rgba(163,177,255,0.08),_transparent_34%),linear-gradient(180deg,_rgba(20,23,28,0.90),_rgba(16,18,22,0.96))] text-white"
+            : "bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.22),_transparent_26%),radial-gradient(circle_at_bottom,_rgba(152,166,255,0.06),_transparent_32%),linear-gradient(180deg,_rgba(255,252,248,0.96),_rgba(247,242,235,0.99))] text-slate-950"
         }`}
       >
         <header className="fixed inset-x-0 top-0 z-50">
           <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
             <div
-              className={`flex items-center justify-between rounded-full border px-4 py-3 shadow-[0_16px_50px_rgba(30,22,12,0.18)] backdrop-blur-xl sm:px-6 ${
+              className={`flex items-center justify-between rounded-full border px-4 py-3 shadow-[0_16px_50px_rgba(33,29,24,0.14)] backdrop-blur-2xl sm:px-6 ${
                 darkMode
-                  ? "border-[#d9b87d]/15 bg-[#130f0d]/80"
-                  : "border-[#ead8b4]/80 bg-[#fffaf3]/85"
+                  ? "border-white/10 bg-[rgba(37,32,27,0.42)]"
+                  : "border-white/60 bg-[rgba(255,255,255,0.55)]"
               }`}
             >
               <button
@@ -624,19 +624,21 @@ export default function FinanceLandingPage() {
                 darkMode ? "bg-[#d9b87d]/8" : "bg-[#f0e6d1]/60"
               }`}
             />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.12),transparent_26%)]" />
+            <div className="absolute inset-0 backdrop-blur-[1px]" />
           </div>
 
           <div className="mx-auto max-w-5xl text-center">
             <Badge darkMode={darkMode}>Your money, understood by AI</Badge>
 
             <h1
-              className={`mx-auto mt-7 max-w-5xl text-5xl font-black leading-[0.96] tracking-[-0.06em] sm:text-6xl lg:text-8xl ${
+                  className={`mx-auto mt-7 max-w-5xl text-5xl font-black leading-[0.92] tracking-[-0.07em] sm:text-6xl lg:text-[6.5rem] ${
                 darkMode ? "text-white" : "text-slate-950"
               }`}
             >
-              Stop tracking money.
-              <span className="block bg-gradient-to-r from-[#f0d8a6] via-[#d9b87d] to-[#b9944e] bg-clip-text text-transparent">
-                Start understanding it.
+                  Your wealth,
+                  <span className="block bg-gradient-to-r from-[#f7e7c0] via-[#d9b87d] to-[#c6a367] bg-clip-text text-transparent">
+                    refined by intelligence.
               </span>
             </h1>
 
@@ -652,7 +654,7 @@ export default function FinanceLandingPage() {
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <button
                 onClick={openAuth}
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] px-6 py-4 text-base font-bold text-[#1d140b] shadow-[0_18px_45px_rgba(217,184,125,0.28)] transition hover:brightness-110 sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#f5e4b7] via-[#e8c987] to-[#d9b87d] px-6 py-4 text-base font-bold text-[#1d140b] shadow-[0_18px_45px_rgba(217,184,125,0.3)] transition hover:scale-[1.01] hover:brightness-110 sm:w-auto"
               >
                 Start analyzing your money
                 <ArrowRight
@@ -665,7 +667,7 @@ export default function FinanceLandingPage() {
                 href="#how-it-works"
                 className={`inline-flex w-full items-center justify-center gap-2 rounded-full border px-6 py-4 text-base font-bold transition sm:w-auto ${
                   darkMode
-                    ? "border-white/10 bg-white/3 text-slate-100 hover:bg-white/5"
+                    ? "border-[#d9b87d]/20 bg-[#12100d]/60 text-[#f5eedb] hover:bg-[#1d1713]"
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
@@ -696,17 +698,17 @@ export default function FinanceLandingPage() {
         <section
           className={`border-y ${
             darkMode
-              ? "border-white/10 bg-[#0b1218]/70"
+              ? "border-[#d9b87d]/10 bg-[#0b1218]/70"
               : "border-slate-200 bg-slate-50/70"
           }`}
         >
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-7 text-center sm:flex-row sm:px-6 sm:text-left lg:px-8">
             <p
-              className={`text-sm font-medium ${
-                darkMode ? "text-slate-300" : "text-slate-500"
+              className={`text-sm font-medium tracking-[0.12em] uppercase ${
+                darkMode ? "text-[#f0d8a6]" : "text-[#86682d]"
               }`}
             >
-              Built for people who want clarity, not complexity.
+              Built for clarity
             </p>
 
             <div
@@ -715,15 +717,15 @@ export default function FinanceLandingPage() {
               }`}
             >
               <div className="flex items-center gap-2 text-sm">
-                <ShieldCheck size={17} />
+                <ShieldCheck size={17} className="text-[#d9b87d]" />
                 Secure
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <Zap size={17} />
+                <Zap size={17} className="text-[#d9b87d]" />
                 Real-time
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <Bot size={17} />
+                <Bot size={17} className="text-[#d9b87d]" />
                 AI-powered
               </div>
             </div>
@@ -733,7 +735,7 @@ export default function FinanceLandingPage() {
         <section
           id="features"
           className={`px-4 py-24 sm:px-6 lg:px-8 lg:py-32 ${
-            darkMode ? "bg-[#050b10]" : "bg-white"
+            darkMode ? "bg-[#04080b]" : "bg-[#fffdfa]"
           }`}
         >
           <SectionHeading
@@ -749,13 +751,13 @@ export default function FinanceLandingPage() {
               return (
                 <div
                   key={feature.title}
-                  className={`group rounded-[1.6rem] border p-7 transition duration-300 hover:-translate-y-1 ${
+                  className={`group rounded-[1.7rem] border p-7 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(205,154,71,0.12)] ${
                     darkMode
                       ? "border-[#d9b87d]/15 bg-[#120f0d] hover:border-[#d9b87d]/35 hover:bg-[#171310]"
                       : "border-[#ead8b4] bg-[#fffaf2] hover:border-[#d9b87d]/35 hover:bg-[#f5ecdd]"
                   }`}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#d9b87d]/10 text-[#f0d8a6] transition group-hover:bg-[#d9b87d] group-hover:text-[#1d140b]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#d9b87d]/12 text-[#f0d8a6] ring-1 ring-[#d9b87d]/10 transition group-hover:bg-[#d9b87d] group-hover:text-[#1d140b]">
                     <Icon size={21} />
                   </div>
 
@@ -781,7 +783,7 @@ export default function FinanceLandingPage() {
 
         <section
           id="how-it-works"
-          className="bg-[#071016] px-4 py-24 text-white sm:px-6 lg:px-8 lg:py-32"
+          className="bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.12),_transparent_45%),_#071016] px-4 py-24 text-white sm:px-6 lg:px-8 lg:py-32"
         >
           <div className="mx-auto max-w-6xl">
             <div className="grid items-center gap-16 lg:grid-cols-2">
@@ -824,7 +826,7 @@ export default function FinanceLandingPage() {
                     },
                   ].map((step) => (
                     <div key={step.number} className="flex gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#d9b87d]/15 bg-[#d9b87d]/5 text-xs font-bold text-[#f0d8a6]">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#d9b87d]/20 bg-[#d9b87d]/8 text-xs font-bold text-[#f0d8a6] shadow-[0_0_0_1px_rgba(217,184,125,0.08)]">
                         {step.number}
                       </div>
                       <div>
@@ -840,7 +842,7 @@ export default function FinanceLandingPage() {
 
               <div className="relative">
                 <div className="absolute -inset-10 rounded-full bg-[#d9b87d]/10 blur-3xl" />
-                <div className="relative rounded-[2rem] border border-[#d9b87d]/15 bg-[#120f0d] p-5 shadow-[0_30px_80px_rgba(20,14,8,0.42)]">
+                <div className="relative rounded-[2rem] border border-[#d9b87d]/15 bg-[#120f0d] p-5 shadow-[0_30px_80px_rgba(20,14,8,0.42)] ring-1 ring-white/5">
                   <div className="mb-5 flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#f0d8a6] to-[#d9b87d] text-[#1d140b]">
                       <Bot size={18} />
@@ -903,7 +905,7 @@ export default function FinanceLandingPage() {
             darkMode ? "bg-[#050b10]" : "bg-white"
           }`}
         >
-          <div className="mx-auto max-w-6xl rounded-[2rem] border border-[#d9b87d]/20 bg-gradient-to-br from-[#d9b87d]/12 to-[#120f0d] px-6 py-12 text-white sm:px-10 lg:px-16 lg:py-16">
+          <div className="mx-auto max-w-6xl rounded-[2rem] border border-[#d9b87d]/20 bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.18),_transparent_38%),_linear-gradient(135deg,_rgba(217,184,125,0.12),_rgba(18,15,13,0.96))] px-6 py-12 text-white shadow-[0_24px_80px_rgba(14,10,6,0.45)] sm:px-10 lg:px-16 lg:py-16">
             <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.85fr]">
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-[#d9b87d]/25 bg-[#d9b87d]/8 px-4 py-2 text-sm font-medium text-[#f0d8a6]">
@@ -958,8 +960,8 @@ export default function FinanceLandingPage() {
         <section
           className={`border-t px-4 py-24 sm:px-6 lg:px-8 ${
             darkMode
-              ? "border-[#d9b87d]/10 bg-[#0d0b09]"
-              : "border-[#ead8b4] bg-[#fffaf2]"
+              ? "border-[#d9b87d]/10 bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.10),_transparent_35%),_#0d0b09]"
+              : "border-[#ead8b4] bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.08),_transparent_35%),_#fffaf2]"
           }`}
         >
           <div className="mx-auto max-w-4xl text-center">
