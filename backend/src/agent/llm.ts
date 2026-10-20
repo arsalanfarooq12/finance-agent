@@ -11,8 +11,8 @@ interface InvokeOptions {
   tools?: any[];
   responseMimeType?: string;
   temperature?: number;
+  userId?: string; // <-- Added context tracking
 }
-
 /**
  * Unified LLM invocation with fallback across MODEL_CHAIN.
  * Works seamlessly for LangGraph agents, orchestrators, and standalone tasks (like PDF parsing).
@@ -22,9 +22,12 @@ export async function invokeWithFallback(
   options: InvokeOptions = {}
 ): Promise<any> {
   let lastError: any;
+  const userId = options.userId ?? "anonymous";
 
   for (let i = 0; i < MODEL_CHAIN.length; i++) {
     const modelName = MODEL_CHAIN[i]!;
+    const startTime = Date.now();
+
     try {
       const llm = new ChatGoogleGenerativeAI({
         model: modelName,
@@ -41,28 +44,45 @@ export async function invokeWithFallback(
           : llm;
 
       const response = await model.invoke(messages);
+      const durationMs = Date.now() - startTime;
 
-      if (i > 0) {
-        console.log(
-          `[llm-fallback] Recovered using ${modelName} after ${i} failure(s)`
-        );
-      }
+      // Structured success log
+      console.log(
+        JSON.stringify({
+          level: "INFO",
+          event: "LLM_SUCCESS",
+          userId,
+          model: modelName,
+          attemptIndex: i,
+          durationMs,
+          timestamp: new Date().toISOString(),
+        })
+      );
 
       return response;
     } catch (error: any) {
       lastError = error;
+      const durationMs = Date.now() - startTime;
       const status = error?.status ?? error?.response?.status;
 
-      // Only retry on 429 (Rate Limit) or 503 (Service Overload)
-      if (status !== 429 && status !== 503) {
-        throw error;
-      }
-
+      // Structured warning log for retryable failures
       console.warn(
-        `[llm-fallback] ${modelName} failed (${
-          status || "unknown"
-        }), trying next model...`
+        JSON.stringify({
+          level: "WARN",
+          event: "LLM_ATTEMPT_FAILED",
+          userId,
+          model: modelName,
+          attemptIndex: i,
+          status: status ?? "unknown",
+          durationMs,
+          error: error?.message,
+          timestamp: new Date().toISOString(),
+        })
       );
+
+      if (status !== 429 && status !== 503) {
+        throw error; // Fail fast on non-retryable errors
+      }
     }
   }
 

@@ -20,9 +20,8 @@ apiClient.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Safer type definition using unknown instead of any
 export interface ExtractedExpense {
-  [key: string]: unknown;
+  [key: string]: any;
 }
 
 export const sendMessage = async (message: string) => {
