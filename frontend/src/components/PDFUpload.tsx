@@ -24,7 +24,11 @@ type UploadState =
   | "saving"
   | "done"
   | "error";
-
+/**
+ * PDFUpload component allows users to upload a PDF bank statement, preview extracted transactions,
+ * edit or remove them, and save them in bulk.
+ * @param onSaved A callback function to be called after successful saving of expenses.
+ */
 export default function PDFUpload({ onSaved }: Props) {
   const [state, setState] = useState<UploadState>("idle");
   const [isDragging, setIsDragging] = useState(false);
@@ -52,7 +56,7 @@ export default function PDFUpload({ onSaved }: Props) {
       setPageCount(result.pageCount);
       setState("preview");
     } catch (err: any) {
-      setErrorMsg(err?.response?.data?.error ?? "Failed to process PDF.");
+      setErrorMsg("Failed to process PDF.");
       setState("error");
     }
   };

@@ -8,8 +8,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
 // Using legacy build for better compatibility in Node environment
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { generateWithFallback } from "../agent/modelFallback.js";
+import type { GenerateContentRequest } from "@google/generative-ai";
 const router = Router();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
 // Store file in memory, not disk
 const upload = multer({
@@ -20,7 +23,11 @@ const upload = multer({
     else cb(new Error("Only PDF files are allowed"));
   },
 });
-
+/**
+ * Extracts text from a PDF buffer.
+ * @param buffer The PDF file buffer
+ * @returns A promise resolving to the extracted text
+ */
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   const uint8Array = new Uint8Array(buffer);
   const pdf = await getDocument({ data: uint8Array }).promise;
@@ -41,23 +48,19 @@ interface ExtractedExpense {
   category: string;
   date: string;
 }
-
+/**
+ * Extracts expense transactions from the provided text using Gemini.
+ * @param text The text extracted from the PDF
+ * @returns A promise resolving to an array of extracted expenses
+ */
 async function extractExpensesFromText(
   text: string
 ): Promise<ExtractedExpense[]> {
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-    systemInstruction: `You are a bank statement parser. Extract all expense/debit transactions from the provided bank statement text.
-    Respond ONLY with a valid JSON array. No explanation, no markdown, no code fences. Raw JSON array only.
-    If you cannot find any transactions, return an empty array: []`,
-    generationConfig: {
-      temperature: 0,
-      maxOutputTokens: 4096,
-      responseMimeType: "application/json",
-    },
-  });
-
   const today: any = new Date().toISOString().split("T")[0];
+  const currentYear = new Date().getFullYear();
+  const systemInstruction = `You are a bank statement parser. Extract all expense/debit transactions from the provided bank statement text.
+    Respond ONLY with a valid JSON array. No explanation, no markdown, no code fences. Raw JSON array only.
+    If you cannot find any transactions, return an empty array: []`;
 
   const prompt = `Extract all debit/expense transactions from this bank statement.
 Return a JSON array where each item has:
@@ -75,11 +78,51 @@ Bank statement text:
 ${text.slice(0, 12000)}
 </statement>`;
 
-  const response = await model.generateContent({
+  const request: GenerateContentRequest = {
     contents: [{ role: "user", parts: [{ text: prompt }] }],
-  });
+    generationConfig: { temperature: 0, responseMimeType: "application/json" },
+  };
+  // Call the shared fallback function seamlessly
+  const { response, modelUsed } = await generateWithFallback(
+    genAI,
+    { systemInstruction },
+    request
+  );
+  console.log(`Used model: ${modelUsed}`);
 
-  const raw = response.response
+  // const model = genAI.getGenerativeModel({
+  //   model: "gemini-3.6-flash",
+  //   systemInstruction: `You are a bank statement parser. Extract all expense/debit transactions from the provided bank statement text.
+  //   Respond ONLY with a valid JSON array. No explanation, no markdown, no code fences. Raw JSON array only.
+  //   If you cannot find any transactions, return an empty array: []`,
+  //   generationConfig: {
+  //     temperature: 0,
+  //     maxOutputTokens: 4096,
+  //     responseMimeType: "application/json",
+  //   },
+  // });
+
+  //   const prompt = `Extract all debit/expense transactions from this bank statement.
+  // Return a JSON array where each item has:
+  // - description (string): merchant name or transaction description, keep it concise
+  // - amount (number): transaction amount as positive number in rupees
+  // - category (string): exactly one of: Housing, Food, Transport, Entertainment, Shopping, Health, Utilities, Education, Other
+  // - date (string): date in YYYY-MM-DD format. If year is missing or unclear, use ${
+  //     today.split("-")[0]
+  //   }. If date is completely missing, use ${today}
+
+  // Only include debits/expenses. Skip credits, deposits, salary credits, refunds, and opening/closing balances.
+
+  // Bank statement text:
+  // <statement>
+  // ${text.slice(0, 12000)}
+  // </statement>`;
+
+  // const response = await model.generateContent({
+  //   contents: [{ role: "user", parts: [{ text: prompt }] }],
+  // });
+
+  const raw = response
     .text()
     .replace(/```json|```/g, "")
     .trim();
@@ -132,7 +175,7 @@ router.post("/", upload.single("pdf"), async (req: Request, res: Response) => {
 
     res.json({
       expenses,
-      pageCount: 1, // pdfjs counts internally, simplify for now
+      pageCount: 1, // pdfjs counts internally,
       textLength: text.length,
       message: `Found ${expenses.length} transactions`,
     });

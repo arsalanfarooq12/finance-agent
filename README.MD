@@ -25,7 +25,7 @@ A production-deployed fullstack AI agent for personal finance. Users paste expen
 | Database           | PostgreSQL via Supabase                                                           |
 | Auth server        | Supabase Auth + JWT verification middleware                                       |
 | File upload        | Multer (in-memory storage)                                                        |
-| PDF parsing        | `pdfjs-dist` (NOT `pdf-parse` — breaks under ESM)                                 |
+| PDF parsing        | `pdfjs-dist`                                                                      |
 
 ### AI Models
 
@@ -36,7 +36,6 @@ A production-deployed fullstack AI agent for personal finance. Users paste expen
 | Fallback 2          | `gemini-3.5-flash`           |
 | Embeddings          | `gemini-embedding-001`       |
 
-> CRITICAL: `gemini-1.5-flash` and ALL `gemini-2.0-*` models are SHUT DOWN (404). Never use them.
 > CRITICAL: `@langchain/google-genai` reads `GOOGLE_API_KEY` — NOT `GEMINI_API_KEY`. Both SDKs must use `GOOGLE_API_KEY`.
 
 ---
@@ -357,8 +356,6 @@ Context + question → Gemini → grounded answer
 }
 ```
 
-Do NOT use Tailwind gray-\* classes — use inline hex or CSS variables.
-
 ### Component notes
 
 **`Chat.tsx`**
@@ -395,21 +392,11 @@ app.use("/api/...", routes); // 3rd
 
 ### PDF parsing
 
-`pdf-parse` throws under ESM. Always use `pdfjs-dist`:
+use `pdfjs-dist`:
 
 ```typescript
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 ```
-
-### Recharts
-
-- No `<Cell>` — pass `fill` in data objects
-- Pie label: `label={({ name, percent }: any) => ...}`
-- Always `type` imports for interfaces
-
-### CORS debugging
-
-`curl -i /api/health` first. CORS errors on every route = server unreachable, not CORS misconfiguration.
 
 ---
 
@@ -432,7 +419,7 @@ import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 ## Next Steps
 
 - [ ] Replace in-memory RAG with Supabase pgvector (persist across restarts)
-- [ ] CSV export (`GET /api/expenses/export`)
+
 - [ ] Weekly summary cron (separate service → `weekly_summaries` table → UI banner)
 - [ ] Human-in-the-loop for destructive actions (LangGraph `interrupt()`)
 - [ ] LangGraph checkpointing (MemorySaver → PostgresSaver for persistent sessions)

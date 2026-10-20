@@ -5,11 +5,10 @@ import {
 } from "@google/generative-ai";
 
 const MODEL_CHAIN = [
-  "gemini-2.5-flash",
-  "gemini-2.5-flash-lite",
+  // "gemini-2.5-flash",
+  // "gemini-2.5-flash-lite",
 
-  "gemini-3-flash-live",
-  "gemini-3.1-flash",
+  "gemini-3.5-flash",
   "gemini-3.6-flash",
   "gemini-3.7-flash",
 ];
@@ -41,8 +40,8 @@ export async function generateWithFallback(
       const modelParams = {
         model: modelName,
         tools: config.tools,
-        ...(config.systemInstruction !== undefined
-          ? { systemInstruction: config.systemInstruction }
+        ...(config.systemInstruction !== undefined //this is a workaround for the fact that systemInstruction is optional in the config, but required in the modelParams.
+          ? { systemInstruction: config.systemInstruction } //  If it's not provided, we don't want to include it in the modelParams at all.
           : {}),
       };
 
@@ -50,11 +49,11 @@ export async function generateWithFallback(
 
       const result = await model.generateContent(request);
 
-      if (i > 0) {
-        console.log(
-          `[model-fallback] Recovered using ${modelName} after ${i} failure(s)`
-        );
-      }
+      // if (i > 0) {
+      //   console.log(
+      //     `[model-fallback] Recovered using ${modelName} after ${i} failure(s)`
+      //   );
+      // }
 
       return { response: result.response, modelUsed: modelName! };
     } catch (error: any) {

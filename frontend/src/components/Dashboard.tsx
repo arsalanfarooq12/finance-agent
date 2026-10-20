@@ -256,7 +256,7 @@ export default function Dashboard({ refreshKey }: Props) {
         </button>
       </div>
 
-      {/* <UploadStatement fetchData={fetchData} /> */}
+      <UploadStatement fetchData={fetchData} />
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 gap-3">

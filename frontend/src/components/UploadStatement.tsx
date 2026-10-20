@@ -3,6 +3,11 @@ import PDFUpload from "./PDFUpload";
 interface UploadStatementProps {
   fetchData: () => Promise<void>;
 }
+/**
+ * UploadStatement component allows users to upload bank statements in PDF format.
+ * It provides a button to toggle the upload form and handles the state of the upload process.
+ * @param fetchData A function to fetch data after a successful upload.
+ */
 export default function UploadStatement({ fetchData }: UploadStatementProps) {
   const [showUpload, setShowUpload] = useState(false);
   return (
