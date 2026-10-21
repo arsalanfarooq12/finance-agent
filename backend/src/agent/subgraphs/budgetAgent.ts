@@ -119,7 +119,7 @@ async function budgetModelNode(state: typeof BudgetState.State) {
       Warn clearly when spending is above 80% or over the limit.`),
       ...state.messages,
     ],
-    budgetTools
+    { tools: budgetTools }
   );
 
   return { messages: [response] };

@@ -55,7 +55,9 @@ async function adviceModelNode(state: typeof AdviceState.State) {
       Be encouraging and specific, not generic.`),
       ...state.messages,
     ],
-    adviceTools
+    {
+      tools: adviceTools,
+    }
   );
 
   return { messages: [response] };

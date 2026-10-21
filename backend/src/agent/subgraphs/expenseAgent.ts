@@ -131,7 +131,7 @@ async function expenseModelNode(state: typeof ExpenseState.State) {
       After saving, always analyze spending to give the user a summary.`),
       ...state.messages,
     ],
-    expenseTools
+    { tools: expenseTools }
   );
 
   return { messages: [response] };
