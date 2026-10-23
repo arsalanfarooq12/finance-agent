@@ -43,6 +43,7 @@ router.post("/stream", async (req: AuthRequest, res) => {
     console.error("Stream error:", error);
     send(res)("Something went wrong.", "error");
   } finally {
+    send(res)("", "done");
     res.end();
   }
 });
@@ -63,6 +64,7 @@ router.post("/resume", async (req: AuthRequest, res) => {
     console.error("Resume error:", error);
     send(res)(error?.message ?? "Something went wrong.", "error");
   } finally {
+    send(res)("", "done");
     res.end();
   }
 });

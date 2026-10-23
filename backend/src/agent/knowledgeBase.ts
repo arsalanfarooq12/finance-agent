@@ -1,9 +1,5 @@
-import { GoogleGenAI } from "@google/genai";
-import * as dotenv from "dotenv";
-dotenv.config();
-
-const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
-
+import { embedQuery } from "../lib/embeddings.js";
+import { supabase } from "../lib/supabase.js";
 // Financial advice knowledge base
 export const financialKnowledge = [
   {
@@ -67,60 +63,27 @@ export const financialKnowledge = [
       "For average Indian urban salaries: Rent 20-35% of income, Groceries 8-12%, Dining 5-8%, Transport 8-12%, Entertainment 3-5%, Utilities 3-5%, Savings minimum 20%. Metro cities like Mumbai and Delhi have higher housing costs so adjust accordingly.",
   },
 ];
+const MIN_SIMILARITY = 0.5; // tune after logging real scores
+export const vectorStore = {
+  async initialize() {}, // no-op: data now lives in Postgres
 
-// Vector store
-interface VectorEntry {
-  id: string;
-  title: string;
-  content: string;
-  embedding: number[];
-}
-
-class FinancialVectorStore {
-  private entries: VectorEntry[] = [];
-  private initialized = false;
-
-  async initialize() {
-    if (this.initialized) return;
-    console.log("Building financial knowledge base...");
-    for (const doc of financialKnowledge) {
-      const embedding = await this.getEmbedding(doc.content);
-      this.entries.push({ ...doc, embedding });
-    }
-    this.initialized = true;
-    console.log("Knowledge base ready.");
-  }
-
-  private async getEmbedding(text: string): Promise<number[]> {
-    const response: any = await genAI.models.embedContent({
-      model: "gemini-embedding-001",
-      contents: text,
-      config: { taskType: "RETRIEVAL_DOCUMENT" },
+  async search(query: string, topK = 2, userId?: string): Promise<string> {
+    const embedding = await embedQuery(query);
+    const { data, error } = await supabase.rpc("match_documents", {
+      query_embedding: JSON.stringify(embedding),
+      match_count: topK,
+      min_similarity: MIN_SIMILARITY,
+      p_user_id: userId ?? null,
     });
-    return response!.embeddings![0].values!;
-  }
+    if (error) throw new Error(`Knowledge search failed: ${error.message}`);
 
-  private cosineSimilarity(a: number[], b: number[]): number {
-    const dot = a.reduce((sum, val, i) => {
-      const bj = b[i] ?? 0;
-      return sum + val * bj;
-    }, 0);
-    const magA = Math.sqrt(a.reduce((s, v) => s + v * v, 0));
-    const magB = Math.sqrt(b.reduce((s, v) => s + v * v, 0));
-    return dot / (magA * magB);
-  }
+    console.log(
+      "[rag]",
+      (data ?? []).map((r: any) => `${r.title}=${r.similarity.toFixed(3)}`)
+    );
 
-  async search(query: string, topK = 2): Promise<string> {
-    const queryEmbedding = await this.getEmbedding(query);
-    const results = this.entries
-      .map((e) => ({
-        ...e,
-        score: this.cosineSimilarity(queryEmbedding, e.embedding),
-      }))
-      .sort((a: any, b: any) => b.score - a.score)
-      .slice(0, topK);
-    return results.map((r) => `[${r.title}]\n${r.content}`).join("\n\n");
-  }
-}
-
-export const vectorStore = new FinancialVectorStore();
+    if (!data?.length)
+      return "No relevant guidance found in the knowledge base.";
+    return data.map((r: any) => `[${r.title}]\n${r.content}`).join("\n\n");
+  },
+};
