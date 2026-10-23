@@ -8,7 +8,12 @@ import ReactMarkdown from "react-markdown";
 //   getFinancialAdvice: "💡 Getting advice",
 //   clearExpenses: "🗑️ Clearing data",
 // };
-import { streamMessage } from "../api";
+import {
+  streamMessage,
+  resumeMessage,
+  type PendingConfirmation,
+  type StreamHandlers,
+} from "../api";
 
 const AGENT_LABELS: Record<string, string> = {
   expenseAgent: "💰 Expense Agent",
@@ -32,11 +37,64 @@ export default function Chat({ onAgentReply }: Props) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pending, setPending] = useState<PendingConfirmation | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const makeHandlers = (): StreamHandlers => ({
+    onToken: (token) => {
+      setMessages((prev) => {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        if (last.role === "assistant") {
+          updated[updated.length - 1] = {
+            ...last,
+            content: last.content + token,
+          };
+        }
+        return updated;
+      });
+    },
+    onAgent: (agent) => {
+      setMessages((prev) => {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        if (last.role === "assistant") {
+          updated[updated.length - 1] = {
+            ...last,
+            toolsCalled: [AGENT_LABELS[agent] ?? agent],
+          };
+        }
+        return updated;
+      });
+      onAgentReply();
+    },
+    onInterrupt: (p) => setPending(p),
+    onDone: () => setLoading(false),
+    onError: () => {
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          ...updated[updated.length - 1],
+          content: "Something went wrong. Please try again.",
+        };
+        return updated;
+      });
+      setLoading(false);
+    },
+  });
+
+  const handleResume = async (approved: boolean) => {
+    if (!pending) return;
+    const { threadId } = pending;
+    setPending(null);
+    setLoading(true);
+    await resumeMessage(threadId, approved, makeHandlers());
+    onAgentReply(); // refresh the dashboard after a delete
+  };
 
   const handleSend = async (text?: string) => {
     const msg = (text ?? input).trim();
@@ -64,52 +122,7 @@ export default function Chat({ onAgentReply }: Props) {
       },
     ]);
 
-    await streamMessage(
-      msg,
-      // onToken — append each word to the last message
-      (token) => {
-        setMessages((prev) => {
-          const updated = [...prev];
-          const last = updated[updated.length - 1];
-          if (last.role === "assistant") {
-            updated[updated.length - 1] = {
-              ...last,
-              content: last.content + token,
-            };
-          }
-          return updated;
-        });
-      },
-      // onAgent — show which specialist is running
-      (agent) => {
-        setMessages((prev) => {
-          const updated = [...prev];
-          const last = updated[updated.length - 1];
-          if (last.role === "assistant") {
-            updated[updated.length - 1] = {
-              ...last,
-              toolsCalled: [AGENT_LABELS[agent] ?? agent],
-            };
-          }
-          return updated;
-        });
-        onAgentReply();
-      },
-      // onDone
-      () => setLoading(false),
-      // onError
-      () => {
-        setMessages((prev) => {
-          const updated = [...prev];
-          updated[updated.length - 1] = {
-            ...updated[updated.length - 1],
-            content: "Something went wrong. Please try again.",
-          };
-          return updated;
-        });
-        setLoading(false);
-      }
-    );
+    await streamMessage(msg, makeHandlers());
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -260,7 +273,34 @@ export default function Chat({ onAgentReply }: Props) {
             </div>
           </div>
         ))}
-
+        {pending && (
+          <div
+            className="rounded-2xl p-4 text-sm"
+            style={{
+              backgroundColor: "#2d2d2d",
+              border: "1px solid #3d3d3d",
+              color: "#ececec",
+            }}
+          >
+            <p className="mb-3 leading-relaxed">{pending.message}</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleResume(true)}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium"
+                style={{ backgroundColor: "#b91c1c", color: "#ffffff" }}
+              >
+                Delete everything
+              </button>
+              <button
+                onClick={() => handleResume(false)}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium"
+                style={{ backgroundColor: "#3d3d3d", color: "#ececec" }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
         {/* Typing indicator */}
         {loading && (
           <div className="flex justify-start">

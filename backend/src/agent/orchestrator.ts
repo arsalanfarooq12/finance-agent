@@ -11,6 +11,10 @@ import { budgetAgent } from "./subgraphs/budgetAgent.js";
 import { adviceAgent } from "./subgraphs/adviceAgent.js";
 import { insertConversation, getRecentConversations } from "../db/database.js";
 
+import { Command } from "@langchain/langgraph";
+import type { RunnableConfig } from "@langchain/core/runnables";
+import { randomUUID } from "node:crypto";
+import { getCheckpointer } from "../lib/checkpointer.js";
 // ── Orchestrator node — classifies intent ──────────────────────
 async function orchestratorNode(state: typeof AgentState.State) {
   console.log("\n[Orchestrator] Classifying intent...");
@@ -45,12 +49,15 @@ function orchestratorRoute(state: typeof AgentState.State): string {
 
 // ── Specialist caller nodes ───────────────────────────────────
 
-async function callExpenseAgent(state: typeof AgentState.State) {
+async function callExpenseAgent(
+  state: typeof AgentState.State,
+  config: RunnableConfig
+) {
   console.log("\n[Orchestrator] → ExpenseAgent");
-  const result = await expenseAgent.invoke({
-    messages: state.messages,
-    userId: state.userId,
-  });
+  const result = await expenseAgent.invoke(
+    { messages: state.messages, userId: state.userId },
+    config
+  );
   const last = result.messages[result.messages.length - 1];
   const answer =
     typeof last!.content === "string"
@@ -133,7 +140,7 @@ const orchestratorGraph = new StateGraph(AgentState)
     generalAgent: "generalAgent",
   })
 
-  .compile();
+  .compile({ checkpointer: getCheckpointer() });
 
 // ── Public API — replaces old runAgent() ──────────────────────
 
@@ -165,11 +172,17 @@ export async function runAgent(
   ];
 
   // Run the graph
-  const result = await orchestratorGraph.invoke({
-    messages,
-    userId,
-  });
-
+  const threadId = `${userId}:${randomUUID()}`;
+  const result = await orchestratorGraph.invoke(
+    { messages, userId },
+    { configurable: { thread_id: threadId } }
+  );
+  if ((result as any).__interrupt__) {
+    return {
+      reply: "That action needs confirmation. Please use the streaming chat.",
+      agentUsed: "expense",
+    };
+  }
   const reply = result.finalAnswer || "I couldn't generate a response.";
   const agentUsed = result.route || "general";
 
@@ -181,11 +194,53 @@ export async function runAgent(
 
 // ── Streaming version ─────────────────────────────────────────
 
+type ChunkType = "token" | "agent" | "done" | "interrupt";
+type OnChunk = (chunk: any, type: ChunkType) => void;
+
+const AGENT_NODES = [
+  "expenseAgent",
+  "budgetAgent",
+  "adviceAgent",
+  "generalAgent",
+];
+
+async function pumpStream(
+  stream: AsyncIterable<any>,
+  threadId: string,
+  onChunk: OnChunk
+) {
+  let finalReply = "";
+
+  for await (const update of stream) {
+    console.log("[stream update]", JSON.stringify(update));
+    // Interrupts arrive as an "__interrupt__" key in "updates" mode
+    if (update.__interrupt__) {
+      const payload = update.__interrupt__[0]?.value ?? {};
+      onChunk({ threadId, ...payload }, "interrupt");
+      continue;
+    }
+
+    const nodeName = Object.keys(update)[0] || "";
+    const nodeData = update[nodeName];
+
+    if (AGENT_NODES.includes(nodeName)) onChunk(nodeName, "agent");
+
+    if (nodeData?.finalAnswer && nodeData.finalAnswer !== finalReply) {
+      for (const word of nodeData.finalAnswer.split(" ")) {
+        onChunk(word + " ", "token");
+        await new Promise((r) => setTimeout(r, 20));
+      }
+      finalReply = nodeData.finalAnswer;
+    }
+  }
+  return finalReply;
+}
+
 export async function streamAgent(
   userMessage: string,
   userId: string,
-  onChunk: (chunk: string, type: "token" | "agent" | "done") => void
-): Promise<void> {
+  onChunk: OnChunk
+) {
   const dbHistory = await getRecentConversations(userId);
   await insertConversation(userId, "user", userMessage);
 
@@ -196,45 +251,46 @@ export async function streamAgent(
     new HumanMessage(userMessage),
   ];
 
-  let finalReply = "";
-
-  // Stream graph events
+  const threadId = `${userId}:${randomUUID()}`;
   const stream = await orchestratorGraph.stream(
     { messages, userId },
-    { streamMode: "updates" }
+    {
+      streamMode: "updates",
+      recursionLimit: 25,
+      configurable: { thread_id: threadId },
+    }
   );
 
-  for await (const update of stream) {
-    const nodeName = Object.keys(update)[0] || "";
-    const nodeData = (update as any)[nodeName];
+  const finalReply = await pumpStream(stream, threadId, onChunk);
+  if (finalReply) await insertConversation(userId, "model", finalReply);
+  onChunk("", "done"); // sent after an interrupt too, so the UI's loading state clears
+}
 
-    // Notify frontend which agent is running
-    if (
-      ["expenseAgent", "budgetAgent", "adviceAgent", "generalAgent"].includes(
-        nodeName
-      )
-    ) {
-      onChunk(nodeName, "agent");
-    }
+export async function resumeAgent(
+  threadId: string,
+  userId: string,
+  approved: boolean,
+  onChunk: OnChunk
+) {
+  // Ownership check: threadId must belong to this user
+  if (!threadId.startsWith(`${userId}:`)) throw new Error("Invalid thread");
 
-    // Stream the final answer token by token
-    if (nodeData?.finalAnswer && nodeData.finalAnswer !== finalReply) {
-      const newText = nodeData.finalAnswer;
-      // Simulate streaming by chunking the text
-      // Real token streaming requires LangChain streaming callbacks
-      const words = newText.split(" ");
-      for (const word of words) {
-        onChunk(word + " ", "token");
-        await new Promise((r) => setTimeout(r, 20)); // small delay for effect
-      }
-      finalReply = newText;
-    }
-  }
+  const config = {
+    streamMode: "updates" as const,
+    recursionLimit: 25,
+    configurable: { thread_id: threadId },
+  };
 
-  // Save final reply
-  if (finalReply) {
-    await insertConversation(userId, "model", finalReply);
-  }
+  // Reject stale or double-clicked resumes
+  const snap = await orchestratorGraph.getState(config);
+  if (!snap.tasks?.some((t: any) => t.interrupts?.length))
+    throw new Error("No pending confirmation");
 
+  const stream = await orchestratorGraph.stream(
+    new Command({ resume: { approved } }),
+    config
+  );
+  const finalReply = await pumpStream(stream, threadId, onChunk);
+  if (finalReply) await insertConversation(userId, "model", finalReply);
   onChunk("", "done");
 }

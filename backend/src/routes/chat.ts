@@ -1,8 +1,18 @@
 import { Router } from "express";
 import { type AuthRequest } from "../middleware/verifyToken.js";
-import { runAgent, streamAgent } from "../agent/orchestrator.js";
+import { runAgent, streamAgent, resumeAgent } from "../agent/orchestrator.js";
 
 const router = Router();
+
+function openSSE(res: any) {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+}
+
+const send = (res: any) => (chunk: any, type: string) =>
+  res.write(`data: ${JSON.stringify({ chunk, type })}\n\n`);
 
 // Non-streaming endpoint (kept for compatibility)
 router.post("/", async (req: AuthRequest, res) => {
@@ -19,32 +29,39 @@ router.post("/", async (req: AuthRequest, res) => {
   }
 });
 
-// Streaming endpoint — Server-Sent Events
+// Streaming endpoint (SSE)
 router.post("/stream", async (req: AuthRequest, res) => {
   const { message } = req.body;
-
   if (!message?.trim()) {
     return res.status(400).json({ error: "Message is required" });
   }
 
-  // Set SSE headers
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-  res.flushHeaders();
-
+  openSSE(res);
   try {
-    await streamAgent(message, req.userId!, (chunk, type) => {
-      // Send each chunk as an SSE event
-      res.write(`data: ${JSON.stringify({ chunk, type })}\n\n`);
-    });
+    await streamAgent(message, req.userId!, send(res));
   } catch (error: any) {
-    res.write(
-      `data: ${JSON.stringify({
-        chunk: "Something went wrong.",
-        type: "error",
-      })}\n\n`
-    );
+    console.error("Stream error:", error);
+    send(res)("Something went wrong.", "error");
+  } finally {
+    res.end();
+  }
+});
+
+// Resume a paused (interrupted) run
+router.post("/resume", async (req: AuthRequest, res) => {
+  const { threadId, approved } = req.body;
+  if (typeof threadId !== "string" || typeof approved !== "boolean") {
+    return res
+      .status(400)
+      .json({ error: "threadId and approved are required" });
+  }
+
+  openSSE(res);
+  try {
+    await resumeAgent(threadId, req.userId!, approved, send(res));
+  } catch (error: any) {
+    console.error("Resume error:", error);
+    send(res)(error?.message ?? "Something went wrong.", "error");
   } finally {
     res.end();
   }

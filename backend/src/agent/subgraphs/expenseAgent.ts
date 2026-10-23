@@ -6,7 +6,10 @@ import {
   SystemMessage,
   AIMessage,
   BaseMessage,
+  ToolMessage,
 } from "@langchain/core/messages";
+import { interrupt, Command } from "@langchain/langgraph";
+
 import { z } from "zod";
 import { invokeWithFallback } from "../llm.js";
 import {
@@ -106,7 +109,7 @@ const clearExpenses = tool(
   {
     name: "clearExpenses",
     description:
-      "Delete all expenses. Only use when user explicitly asks to clear or delete all their data. and always confirm with the user before proceeding.",
+      "Delete all expenses. Only use when the user explicitly asks to clear or delete all their data. Call it directly; the system asks the user to confirm.",
     schema: z.object({ userId: z.string() }),
   }
 );
@@ -139,18 +142,52 @@ async function expenseModelNode(state: typeof ExpenseState.State) {
 
 function expenseShouldContinue(state: typeof ExpenseState.State): string {
   const last = state.messages[state.messages.length - 1] as AIMessage;
-  return last.tool_calls?.length ? "tools" : END;
+  if (!last.tool_calls?.length) return END;
+  return last.tool_calls.some((c) => c.name === "clearExpenses")
+    ? "confirm"
+    : "tools";
 }
 
-// ── Build subgraph ────────────────────────────────────────────
+async function confirmNode(state: typeof ExpenseState.State) {
+  const last = state.messages[state.messages.length - 1] as AIMessage;
+
+  // No side effects before interrupt(): this node re-runs from the top on resume
+  const decision = interrupt({
+    action: "clearExpenses",
+    message: "This will permanently delete ALL your expenses. Continue?",
+  }) as { approved?: boolean } | undefined;
+
+  if (decision?.approved === true) return new Command({ goto: "tools" });
+
+  // Every tool_call needs a matching ToolMessage or Gemini rejects the history
+  const toolMessages = (last.tool_calls ?? []).map(
+    (c) =>
+      new ToolMessage({
+        tool_call_id: c.id!,
+        name: c.name,
+        content: "User cancelled. Nothing was deleted.",
+      })
+  );
+  return new Command({
+    goto: END,
+    update: {
+      messages: [
+        ...toolMessages,
+        new AIMessage("Cancelled. Nothing was deleted."),
+      ],
+    },
+  });
+}
 
 export const expenseAgent = new StateGraph(ExpenseState)
   .addNode("model", expenseModelNode)
+  .addNode("confirm", confirmNode, { ends: ["tools", END] })
   .addNode("tools", new ToolNode(expenseTools))
   .addEdge(START, "model")
   .addEdge("tools", "model")
   .addConditionalEdges("model", expenseShouldContinue, {
     tools: "tools",
+    confirm: "confirm",
     [END]: END,
   })
-  .compile();
+  .compile(); // no checkpointer here; it inherits the parent's

@@ -84,28 +84,40 @@ export const deleteBudget = async (category: string) => {
   await apiClient.delete(`/budgets/${encodeURIComponent(category)}`);
 };
 
-export async function streamMessage(
-  message: string,
-  onToken: (token: string) => void,
-  onAgent: (agent: string) => void,
-  onDone: () => void,
-  onError: () => void
+export interface PendingConfirmation {
+  threadId: string;
+  action: string;
+  message: string;
+}
+
+export interface StreamHandlers {
+  onToken: (token: string) => void;
+  onAgent: (agent: string) => void;
+  onDone: () => void;
+  onError: () => void;
+  onInterrupt: (p: PendingConfirmation) => void;
+}
+
+async function postSSE(
+  path: string,
+  body: unknown,
+  h: StreamHandlers
 ): Promise<void> {
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const response = await fetch(`${API_URL}/chat/stream`, {
+  const response = await fetch(`${API_URL}${path}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${session?.access_token ?? ""}`,
     },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok || !response.body) {
-    onError();
+    h.onError();
     return;
   }
 
@@ -118,11 +130,8 @@ export async function streamMessage(
       const { done, value } = await reader.read();
       if (done) break;
 
-      // Accumulate chunks into buffer to handle fragmented SSE events
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split("\n");
-
-      // Keep the last partial line in the buffer for the next read
       buffer = lines.pop() ?? "";
 
       for (const line of lines) {
@@ -131,16 +140,26 @@ export async function streamMessage(
 
         try {
           const { chunk, type } = JSON.parse(trimmed.slice(6));
-          if (type === "token") onToken(chunk);
-          else if (type === "agent") onAgent(chunk);
-          else if (type === "done") onDone();
-          else if (type === "error") onError();
+          if (type === "token") h.onToken(chunk);
+          else if (type === "agent") h.onAgent(chunk);
+          else if (type === "interrupt") h.onInterrupt(chunk);
+          else if (type === "done") h.onDone();
+          else if (type === "error") h.onError();
         } catch {
-          // Skip malformed JSON chunks safely
+          // skip malformed JSON chunks
         }
       }
     }
   } catch {
-    onError();
+    h.onError();
   }
 }
+
+export const streamMessage = (message: string, h: StreamHandlers) =>
+  postSSE("/chat/stream", { message }, h);
+
+export const resumeMessage = (
+  threadId: string,
+  approved: boolean,
+  h: StreamHandlers
+) => postSSE("/chat/resume", { threadId, approved }, h);
