@@ -49,16 +49,6 @@ const card =
 const inputCls =
   "w-full rounded-lg border border-[color:var(--line)] bg-[var(--bg)] px-3.5 py-2.5 text-sm text-[color:var(--ink)] placeholder:text-[color:var(--muted)] transition-colors focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20";
 
-const THEME_KEY = "fa-theme";
-
-function readTheme(): boolean {
-  try {
-    return localStorage.getItem(THEME_KEY) === "dark";
-  } catch {
-    return false;
-  }
-}
-
 function Field({
   label,
   children,
@@ -84,7 +74,7 @@ export default function AuthPage() {
   const { signIn, signUp, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  const [dark, setDark] = useState(readTheme);
+  const [dark, setDark] = useState(true);
   const [tab, setTab] = useState<Tab>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -94,14 +84,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   const toggleTheme = () => {
-    setDark((d) => {
-      try {
-        localStorage.setItem(THEME_KEY, d ? "light" : "dark");
-      } catch {
-        /* storage unavailable: keep in-memory only */
-      }
-      return !d;
-    });
+    setDark((d) => !d);
   };
 
   const switchTab = (t: Tab) => {

@@ -410,32 +410,6 @@ function DashboardPreview() {
           </div>
         </div>
       </div>
-
-      {/* Floating insight chips */}
-      <div
-        className={`${card} absolute -right-4 top-24 hidden items-center gap-3 px-4 py-3 lg:flex`}
-      >
-        {/* <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[color:var(--accent)]">
-          <Check size={15} strokeWidth={2} />
-        </span>
-        <div>
-          <p className={`text-sm font-medium ${ink}`}>
-            Food is at 31% of budget
-          </p>
-          <p className={`text-xs ${muted}`}>On track for the month</p>
-        </div> */}
-      </div>
-      <div
-        className={`${card} absolute -left-4 bottom-24 hidden items-center gap-3 px-4 py-3 lg:flex`}
-      >
-        {/* <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[color:var(--accent)]">
-          <MessageSquare size={15} strokeWidth={1.5} />
-        </span> */}
-        {/* <div>
-          <p className={`text-sm font-medium ${ink}`}>4 expenses categorized</p>
-          <p className={`text-xs ${muted}`}>From one pasted line</p>
-        </div> */}
-      </div>
     </div>
   );
 }
@@ -467,7 +441,7 @@ const securityNotes = [
 ];
 
 export default function FinanceLandingPage() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(true);
   const navigate = useNavigate();
   const { session } = useAuth();
 
@@ -484,7 +458,7 @@ export default function FinanceLandingPage() {
       <style>{css}</style>
 
       {/* Header */}
-      <header className="border-b border-[color:var(--line)]">
+      <header className="border-b border-[color:var(--line)] fixed inset-x-0 top-0 z-10 bg-[var(--bg)]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <button
             onClick={() => navigate("/")}
