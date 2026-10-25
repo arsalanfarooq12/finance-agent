@@ -2,6 +2,7 @@ import { Router } from "express";
 import { type AuthRequest } from "../middleware/verifyToken.js";
 import { runAgent, streamAgent, resumeAgent } from "../agent/orchestrator.js";
 import { getRecentConversations } from "../db/database.js";
+import { chatLimiter, dailyChatLimit } from "../middleware/rateLimit.js";
 
 const router = Router();
 
@@ -16,7 +17,7 @@ const send = (res: any) => (chunk: any, type: string) =>
   res.write(`data: ${JSON.stringify({ chunk, type })}\n\n`);
 
 // Non-streaming endpoint (kept for compatibility)
-router.post("/", async (req: AuthRequest, res) => {
+router.post("/", chatLimiter, dailyChatLimit, async (req: AuthRequest, res) => {
   try {
     const { message } = req.body;
     if (!message?.trim()) {
@@ -31,23 +32,28 @@ router.post("/", async (req: AuthRequest, res) => {
 });
 
 // Streaming endpoint (SSE)
-router.post("/stream", async (req: AuthRequest, res) => {
-  const { message } = req.body;
-  if (!message?.trim()) {
-    return res.status(400).json({ error: "Message is required" });
-  }
+router.post(
+  "/stream",
+  chatLimiter,
+  dailyChatLimit,
+  async (req: AuthRequest, res) => {
+    const { message } = req.body;
+    if (!message?.trim()) {
+      return res.status(400).json({ error: "Message is required" });
+    }
 
-  openSSE(res);
-  try {
-    await streamAgent(message, req.userId!, send(res));
-  } catch (error: any) {
-    console.error("Stream error:", error);
-    send(res)("Something went wrong.", "error");
-  } finally {
-    send(res)("", "done");
-    res.end();
+    openSSE(res);
+    try {
+      await streamAgent(message, req.userId!, send(res));
+    } catch (error: any) {
+      console.error("Stream error:", error);
+      send(res)("Something went wrong.", "error");
+    } finally {
+      send(res)("", "done");
+      res.end();
+    }
   }
-});
+);
 
 // Resume a paused (interrupted) run
 router.post("/resume", async (req: AuthRequest, res) => {

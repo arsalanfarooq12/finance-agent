@@ -102,6 +102,7 @@ export interface StreamHandlers {
   onDone: () => void;
   onError: () => void;
   onInterrupt: (p: PendingConfirmation) => void;
+  onRateLimited?: (message: string) => void;
 }
 
 async function postSSE(
@@ -121,7 +122,15 @@ async function postSSE(
     },
     body: JSON.stringify(body),
   });
-
+  // Handle rate limiting and errors
+  if (response.status === 429) {
+    const body = await response.json().catch(() => null);
+    h.onRateLimited?.(
+      body?.error ?? "Too many requests. Please try again shortly."
+    );
+    return;
+  }
+  // Handle non-OK responses
   if (!response.ok || !response.body) {
     h.onError();
     return;

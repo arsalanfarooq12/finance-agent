@@ -9,6 +9,7 @@ dotenv.config();
 
 // Using legacy build for better compatibility in Node environment
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { uploadLimiter } from "../middleware/rateLimit.js";
 
 const router = Router();
 
@@ -110,43 +111,48 @@ ${text.slice(0, 12000)}
 // ==========================================
 // POST /api/upload ENDPOINT
 // ==========================================
-router.post("/", upload.single("pdf"), async (req: Request, res: Response) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No PDF file provided" });
-    }
+router.post(
+  "/",
+  uploadLimiter,
+  upload.single("pdf"),
+  async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No PDF file provided" });
+      }
 
-    const { fullText: text, pageCount } = await extractTextFromPDF(
-      req.file.buffer
-    );
+      const { fullText: text, pageCount } = await extractTextFromPDF(
+        req.file.buffer
+      );
 
-    if (!text || text.trim().length < 50) {
-      return res.status(400).json({
-        error:
-          "Could not extract text from PDF. The file may be scanned or image-based.",
-      });
-    }
+      if (!text || text.trim().length < 50) {
+        return res.status(400).json({
+          error:
+            "Could not extract text from PDF. The file may be scanned or image-based.",
+        });
+      }
 
-    const expenses = await extractExpensesFromText(text);
+      const expenses = await extractExpensesFromText(text);
 
-    if (expenses.length === 0) {
-      return res.status(200).json({
-        expenses: [],
-        message: "No expense transactions found in this PDF.",
+      if (expenses.length === 0) {
+        return res.status(200).json({
+          expenses: [],
+          message: "No expense transactions found in this PDF.",
+          pageCount,
+        });
+      }
+
+      res.json({
+        expenses,
         pageCount,
+        textLength: text.length,
+        message: `Found ${expenses.length} transactions`,
       });
+    } catch (error: any) {
+      console.error("PDF upload error:", error);
+      res.status(500).json({ error: error.message ?? "Failed to process PDF" });
     }
-
-    res.json({
-      expenses,
-      pageCount,
-      textLength: text.length,
-      message: `Found ${expenses.length} transactions`,
-    });
-  } catch (error: any) {
-    console.error("PDF upload error:", error);
-    res.status(500).json({ error: error.message ?? "Failed to process PDF" });
   }
-});
+);
 
 export default router;

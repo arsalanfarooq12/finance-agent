@@ -98,6 +98,17 @@ export default function Chat({ onAgentReply }: Props) {
     },
     onInterrupt: (p) => setPending(p),
     onDone: () => setLoading(false),
+    onRateLimited: (msg) => {
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          ...updated[updated.length - 1],
+          content: msg,
+        };
+        return updated;
+      });
+      setLoading(false);
+    },
     onError: () => {
       setMessages((prev) => {
         const updated = [...prev];

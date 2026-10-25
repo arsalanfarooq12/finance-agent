@@ -8,6 +8,7 @@ import { vectorStore } from "./agent/knowledgeBase.js";
 import uploadRoutes from "./routes/upload.js";
 import budgetRoutes from "./routes/budget.js";
 import { verifyToken } from "./middleware/verifyToken.js";
+import { apiLimiter, ipLimiter } from "./middleware/rateLimit.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,7 +16,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   process.env.FRONTEND_URL?.trim().replace(/\/$/, ""),
 ].filter((origin): origin is string => Boolean(origin));
-
+app.set("trust proxy", 1); // Render sits behind a proxy; without this all users share one IP
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -32,13 +33,14 @@ app.use(
     credentials: true,
   })
 );
+app.use(ipLimiter);
 app.use(express.json());
 
-app.use("/api/chat", verifyToken, chatRoutes);
-app.use("/api/expenses", verifyToken, expenseRoutes);
-app.use("/api/upload", verifyToken, uploadRoutes);
+app.use("/api/chat", verifyToken, apiLimiter, chatRoutes);
+app.use("/api/expenses", verifyToken, apiLimiter, expenseRoutes);
+app.use("/api/upload", verifyToken, uploadRoutes); // no apiLimiter: uploadLimiter handles it
 
-app.use("/api/budgets", verifyToken, budgetRoutes);
+app.use("/api/budgets", verifyToken, apiLimiter, budgetRoutes);
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
