@@ -1,502 +1,408 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import {
   ArrowRight,
-  BarChart3,
-  Bot,
-  Check,
-  ChevronRight,
-  CreditCard,
+  FileText,
+  Lock,
   MessageSquare,
   Moon,
-  ShieldCheck,
-  Sparkles,
+  PieChart,
   Sun,
-  Zap,
 } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
+/* -------------------------------------------------------------------------- */
+/*  Design tokens                                                              */
+/*  Paper + deep slate ink, one muted green accent. No gradients.              */
+/*  Serif for headlines (Newsreader), clean sans for everything else (Inter).  */
+/* -------------------------------------------------------------------------- */
 
-const features = [
-  {
-    icon: MessageSquare,
-    title: "Talk to your money",
-    description:
-      "Paste expenses naturally and let the AI understand, categorize, and analyze them instantly.",
-  },
-  // {
-  //   icon: FileText,
-  //   title: "Upload bank statements",
-  //   description:
-  //     "Drop in PDF statements and automatically extract transactions without manually entering every expense.",
-  // },
-  {
-    icon: Bot,
-    title: "AI financial advisor",
-    description:
-      "Ask questions about your spending and receive practical, personalized financial guidance.",
-  },
-  {
-    icon: BarChart3,
-    title: "Live financial dashboard",
-    description:
-      "Track spending, budgets, savings, categories, and trends from one real-time dashboard.",
-  },
-  {
-    icon: Zap,
-    title: "Real-time streaming",
-    description:
-      "Get AI responses as they're generated with a fast conversational streaming experience.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Private by design",
-    description:
-      "Your financial information stays protected with secure handling and controlled access.",
-  },
-];
+const css = `
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap');
 
-function Badge({
+.fa { 
+  --bg: #F8F8F6; --surface: #FFFFFF; --ink: #14181F; --muted: #5B6470;
+  --line: #E4E4DF; --accent: #0E7C59; --accent-ink: #FFFFFF;
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  background: var(--bg); color: var(--ink);
+}
+.fa[data-theme="dark"] {
+  --bg: #0E1114; --surface: #151A1F; --ink: #ECEDEE; --muted: #9099A3;
+  --line: #242B32; --accent: #3DDC97; --accent-ink: #06130D;
+}
+.fa .dots {
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 16%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+}
+.fa .halo {
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent) 16%, transparent), transparent 65%);
+}
+.fa .serif { font-family: 'Newsreader', Georgia, serif; font-weight: 400; letter-spacing: -0.02em; }
+.fa a:focus-visible, .fa button:focus-visible, .fa input:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px;
+}
+`;
+
+const ink = "text-[color:var(--ink)]";
+const muted = "text-[color:var(--muted)]";
+const accent = "text-[color:var(--accent)]";
+const card =
+  "rounded-xl border border-[color:var(--line)] bg-[var(--surface)] shadow-[0_1px_2px_rgba(20,24,31,0.04),0_12px_32px_-16px_rgba(20,24,31,0.12)]";
+
+/* -------------------------------------------------------------------------- */
+/*  Small pieces                                                               */
+/* -------------------------------------------------------------------------- */
+
+function PrimaryButton({
   children,
-  darkMode,
+  onClick,
 }: {
   children: React.ReactNode;
-  darkMode: boolean;
+  onClick: () => void;
 }) {
   return (
-    <div
-      className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium tracking-[0.12em] uppercase backdrop-blur-sm ${
-        darkMode
-          ? "border-[#d9b87d]/30 bg-[#1a150f]/80 text-[#f3deaa] shadow-[0_0_0_1px_rgba(217,184,125,0.12)]"
-          : "border-[#d9b87d]/25 bg-[#f7efe3] text-[#886a2e]"
-      }`}
+    <button
+      onClick={onClick}
+      className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-5 py-3 text-sm font-medium text-[color:var(--accent-ink)] shadow-[0_8px_24px_-8px_var(--accent)] ring-1 ring-inset ring-white/20 transition hover:brightness-110"
     >
-      <Sparkles size={15} />
       {children}
-    </div>
+    </button>
   );
 }
 
-function SectionHeading({
-  eyebrow,
+function Tile({
+  className = "",
+  icon: Icon,
   title,
-  description,
-  darkMode,
+  children,
+  body,
 }: {
-  eyebrow: string;
+  className?: string;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
   title: string;
-  description: string;
-  darkMode: boolean;
+  body: string;
+  children?: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-3xl text-center">
-      <div
-        className={`mb-3 text-xs font-semibold uppercase tracking-[0.22em] ${
-          darkMode ? "text-[#d9b87d]" : "text-[#8d6d2f]"
-        }`}
-      >
-        {eyebrow}
-      </div>
-
-      <h2
-        className={`text-3xl font-black tracking-[-0.04em] sm:text-4xl lg:text-5xl ${
-          darkMode ? "text-white" : "text-slate-950"
-        }`}
-      >
-        {title}
-      </h2>
-
-      <p
-        className={`mt-5 text-base leading-7 sm:text-lg ${
-          darkMode ? "text-neutral-400" : "text-slate-500"
-        }`}
-      >
-        {description}
-      </p>
+    <div className={`${card} flex flex-col p-7 sm:p-8 ${className}`}>
+      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[color:var(--accent)]">
+        <Icon size={18} strokeWidth={1.5} />
+      </span>
+      <h3 className={`mt-5 text-base font-medium ${ink}`}>{title}</h3>
+      <p className={`mt-2 max-w-md text-sm leading-6 ${muted}`}>{body}</p>
+      {children && <div className="mt-6 flex-1">{children}</div>}
     </div>
   );
 }
 
-function DashboardPreview({ darkMode }: { darkMode: boolean }) {
-  const textPrimary = darkMode ? "text-white" : "text-slate-950";
-  const textSecondary = darkMode ? "text-slate-400" : "text-slate-500";
+/* -------------------------------------------------------------------------- */
+/*  Product preview tiles (illustrative sample data)                           */
+/* -------------------------------------------------------------------------- */
 
+const parsed = [
+  { item: "Coffee", category: "Food", amount: "₹200" },
+  { item: "Rent", category: "Housing", amount: "₹20,000" },
+  { item: "Uber", category: "Transport", amount: "₹1,500" },
+  { item: "Groceries", category: "Food", amount: "₹5,000" },
+];
+
+function ParsedExpenses() {
   return (
-    <div className="relative mx-auto mt-10 max-w-[1250px] sm:mt-16">
+    <div className="rounded-lg border border-[color:var(--line)] bg-[var(--bg)]">
       <div
-        className={`absolute -inset-10 rounded-[4rem] blur-3xl ${
-          darkMode ? "bg-[#d9b87d]/12" : "bg-[#f7efe3]/80"
-        }`}
-      />
-
-      <div
-        className={`relative overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_40px_100px_rgba(7,8,12,0.45)] backdrop-blur-2xl ${
-          darkMode ? "bg-[rgba(18,15,13,0.68)]" : "bg-[rgba(255,255,255,0.62)]"
-        }`}
+        className={`border-b border-[color:var(--line)] px-4 py-3 text-sm ${muted}`}
       >
-        <div
-          className={`flex h-12 items-center justify-between border-b px-4 ${
-            darkMode
-              ? "border-[#d9b87d]/10 bg-[rgba(23,19,16,0.78)]"
-              : "border-[#ead8b4] bg-[rgba(251,247,242,0.72)]"
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#d9b87d]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#d9b87d]/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#d9b87d]/60" />
-          </div>
-
-          <div
-            className={`hidden rounded-full border px-4 py-1 text-[10px] uppercase tracking-[0.18em] sm:block ${
-              darkMode
-                ? "border-white/10 bg-white/3 text-slate-400"
-                : "border-slate-200 bg-white text-slate-400"
+        Coffee 200, Rent 20000, Uber 1500, Groceries 5000
+      </div>
+      <ul>
+        {parsed.map((row, i) => (
+          <li
+            key={row.item}
+            className={`flex items-center justify-between px-4 py-2.5 text-sm ${
+              i !== parsed.length - 1
+                ? "border-b border-[color:var(--line)]"
+                : ""
             }`}
           >
-            {/* finance-ai.app */}
-          </div>
+            <span className={ink}>{row.item}</span>
+            <span className={muted}>{row.category}</span>
+            <span className={`w-20 text-right tabular-nums ${ink}`}>
+              {row.amount}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-          <div className="w-12" />
-        </div>
-
-        <div
-          className={`flex h-[72px] items-center justify-between border-b px-5 sm:px-7 ${
-            darkMode
-              ? "border-[#d9b87d]/10 bg-[rgba(23,19,16,0.70)]"
-              : "border-[#ead8b4] bg-[rgba(255,253,249,0.70)]"
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-[#d9b87d]/30 bg-[#d9b87d]/10 text-[#f0d8a6]">
-              <img src="./favicon.svg" alt="Finance-AI Logo" />
-            </div>
-
-            <div>
-              <div className={`text-sm font-bold ${textPrimary}`}>
-                Finance-AI
-              </div>
-              <div
-                className={`text-[10px] uppercase tracking-[0.16em] ${textSecondary}`}
-              >
-                Personal finance
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#d9b87d]/10 text-xs font-medium text-[#f0d8a6]">
-              A
-            </div>
-            <span
-              className={`hidden text-sm font-medium sm:block ${textPrimary}`}
-            >
-              Arsalan
+function BudgetBars() {
+  const rows = [
+    { name: "Housing", spent: "₹23,000", limit: "₹50,000", pct: 46 },
+    { name: "Food", spent: "₹6,200", limit: "₹20,000", pct: 31 },
+  ];
+  return (
+    <div className="space-y-5">
+      {rows.map((r) => (
+        <div key={r.name}>
+          <div className="mb-2 flex justify-between text-sm">
+            <span className={ink}>{r.name}</span>
+            <span className={`tabular-nums ${muted}`}>
+              {r.spent} of {r.limit}
             </span>
           </div>
+          <div className="h-1 rounded-full bg-[var(--line)]">
+            <div
+              className="h-1 rounded-full bg-[var(--accent)]"
+              style={{ width: `${r.pct}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AdvisorExchange() {
+  return (
+    <div className="space-y-3 text-sm leading-6">
+      <p className={`${ink} font-medium`}>
+        Why did my spending go up this month?
+      </p>
+      <p className={muted}>
+        Spending is up 12.4% on last month. Most of the change comes from dining
+        out, online shopping, and transport. Reducing discretionary spending by
+        about ₹180 a day keeps you within your monthly budget.
+      </p>
+      <p className={`text-xs ${muted}`}>Example response</p>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Dashboard preview (illustrative sample data)                               */
+/* -------------------------------------------------------------------------- */
+
+const categories = [
+  { name: "Housing", pct: 63, tone: "100%" },
+  { name: "Food", pct: 17, tone: "60%" },
+  { name: "Other", pct: 12, tone: "35%" },
+  { name: "Transport", pct: 8, tone: "18%" },
+];
+
+// Tonal steps of the single accent, mixed toward the surface color.
+const shade = (tone: string) =>
+  `color-mix(in srgb, var(--accent) ${tone}, var(--surface))`;
+
+function buildDonut() {
+  let acc = 0;
+  const stops = categories.map((c) => {
+    const start = acc;
+    acc += c.pct;
+    return `${shade(c.tone)} ${start}% ${acc}%`;
+  });
+  return `conic-gradient(${stops.join(", ")})`;
+}
+
+function DashboardPreview() {
+  const panel =
+    "rounded-lg border border-[color:var(--line)] bg-[var(--surface)] p-5";
+
+  const stats = [
+    {
+      label: "Total spend",
+      value: "₹36,700",
+      // spark: "0,22 14,18 28,20 42,12 56,14 70,6 84,8",
+    },
+    {
+      label: "Transactions",
+      value: "10",
+      // spark: "0,20 14,22 28,14 42,16 56,10 70,12 84,4",
+    },
+    { label: "Categories", value: "4" },
+    { label: "Top category", value: "Housing", sub: "₹23,000" },
+  ];
+
+  const months = [
+    { label: "Jun 2026", value: "₹21.7k", height: 82 },
+    { label: "Jul 2026", value: "₹15.0k", height: 57 },
+  ];
+
+  return (
+    <div className="relative">
+      <div className="halo pointer-events-none absolute -inset-x-10 -inset-y-16 -z-10" />
+      <div
+        className={`${card} overflow-hidden`}
+        role="img"
+        aria-label="Preview of the Finance-AI dashboard with sample data"
+      >
+        {/* App bar */}
+        <div className="flex h-14 items-center justify-between border-b border-[color:var(--line)] px-5">
+          <span className={`serif text-lg ${ink}`}>Finance-AI</span>
+          <div className="flex items-center gap-3">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[color:var(--line)] text-xs font-medium text-[color:var(--accent)]">
+              A
+            </span>
+            <span className={`hidden text-sm sm:block ${ink}`}>Arsalan</span>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-[280px_1fr] lg:grid-cols-[330px_1fr]">
-          <aside
-            className={`relative hidden min-h-[650px] flex-col border-r backdrop-blur-md md:flex ${
-              darkMode
-                ? "border-white/10 bg-[#0d141a]/55"
-                : "border-slate-200 bg-slate-50/60"
-            }`}
-          >
-            <div className="p-5 sm:p-6">
-              <div
-                className={`text-[13px] leading-7 ${
-                  darkMode ? "text-slate-300" : "text-slate-700"
-                }`}
-              >
-                <p className="text-[15px] leading-7 text-slate-200">
-                  Hi! I’m your personal finance assistant. Paste your expenses
-                  and I’ll make sense of them.
-                </p>
-                <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#d9b87d]">
-                  Example
-                </p>
-                <p
-                  className={`mt-2 rounded-2xl border border-[#d9b87d]/15 bg-[#d9b87d]/5 px-3 py-2 italic ${
-                    darkMode ? "text-slate-300" : "text-slate-600"
-                  }`}
-                >
-                  Coffee 200, Rent 20000, Uber 1500, Groceries 5000
-                </p>
-                <p
-                  className={`mt-4 text-[11px] ${
-                    darkMode ? "text-slate-500" : "text-slate-400"
-                  }`}
-                >
-                  18:16
-                </p>
-              </div>
+        <div className="grid md:grid-cols-[280px_1fr]">
+          {/* Chat panel */}
+          <aside className="relative hidden min-h-[640px] border-r border-[color:var(--line)] bg-[var(--bg)] md:block">
+            <div className={`p-6 text-[13px] leading-6 ${muted}`}>
+              <p>
+                Hi, I'm your finance assistant. Paste your expenses and I'll
+                sort them for you.
+              </p>
+              <p className={`mt-5 font-medium ${ink}`}>Example</p>
+              <p className="mt-1 italic">
+                Coffee 200, Rent 20000, Uber 1500, Groceries 5000
+              </p>
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-              <div
-                className={`rounded-2xl border p-2 ${
-                  darkMode
-                    ? "border-white/10 bg-[#101922]"
-                    : "border-slate-200 bg-white"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`flex-1 px-3 py-3 text-sm ${
-                      darkMode ? "text-slate-500" : "text-slate-400"
-                    }`}
-                  >
-                    Message Finance-AI...
-                  </div>
-                  <button
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-                      darkMode
-                        ? "bg-emerald-500/12 text-emerald-300"
-                        : "bg-slate-700 text-slate-200"
-                    }`}
-                  >
-                    <ArrowRight size={17} />
-                  </button>
-                </div>
+            <div className="absolute inset-x-0 bottom-0 p-4">
+              <div className="flex items-center gap-2 rounded-lg border border-[color:var(--line)] bg-[var(--surface)] p-2">
+                <span className={`flex-1 px-2 py-2 text-sm ${muted}`}>
+                  Message Finance-AI
+                </span>
+                <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--accent)] text-[color:var(--accent-ink)]">
+                  <ArrowRight size={15} strokeWidth={1.5} />
+                </span>
               </div>
             </div>
           </aside>
 
-          <div
-            className={`min-w-0 overflow-hidden backdrop-blur-md ${
-              darkMode ? "bg-[#171310]/70" : "bg-[#fffaf2]/60"
-            }`}
-          >
-            <div className="p-4 sm:p-7">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2
-                    className={`text-2xl font-black tracking-[-0.04em] ${textPrimary}`}
-                  >
-                    Dashboard
-                  </h2>
-                  <p className={`mt-1 text-sm ${textSecondary}`}>
-                    Total: ₹36,700
-                  </p>
-                </div>
-                <button
-                  className={`rounded-full border px-3 py-1.5 text-[11px] font-medium ${
-                    darkMode
-                      ? "border-white/10 text-slate-300"
-                      : "border-slate-200 text-slate-600"
-                  }`}
-                >
-                  Clear All
-                </button>
+          {/* Dashboard */}
+          <div className="min-w-0 bg-[var(--bg)] p-5 sm:p-7">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className={`serif text-2xl ${ink}`}>Dashboard</h3>
+                <p className={`mt-1 text-sm ${muted}`}>Total: ₹36,700</p>
               </div>
-
-              {/* <div className={`mt-5 flex items-center justify-between rounded-2xl border px-4 py-4 sm:px-5 ${darkMode ? "border-white/10 bg-[#111b22]" : "border-slate-200 bg-white"}`}>
-                <div className="flex items-center gap-3"> */}
-              {/* <FileText className="text-emerald-400" size={19} /> */}
-              {/* <span className={`text-sm font-semibold ${textPrimary}`}>Upload bank statement (PDF)</span> */}
-              {/* </div> */}
-              {/* <span className={`hidden text-xs sm:block ${textSecondary}`}>Expand</span> */}
-              {/* </div> */}
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                {[
-                  { label: "Total Spend", value: "₹36,700" },
-                  { label: "Transactions", value: "10" },
-                  { label: "Categories", value: "4" },
-                  {
-                    label: "Top Category",
-                    value: "Housing",
-                    secondary: "₹23,000",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className={`rounded-2xl border p-5 ${
-                      darkMode
-                        ? "border-white/10 bg-[#111b22]"
-                        : "border-slate-200 bg-white"
-                    }`}
-                  >
-                    <p
-                      className={`text-[10px] uppercase tracking-[0.16em] ${textSecondary}`}
-                    >
-                      {item.label}
-                    </p>
-                    <p className={`mt-2 text-2xl font-black ${textPrimary}`}>
-                      {item.value}
-                    </p>
-                    {item.secondary && (
-                      <p
-                        className={`mt-1 text-sm font-semibold ${
-                          darkMode ? "text-slate-300" : "text-slate-700"
-                        }`}
-                      >
-                        {item.secondary}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <div
-                className={`mt-5 rounded-2xl border p-5 ${
-                  darkMode
-                    ? "border-white/10 bg-[#111b22]"
-                    : "border-slate-200 bg-white"
-                }`}
+              <span
+                className={`rounded-md border border-[color:var(--line)] px-3 py-1.5 text-xs ${muted}`}
               >
-                <div className="mb-5 flex items-center justify-between">
-                  <h3 className={`font-bold ${textPrimary}`}>Budgets</h3>
-                  <button className="text-xs font-medium text-emerald-400">
-                    + Add
-                  </button>
-                </div>
+                Clear all
+              </span>
+            </div>
 
-                <div className="space-y-5">
-                  {[
-                    {
-                      name: "Housing",
-                      spent: "₹23,000",
-                      budget: "₹50,000",
-                      width: "46%",
-                    },
-                    {
-                      name: "Food",
-                      spent: "₹6,200",
-                      budget: "₹20,000",
-                      width: "31%",
-                    },
-                  ].map((budget) => (
-                    <div key={budget.name}>
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className={`text-sm font-medium ${textPrimary}`}>
-                          {budget.name}
-                        </span>
-                        <span className="text-[11px] font-semibold text-emerald-400">
-                          {budget.spent} / {budget.budget}
-                        </span>
-                      </div>
-                      <div
-                        className={`h-2 overflow-hidden rounded-full ${
-                          darkMode ? "bg-white/5" : "bg-slate-200"
-                        }`}
+            {/* Stats */}
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {stats.map((s) => (
+                <div key={s.label} className={panel}>
+                  <p className={`text-xs ${muted}`}>{s.label}</p>
+                  <p className={`mt-2 text-xl font-medium tabular-nums ${ink}`}>
+                    {s.value}
+                  </p>
+                  {s.sub && (
+                    <p className={`mt-0.5 text-xs tabular-nums ${muted}`}>
+                      {s.sub}
+                    </p>
+                  )}
+                  {/* {s.spark && (
+                    <svg
+                      viewBox="0 0 84 26"
+                      className="mt-3 h-6 w-full"
+                      aria-hidden="true"
+                      preserveAspectRatio="none"
+                    >
+                      <polyline
+                        points={s.spark}
+                        fill="none"
+                        stroke="var(--accent)"
+                        strokeWidth="1.5"
+                        strokeLinejoin="round"
+                        strokeLinecap="round"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    </svg>
+                  )} */}
+                </div>
+              ))}
+            </div>
+
+            {/* Budgets */}
+            <div className={`mt-3 ${panel}`}>
+              <div className="mb-5 flex items-center justify-between">
+                <h4 className={`text-sm font-medium ${ink}`}>Budgets</h4>
+                <span className={`text-xs ${accent}`}>Add budget</span>
+              </div>
+              <BudgetBars />
+            </div>
+
+            {/* Category + monthly */}
+            <div className="mt-3 grid gap-3 lg:grid-cols-2">
+              <div className={panel}>
+                <h4 className={`text-sm font-medium ${ink}`}>
+                  Spending by category
+                </h4>
+                <div className="mt-6 flex flex-wrap items-center gap-8">
+                  <div
+                    className="relative h-36 w-36 shrink-0 rounded-full"
+                    style={{ background: buildDonut() }}
+                  >
+                    <div className="absolute inset-[26px] flex flex-col items-center justify-center rounded-full bg-[var(--surface)]">
+                      <span
+                        className={`text-base font-medium tabular-nums ${ink}`}
                       >
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-400"
-                          style={{ width: budget.width }}
-                        />
-                      </div>
+                        ₹36.7k
+                      </span>
+                      <span className={`text-[11px] ${muted}`}>Total</span>
+                    </div>
+                  </div>
+
+                  <ul className="min-w-[8rem] flex-1 space-y-3">
+                    {categories.map((c) => (
+                      <li
+                        key={c.name}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <span className={`flex items-center gap-2.5 ${muted}`}>
+                          <span
+                            className="h-2.5 w-2.5 rounded-sm"
+                            style={{ background: shade(c.tone) }}
+                          />
+                          {c.name}
+                        </span>
+                        <span className={`tabular-nums ${ink}`}>{c.pct}%</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className={panel}>
+                <h4 className={`text-sm font-medium ${ink}`}>
+                  Monthly spending
+                </h4>
+                <div className="mt-6 flex h-44 items-end justify-center gap-10 border-b border-[color:var(--line)] px-4">
+                  {months.map((m) => (
+                    <div
+                      key={m.label}
+                      className="flex h-full w-20 flex-col items-center justify-end sm:w-24"
+                    >
+                      <span className={`mb-2 text-xs tabular-nums ${muted}`}>
+                        {m.value}
+                      </span>
+                      <div
+                        className="w-full rounded-t-md bg-[var(--accent)]"
+                        style={{ height: `${m.height}%` }}
+                      />
                     </div>
                   ))}
                 </div>
-              </div>
-
-              <div
-                className={`mt-5 rounded-2xl border p-5 ${
-                  darkMode
-                    ? "border-white/10 bg-[#111b22]"
-                    : "border-slate-200 bg-white"
-                }`}
-              >
-                <h3 className={`font-bold ${textPrimary}`}>
-                  Spending by Category
-                </h3>
-                <div className="mt-6 grid items-center gap-8 lg:grid-cols-[240px_1fr]">
-                  <div className="flex justify-center">
-                    <div
-                      className="relative h-44 w-44 rounded-full"
-                      style={{
-                        background:
-                          "conic-gradient(#34d399 0deg 227deg, #22d3ee 227deg 288deg, #cbd5e1 288deg 331deg, #fbbf24 331deg 360deg)",
-                      }}
+                <div className="flex justify-center gap-10 px-4 pt-2">
+                  {months.map((m) => (
+                    <span
+                      key={m.label}
+                      className={`w-20 text-center text-xs sm:w-24 ${muted}`}
                     >
-                      <div
-                        className={`absolute inset-[30px] flex items-center justify-center rounded-full ${
-                          darkMode ? "bg-[#111b22]" : "bg-white"
-                        }`}
-                      >
-                        <div className="text-center">
-                          <p className={`text-xl font-black ${textPrimary}`}>
-                            ₹36.7k
-                          </p>
-                          <p
-                            className={`text-[10px] uppercase tracking-[0.16em] ${textSecondary}`}
-                          >
-                            Total spend
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    {[
-                      {
-                        name: "Housing",
-                        value: "63%",
-                        color: "bg-emerald-400",
-                      },
-                      { name: "Food", value: "17%", color: "bg-teal-400" },
-                      { name: "Other", value: "12%", color: "bg-slate-400" },
-                      { name: "Transport", value: "8%", color: "bg-amber-400" },
-                    ].map((item) => (
-                      <div
-                        key={item.name}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span
-                            className={`h-3 w-3 rounded-full ${item.color}`}
-                          />
-                          <span className={`text-sm ${textSecondary}`}>
-                            {item.name}
-                          </span>
-                        </div>
-                        <span className={`text-sm font-bold ${textPrimary}`}>
-                          {item.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className={`mt-5 rounded-2xl border p-5 ${
-                  darkMode
-                    ? "border-white/10 bg-[#111b22]"
-                    : "border-slate-200 bg-white"
-                }`}
-              >
-                <h3 className={`font-bold ${textPrimary}`}>Monthly Spending</h3>
-                <div
-                  className={`mt-6 flex h-48 items-end justify-center gap-6 border-b px-2 sm:gap-12 sm:px-6 ${
-                    darkMode ? "border-white/10" : "border-slate-200"
-                  }`}
-                >
-                  {[
-                    { month: "2026-08", height: "55%", value: "₹14k" },
-                    { month: "2026-06", height: "82%", value: "₹21k" },
-                  ].map((bar) => (
-                    <div
-                      key={bar.month}
-                      className="flex h-full w-24 flex-col items-center justify-end sm:w-36"
-                    >
-                      <span className={`mb-2 text-xs ${textSecondary}`}>
-                        {bar.value}
-                      </span>
-                      <div
-                        className="w-full rounded-t-xl bg-gradient-to-t from-emerald-500 to-teal-400"
-                        style={{ height: bar.height }}
-                      />
-                      <span
-                        className={`mt-3 text-[10px] uppercase tracking-[0.16em] ${textSecondary}`}
-                      >
-                        {bar.month}
-                      </span>
-                    </div>
+                      {m.label}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -504,531 +410,292 @@ function DashboardPreview({ darkMode }: { darkMode: boolean }) {
           </div>
         </div>
       </div>
+
+      {/* Floating insight chips */}
+      <div
+        className={`${card} absolute -right-4 top-24 hidden items-center gap-3 px-4 py-3 lg:flex`}
+      >
+        {/* <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[color:var(--accent)]">
+          <Check size={15} strokeWidth={2} />
+        </span>
+        <div>
+          <p className={`text-sm font-medium ${ink}`}>
+            Food is at 31% of budget
+          </p>
+          <p className={`text-xs ${muted}`}>On track for the month</p>
+        </div> */}
+      </div>
+      <div
+        className={`${card} absolute -left-4 bottom-24 hidden items-center gap-3 px-4 py-3 lg:flex`}
+      >
+        {/* <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[color:var(--accent)]">
+          <MessageSquare size={15} strokeWidth={1.5} />
+        </span> */}
+        {/* <div>
+          <p className={`text-sm font-medium ${ink}`}>4 expenses categorized</p>
+          <p className={`text-xs ${muted}`}>From one pasted line</p>
+        </div> */}
+      </div>
     </div>
   );
 }
 
-export default function FinanceLandingPage() {
-  const [darkMode, setDarkMode] = useState(true);
+/* -------------------------------------------------------------------------- */
+/*  Page                                                                       */
+/* -------------------------------------------------------------------------- */
 
+const steps = [
+  {
+    title: "Add your expenses",
+    body: "Paste them as you'd write them, or upload a PDF statement or CSV.",
+  },
+  {
+    title: "Set your limits",
+    body: "Give each category a monthly budget and a savings target.",
+  },
+  {
+    title: "Ask questions",
+    body: "Ask where the money went and get an answer based on your own data.",
+  },
+];
+
+const formats = ["PDF statements", "CSV exports", "Pasted text"];
+
+const securityNotes = [
+  "Access is limited to your authenticated account.",
+  "Your data is never sold or shared for advertising.",
+];
+
+export default function FinanceLandingPage() {
+  const [dark, setDark] = useState(false);
   const navigate = useNavigate();
   const { session } = useAuth();
 
-  const openAuth = () => {
-    navigate("/app");
-  };
+  useEffect(() => {
+    if (session) navigate("/app", { replace: true });
+  }, [session, navigate]);
 
-  if (session) {
-    navigate("/app");
-  } else {
-    return (
-      <main
-        className={`min-h-screen overflow-hidden transition-colors duration-300 ${
-          darkMode
-            ? "bg-[radial-gradient(circle_at_top,_rgba(246,220,170,0.18),_transparent_28%),radial-gradient(circle_at_bottom,_rgba(163,177,255,0.08),_transparent_34%),linear-gradient(180deg,_rgba(20,23,28,0.90),_rgba(16,18,22,0.96))] text-white"
-            : "bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.22),_transparent_26%),radial-gradient(circle_at_bottom,_rgba(152,166,255,0.06),_transparent_32%),linear-gradient(180deg,_rgba(255,252,248,0.96),_rgba(247,242,235,0.99))] text-slate-950"
-        }`}
-      >
-        <header className="fixed inset-x-0 top-0 z-50">
-          <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
-            <div
-              className={`flex items-center justify-between rounded-full border px-4 py-3 shadow-[0_16px_50px_rgba(33,29,24,0.14)] backdrop-blur-2xl sm:px-6 ${
-                darkMode
-                  ? "border-white/10 bg-[rgba(37,32,27,0.42)]"
-                  : "border-white/60 bg-[rgba(255,255,255,0.55)]"
-              }`}
-            >
-              <button
-                onClick={() => navigate("/")}
-                className="flex items-center gap-2.5"
-                aria-label="Finance-AI home"
-              >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d9b87d]/30 bg-[#d9b87d]/10 text-white">
-                  <img src="./favicon.svg" alt="Finance-AI Logo" />
-                </div>
-                <span
-                  className={`text-lg font-black tracking-[-0.04em] ${
-                    darkMode ? "text-white" : "text-slate-950"
-                  }`}
-                >
-                  Finance-AI
-                </span>
-              </button>
+  if (session) return null;
 
-              <nav
-                className={`hidden items-center gap-7 text-sm font-medium md:flex ${
-                  darkMode ? "text-[#e7d9b8]" : "text-slate-600"
-                }`}
-              >
-                <a href="#features" className="transition hover:text-[#d9b87d]">
-                  Features
-                </a>
-                <a
-                  href="#how-it-works"
-                  className="transition hover:text-[#d9b87d]"
-                >
-                  How it works
-                </a>
-                <a
-                  href="#ai-advisor"
-                  className="transition hover:text-[#d9b87d]"
-                >
-                  AI Advisor
-                </a>
-              </nav>
+  const openApp = () => navigate("/app");
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setDarkMode((prev) => !prev)}
-                  aria-label="Toggle dark mode"
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border transition ${
-                    darkMode
-                      ? "border-[#d9b87d]/15 bg-[#1a1714] text-[#f0d8a6] hover:bg-[#221d19]"
-                      : "border-[#ead8b4] bg-white text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-                </button>
+  return (
+    <main className="fa min-h-screen" data-theme={dark ? "dark" : "light"}>
+      <style>{css}</style>
 
-                <button
-                  onClick={openAuth}
-                  className={`hidden rounded-full px-4 py-2 text-sm font-semibold transition sm:block ${
-                    darkMode
-                      ? "text-[#f3e7c5] hover:bg-[#1a1714]"
-                      : "text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  Sign in
-                </button>
+      {/* Header */}
+      <header className="border-b border-[color:var(--line)]">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <button
+            onClick={() => navigate("/")}
+            className={`serif text-xl ${ink}`}
+            aria-label="Finance-AI home"
+          >
+            Finance-AI
+          </button>
 
-                <button
-                  onClick={openAuth}
-                  className="rounded-full bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] px-4 py-2.5 text-sm font-semibold text-[#1d140b] shadow-[0_12px_40px_rgba(217,184,125,0.28)] transition hover:brightness-110"
-                >
-                  Get started
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
+          <nav className={`hidden items-center gap-8 text-sm md:flex ${muted}`}>
+            <a href="#features" className="hover:text-[color:var(--ink)]">
+              Features
+            </a>
+            <a href="#how-it-works" className="hover:text-[color:var(--ink)]">
+              How it works
+            </a>
+            <a href="#security" className="hover:text-[color:var(--ink)]">
+              Security
+            </a>
+          </nav>
 
-        <section className="relative px-4 pb-20 pt-36 sm:px-6 lg:px-8 lg:pt-44">
-          <div className="absolute inset-0 -z-10">
-            <div
-              className={`absolute left-1/2 top-0 h-[560px] w-[820px] -translate-x-1/2 rounded-full blur-3xl ${
-                darkMode ? "bg-[#d9b87d]/10" : "bg-[#f7efe3]/80"
-              }`}
-            />
-            <div
-              className={`absolute right-0 top-96 h-72 w-72 rounded-full blur-3xl ${
-                darkMode ? "bg-[#d9b87d]/8" : "bg-[#f0e6d1]/60"
-              }`}
-            />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.12),transparent_26%)]" />
-            <div className="absolute inset-0 backdrop-blur-[1px]" />
-          </div>
-
-          <div className="mx-auto max-w-5xl text-center">
-            <Badge darkMode={darkMode}>Your money, understood by AI</Badge>
-
-            <h1
-                  className={`mx-auto mt-7 max-w-5xl text-5xl font-black leading-[0.92] tracking-[-0.07em] sm:text-6xl lg:text-[6.5rem] ${
-                darkMode ? "text-white" : "text-slate-950"
-              }`}
-            >
-                  Your wealth,
-                  <span className="block bg-gradient-to-r from-[#f7e7c0] via-[#d9b87d] to-[#c6a367] bg-clip-text text-transparent">
-                    refined by intelligence.
-              </span>
-            </h1>
-
-            <p
-              className={`mx-auto mt-7 max-w-2xl text-base leading-7 sm:text-lg ${
-                darkMode ? "text-slate-400" : "text-slate-500"
-              }`}
-            >
-              Finance-AI turns your expenses, budgets, and financial questions
-              into actionable insights through a real-time AI financial advisor.
-            </p>
-
-            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <button
-                onClick={openAuth}
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#f5e4b7] via-[#e8c987] to-[#d9b87d] px-6 py-4 text-base font-bold text-[#1d140b] shadow-[0_18px_45px_rgba(217,184,125,0.3)] transition hover:scale-[1.01] hover:brightness-110 sm:w-auto"
-              >
-                Start analyzing your money
-                <ArrowRight
-                  size={18}
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </button>
-
-              <a
-                href="#how-it-works"
-                className={`inline-flex w-full items-center justify-center gap-2 rounded-full border px-6 py-4 text-base font-bold transition sm:w-auto ${
-                  darkMode
-                    ? "border-[#d9b87d]/20 bg-[#12100d]/60 text-[#f5eedb] hover:bg-[#1d1713]"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                }`}
-              >
-                See how it works
-                <ChevronRight size={18} />
-              </a>
-            </div>
-
-            <div
-              className={`mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm ${
-                darkMode ? "text-slate-500" : "text-slate-400"
-              }`}
-            >
-              <span className="flex items-center gap-2">
-                <Check size={15} className="text-[#d9b87d]" />
-                No spreadsheets
-              </span>
-              <span className="flex items-center gap-2">
-                <Check size={15} className="text-[#d9b87d]" />
-                Real-time AI
-              </span>
-            </div>
-          </div>
-
-          <DashboardPreview darkMode={darkMode} />
-        </section>
-
-        <section
-          className={`border-y ${
-            darkMode
-              ? "border-[#d9b87d]/10 bg-[#0b1218]/70"
-              : "border-slate-200 bg-slate-50/70"
-          }`}
-        >
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-7 text-center sm:flex-row sm:px-6 sm:text-left lg:px-8">
-            <p
-              className={`text-sm font-medium tracking-[0.12em] uppercase ${
-                darkMode ? "text-[#f0d8a6]" : "text-[#86682d]"
-              }`}
-            >
-              Built for clarity
-            </p>
-
-            <div
-              className={`flex items-center gap-6 ${
-                darkMode ? "text-slate-400" : "text-slate-500"
-              }`}
-            >
-              <div className="flex items-center gap-2 text-sm">
-                <ShieldCheck size={17} className="text-[#d9b87d]" />
-                Secure
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Zap size={17} className="text-[#d9b87d]" />
-                Real-time
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Bot size={17} className="text-[#d9b87d]" />
-                AI-powered
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="features"
-          className={`px-4 py-24 sm:px-6 lg:px-8 lg:py-32 ${
-            darkMode ? "bg-[#04080b]" : "bg-[#fffdfa]"
-          }`}
-        >
-          <SectionHeading
-            darkMode={darkMode}
-            eyebrow="Everything in one place"
-            title="Your finances should answer questions, not create them."
-            description="Finance-AI combines transaction parsing, document extraction, budgeting, analytics, and conversational AI into one financial command center."
-          />
-
-          <div className="mx-auto mt-16 grid max-w-6xl gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <div
-                  key={feature.title}
-                  className={`group rounded-[1.7rem] border p-7 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(205,154,71,0.12)] ${
-                    darkMode
-                      ? "border-[#d9b87d]/15 bg-[#120f0d] hover:border-[#d9b87d]/35 hover:bg-[#171310]"
-                      : "border-[#ead8b4] bg-[#fffaf2] hover:border-[#d9b87d]/35 hover:bg-[#f5ecdd]"
-                  }`}
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#d9b87d]/12 text-[#f0d8a6] ring-1 ring-[#d9b87d]/10 transition group-hover:bg-[#d9b87d] group-hover:text-[#1d140b]">
-                    <Icon size={21} />
-                  </div>
-
-                  <h3
-                    className={`mt-6 text-xl font-bold ${
-                      darkMode ? "text-white" : "text-slate-950"
-                    }`}
-                  >
-                    {feature.title}
-                  </h3>
-                  <p
-                    className={`mt-3 text-sm leading-6 ${
-                      darkMode ? "text-slate-400" : "text-slate-500"
-                    }`}
-                  >
-                    {feature.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        <section
-          id="how-it-works"
-          className="bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.12),_transparent_45%),_#071016] px-4 py-24 text-white sm:px-6 lg:px-8 lg:py-32"
-        >
-          <div className="mx-auto max-w-6xl">
-            <div className="grid items-center gap-16 lg:grid-cols-2">
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d9b87d]">
-                  How it works
-                </div>
-
-                <h2 className="mt-5 text-4xl font-black tracking-[-0.05em] sm:text-5xl">
-                  Give your AI the raw data.
-                  <span className="block text-[#d9b87d]">
-                    Get the full picture.
-                  </span>
-                </h2>
-
-                <p className="mt-6 max-w-xl text-base leading-7 text-slate-400">
-                  Stop spending hours categorizing transactions and building
-                  spreadsheets. Finance-AI handles the messy work so you can
-                  focus on decisions.
-                </p>
-
-                <div className="mt-10 space-y-6">
-                  {[
-                    {
-                      number: "01",
-                      title: "Import your finances",
-                      description: "Paste expenses, upload a CSV.",
-                    },
-                    {
-                      number: "02",
-                      title: "Set your goals",
-                      description:
-                        "Tell Finance-AI your budgets, spending limits, and savings targets.",
-                    },
-                    {
-                      number: "03",
-                      title: "Ask anything",
-                      description:
-                        "Chat with your financial AI and receive instant analysis and advice.",
-                    },
-                  ].map((step) => (
-                    <div key={step.number} className="flex gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#d9b87d]/20 bg-[#d9b87d]/8 text-xs font-bold text-[#f0d8a6] shadow-[0_0_0_1px_rgba(217,184,125,0.08)]">
-                        {step.number}
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-white">{step.title}</h3>
-                        <p className="mt-1 text-sm leading-6 text-slate-400">
-                          {step.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="relative">
-                <div className="absolute -inset-10 rounded-full bg-[#d9b87d]/10 blur-3xl" />
-                <div className="relative rounded-[2rem] border border-[#d9b87d]/15 bg-[#120f0d] p-5 shadow-[0_30px_80px_rgba(20,14,8,0.42)] ring-1 ring-white/5">
-                  <div className="mb-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#f0d8a6] to-[#d9b87d] text-[#1d140b]">
-                      <Bot size={18} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-white">Finance-AI Advisor</p>
-                      <p className="text-xs text-slate-500">
-                        Streaming response
-                      </p>
-                    </div>
-                    <div className="ml-auto flex items-center gap-2 text-xs text-[#f0d8a6]">
-                      <span className="h-2 w-2 rounded-full bg-[#d9b87d]" />
-                      Online
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] p-4 text-sm font-medium text-[#1d140b]">
-                      Why did my spending increase this month?
-                    </div>
-
-                    <div className="max-w-[90%] rounded-2xl rounded-bl-md border border-[#d9b87d]/10 bg-[#1a1714] p-4 text-sm leading-6 text-slate-300">
-                      Your spending increased by{" "}
-                      <strong className="text-white">12.4%</strong> compared
-                      with last month.
-                      <br />
-                      <br />
-                      The biggest changes came from dining (+₹1,260), online
-                      shopping (+₹940), and transportation (+₹610).
-                      <br />
-                      <br />
-                      You can still stay within your monthly budget by reducing
-                      discretionary spending by about ₹180 per day.
-                    </div>
-
-                    <div className="flex items-center gap-2 px-2 text-xs text-slate-500">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-[#d9b87d]" />
-                      Analyzing your latest transactions...
-                    </div>
-                  </div>
-
-                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-[#d9b87d]/10 bg-[#1a1714] p-3">
-                    <input
-                      placeholder="Ask about your finances..."
-                      className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
-                    />
-                    <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] text-[#1d140b]">
-                      <ArrowRight size={16} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="ai-advisor"
-          className={`px-4 py-24 sm:px-6 lg:px-8 lg:py-32 ${
-            darkMode ? "bg-[#050b10]" : "bg-white"
-          }`}
-        >
-          <div className="mx-auto max-w-6xl rounded-[2rem] border border-[#d9b87d]/20 bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.18),_transparent_38%),_linear-gradient(135deg,_rgba(217,184,125,0.12),_rgba(18,15,13,0.96))] px-6 py-12 text-white shadow-[0_24px_80px_rgba(14,10,6,0.45)] sm:px-10 lg:px-16 lg:py-16">
-            <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.85fr]">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#d9b87d]/25 bg-[#d9b87d]/8 px-4 py-2 text-sm font-medium text-[#f0d8a6]">
-                  <Sparkles size={15} />
-                  Your personal financial AI
-                </div>
-
-                <h2 className="mt-6 text-4xl font-black tracking-[-0.05em] sm:text-5xl">
-                  Ask better questions.
-                  <span className="block text-[#d9b87d]">
-                    Make better decisions.
-                  </span>
-                </h2>
-
-                <p className="mt-6 max-w-xl text-base leading-7 text-slate-300">
-                  “Can I afford a ₹9000 vacation?” “Where am I overspending?”
-                  “How much should I save this month?” Your financial data
-                  becomes a conversation.
-                </p>
-
-                <button
-                  onClick={openAuth}
-                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-4 text-sm font-bold text-[#1d140b] shadow-[0_18px_45px_rgba(255,255,255,0.12)] transition hover:bg-[#f5ecdd]"
-                >
-                  Talk to Finance-AI
-                  <ArrowRight size={17} />
-                </button>
-              </div>
-
-              <div className="rounded-[1.6rem] border border-[#d9b87d]/10 bg-[#1a1714]/50 p-5 backdrop-blur-sm">
-                <div className="space-y-3">
-                  {[
-                    "Analyze my spending this month",
-                    "Am I on track for my savings goal?",
-                    "Find 3 areas where I can cut costs",
-                    "Create a budget for next month",
-                  ].map((question) => (
-                    <div
-                      key={question}
-                      className="flex items-center justify-between rounded-2xl border border-[#d9b87d]/10 bg-[#201d1a]/70 px-4 py-4 text-sm text-slate-200"
-                    >
-                      <span>{question}</span>
-                      <ChevronRight size={17} className="text-[#f0d8a6]" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section
-          className={`border-t px-4 py-24 sm:px-6 lg:px-8 ${
-            darkMode
-              ? "border-[#d9b87d]/10 bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.10),_transparent_35%),_#0d0b09]"
-              : "border-[#ead8b4] bg-[radial-gradient(circle_at_top,_rgba(217,184,125,0.08),_transparent_35%),_#fffaf2]"
-          }`}
-        >
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#f0d8a6] to-[#d9b87d] text-[#1d140b] shadow-[0_18px_45px_rgba(217,184,125,0.24)]">
-              <CreditCard size={23} />
-            </div>
-
-            <h2
-              className={`mt-7 text-4xl font-black tracking-[-0.05em] sm:text-6xl ${
-                darkMode ? "text-white" : "text-slate-950"
-              }`}
-            >
-              Your money deserves
-              <span className="block bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] bg-clip-text text-transparent">
-                an intelligent system.
-              </span>
-            </h2>
-
-            <p
-              className={`mx-auto mt-6 max-w-2xl text-base leading-7 sm:text-lg ${
-                darkMode ? "text-slate-400" : "text-slate-500"
-              }`}
-            >
-              Import your first statement, set your budget, and let Finance-AI
-              turn your financial data into decisions.
-            </p>
-
+          <div className="flex items-center gap-5">
             <button
-              onClick={openAuth}
-              className="mt-9 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#f0d8a6] to-[#d9b87d] px-7 py-4 text-base font-bold text-[#1d140b] shadow-[0_18px_45px_rgba(217,184,125,0.24)] transition hover:brightness-110"
+              onClick={() => setDark((d) => !d)}
+              aria-label={
+                dark ? "Switch to light theme" : "Switch to dark theme"
+              }
+              className={muted}
             >
-              Get started for free
-              <ArrowRight size={18} />
+              {dark ? (
+                <Sun size={17} strokeWidth={1.5} />
+              ) : (
+                <Moon size={17} strokeWidth={1.5} />
+              )}
+            </button>
+            <button onClick={openApp} className={`text-sm ${ink}`}>
+              Sign in
             </button>
           </div>
-        </section>
+        </div>
+      </header>
 
-        <footer
-          className={`border-t ${
-            darkMode
-              ? "border-[#d9b87d]/10 bg-[#120f0d]"
-              : "border-[#ead8b4] bg-[#fffaf2]"
-          }`}
-        >
-          <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#f0d8a6] to-[#d9b87d] text-[#1d140b]">
-                <img src="./favicon.svg" alt="Finance-AI Logo" />
-              </div>
-              <span
-                className={`font-black ${
-                  darkMode ? "text-white" : "text-slate-950"
-                }`}
-              >
-                Finance-AI
-              </span>
-            </div>
-            <p
-              className={`text-sm ${
-                darkMode ? "text-slate-500" : "text-slate-400"
-              }`}
+      {/* Hero */}
+      <section className="relative">
+        <div className="dots pointer-events-none absolute inset-0" />
+        <div className="halo pointer-events-none absolute left-1/2 top-0 h-[420px] w-[900px] max-w-full -translate-x-1/2" />
+        <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-24 sm:pt-32">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-[var(--surface)] px-3.5 py-1.5 text-xs text-[color:var(--muted)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+            Expenses, statements and budgets in one place
+          </span>
+          <h1
+            className={`serif mt-8 max-w-3xl text-5xl leading-[1.05] sm:text-6xl lg:text-7xl ${ink}`}
+          >
+            Know where your money goes.
+          </h1>
+          <p className={`mt-8 max-w-xl text-lg leading-8 ${muted}`}>
+            Finance-AI reads your expenses and bank statements, sorts them into
+            categories, and answers questions about your spending in plain
+            language.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <PrimaryButton onClick={openApp}>
+              Get started
+              <ArrowRight size={16} strokeWidth={1.5} />
+            </PrimaryButton>
+            <a
+              href="#how-it-works"
+              className={`text-sm underline decoration-[color:var(--line)] underline-offset-4 hover:decoration-[color:var(--ink)] ${ink}`}
             >
-              Intelligent personal finance, powered by AI.
-            </p>
+              See how it works
+            </a>
           </div>
-        </footer>
-      </main>
-    );
-  }
+
+          <div className="mt-20 sm:mt-24">
+            <DashboardPreview />
+          </div>
+        </div>
+      </section>
+
+      {/* Supported inputs: quiet, muted wall */}
+      <section className="border-y border-[color:var(--line)]">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className={`text-sm ${muted}`}>
+            Works with the files you already have
+          </p>
+          <ul
+            className={`flex flex-wrap gap-x-10 gap-y-2 text-sm font-medium ${muted}`}
+          >
+            {formats.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Features: bento grid */}
+      <section id="features" className="mx-auto max-w-6xl px-6 py-28 sm:py-36">
+        <h2
+          className={`serif max-w-2xl text-4xl leading-tight sm:text-5xl ${ink}`}
+        >
+          One place for your spending, budgets, and questions.
+        </h2>
+
+        <div className="mt-16 grid gap-4 lg:grid-cols-6">
+          <Tile
+            className="lg:col-span-4"
+            icon={MessageSquare}
+            title="Write expenses the way you'd say them"
+            body="Paste a line of expenses and each one is read, categorized, and added up."
+          >
+            <ParsedExpenses />
+          </Tile>
+
+          <Tile
+            className="lg:col-span-2"
+            icon={FileText}
+            title="Statements, read for you"
+            body="Upload a PDF statement and the transactions are extracted without manual entry."
+          />
+
+          <Tile
+            className="lg:col-span-2"
+            icon={PieChart}
+            title="Budgets by category"
+            body="See what you've spent against each limit at a glance."
+          >
+            <BudgetBars />
+          </Tile>
+
+          <Tile
+            className="lg:col-span-4"
+            icon={MessageSquare}
+            title="Ask about your own numbers"
+            body="Questions are answered from your transactions, and responses stream in as they're written."
+          >
+            <AdvisorExchange />
+          </Tile>
+        </div>
+      </section>
+
+      {/* How it works: a real sequence, so numbers are warranted */}
+      <section id="how-it-works" className="bg-[#0A1613] text-white">
+        <div className="mx-auto max-w-6xl px-6 py-28 sm:py-36">
+          <h2 className="serif max-w-2xl text-4xl leading-tight text-white sm:text-5xl">
+            Less time sorting. More time deciding.
+          </h2>
+
+          <ol className="mt-16 grid gap-12 md:grid-cols-3 md:gap-8">
+            {steps.map((s, i) => (
+              <li key={s.title} className="border-t border-white/15 pt-5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#3DDC97]/40 text-sm tabular-nums text-[#3DDC97]">
+                  {i + 1}
+                </span>
+                <h3 className="mt-4 text-base font-medium text-white">
+                  {s.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-white/60">{s.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Security: understated, footnote-style */}
+      <section id="security" className="border-t border-[color:var(--line)]">
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-24 md:grid-cols-[1fr_1.4fr]">
+          <div className="flex items-start gap-3">
+            <span className={`mt-1 ${accent}`}>
+              <Lock size={16} strokeWidth={1.5} />
+            </span>
+            <h2 className={`serif text-2xl ${ink}`}>Your data stays yours.</h2>
+          </div>
+          <ul className={`space-y-3 text-sm leading-6 ${muted}`}>
+            {securityNotes.map((n) => (
+              <li key={n} className="border-b border-[color:var(--line)] pb-3">
+                {n}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Closing CTA */}
+      <section className="border-t border-[color:var(--line)]">
+        <div className="mx-auto max-w-6xl px-6 py-28 sm:py-36">
+          <h2
+            className={`serif max-w-2xl text-4xl leading-tight sm:text-5xl ${ink}`}
+          >
+            Add your first statement and see the picture.
+          </h2>
+          <div className="mt-10">
+            <PrimaryButton onClick={openApp}>
+              Get started
+              <ArrowRight size={16} strokeWidth={1.5} />
+            </PrimaryButton>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-[color:var(--line)]">
+        <div
+          className={`mx-auto flex max-w-6xl flex-col gap-2 px-6 py-8 text-xs sm:flex-row sm:justify-between ${muted}`}
+        >
+          <span>© 2026 Finance-AI</span>
+          <span>
+            Finance-AI provides insights, not regulated financial advice.
+          </span>
+        </div>
+      </footer>
+    </main>
+  );
 }
