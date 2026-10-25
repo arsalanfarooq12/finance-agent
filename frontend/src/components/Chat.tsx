@@ -13,6 +13,7 @@ import {
   resumeMessage,
   type PendingConfirmation,
   type StreamHandlers,
+  getChatHistory,
 } from "../api";
 
 const AGENT_LABELS: Record<string, string> = {
@@ -39,11 +40,34 @@ export default function Chat({ onAgentReply }: Props) {
   const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState<PendingConfirmation | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-
+  //  scroll to bottom when messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
+  // Load chat history on mount
+  useEffect(() => {
+    let cancelled = false;
+    getChatHistory()
+      .then((rows) => {
+        if (cancelled || rows.length === 0) return;
+        setMessages((prev) =>
+          prev.length > 1
+            ? prev // user already started typing, don't overwrite
+            : [
+                prev[0], // keep the greeting
+                ...rows.map((r) => ({
+                  role: r.role,
+                  content: r.content,
+                  timestamp: r.createdAt ? new Date(r.createdAt) : new Date(),
+                })),
+              ]
+        );
+      })
+      .catch(() => {}); // history is optional; fail quietly
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const makeHandlers = (): StreamHandlers => ({
     onToken: (token) => {
       setMessages((prev) => {

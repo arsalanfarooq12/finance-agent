@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { type AuthRequest } from "../middleware/verifyToken.js";
 import { runAgent, streamAgent, resumeAgent } from "../agent/orchestrator.js";
+import { getRecentConversations } from "../db/database.js";
 
 const router = Router();
 
@@ -69,4 +70,20 @@ router.post("/resume", async (req: AuthRequest, res) => {
   }
 });
 
+// Past messages for the chat UI
+router.get("/history", async (req: AuthRequest, res) => {
+  try {
+    const rows = await getRecentConversations(req.userId!);
+    res.json(
+      rows.map((r: any) => ({
+        role: r.role === "user" ? "user" : "assistant", // DB stores "model"; UI uses "assistant"
+        content: r.content,
+        createdAt: r.created_at ?? null,
+      }))
+    );
+  } catch (error) {
+    console.error("History error:", error);
+    res.status(500).json({ error: "Failed to load history" });
+  }
+});
 export default router;

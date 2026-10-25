@@ -155,15 +155,15 @@ export async function insertConversation(
   if (error) throw error;
 }
 
-export async function getRecentConversations(userId: string) {
+export async function getRecentConversations(userId: string, limit = 20) {
   const { data, error } = await supabase
     .from("conversations")
-    .select("role, content")
+    .select("role, content, created_at")
     .eq("user_id", userId)
-    .order("created_at", { ascending: true })
-    .limit(20);
+    .order("created_at", { ascending: false })
+    .limit(limit);
   if (error) throw error;
-  return data;
+  return (data ?? []).reverse();
 }
 
 export async function clearConversations(userId: string) {

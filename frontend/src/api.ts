@@ -83,6 +83,12 @@ export const setBudget = async (category: string, limit: number) => {
 export const deleteBudget = async (category: string) => {
   await apiClient.delete(`/budgets/${encodeURIComponent(category)}`);
 };
+export const getChatHistory = async () => {
+  const { data } = await apiClient.get<
+    { role: "user" | "assistant"; content: string; createdAt: string | null }[]
+  >("/chat/history");
+  return data;
+};
 
 export interface PendingConfirmation {
   threadId: string;
